@@ -12,7 +12,7 @@ bookdown::gitbook:
         <li><a href="./"><img src="img/amat-logo.png" width="280"></a></li>
     download: ["pdf"]
 bookdown::pdf_book:
-  output_dir: '_book'
+  output_dir: 'docs'
   includes:
     in_header: preamble.tex
   latex_engine: xelatex
