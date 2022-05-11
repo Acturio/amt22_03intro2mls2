@@ -1,0 +1,17 @@
+bienvenida
+objetivo
+instructores
+ciencia-de-datos-en-r
+estructura-del-curso-actual
+alcances-del-curso
+duración-y-evaluación-del-curso
+recursos-y-dinámica-de-clase
+repaso
+supervised-machine-learning
+support-vector-machine-svm
+maximum-margin-classifier
+support-vector-classifiers
+support-vector-machine
+el-truco-del-kernel
+ventajas-y-desventajas
+ajuste-del-modelo-con-r

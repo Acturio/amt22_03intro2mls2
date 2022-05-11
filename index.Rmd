@@ -24,7 +24,7 @@ Desarrollar conocimiento y habilidades para implementar modelos complejos de Mac
 **Se asume que el alumno tiene conocimientos generales de estadística, bases matemáticas y de programación básica en R y que cuenta con los conocimientos teóricos básicos de machine learning y prácticos con tidymodels.**
 
 
-## ¿Quienes somos? 
+## Instructores 
 
 **ACT. ARTURO BRINGAS** 
 
@@ -145,7 +145,7 @@ En esta clase estaremos usando:
   - Mano arriba: Quiero participar/preguntar ó Ya estoy listo para iniciar 
 * Grupo de WhatsApp [El chismecito está aquí](https://chat.whatsapp.com/KUbqIk8Cqu42zkXffIgUQQ)
 * [Google Drive](https://drive.google.com/drive/folders/1IblKYfDpSjV89FBT3c-PafOiD4wW7UrD?usp=sharing)
-* Notas de clase [Revisame si quieres aprender](KaLizzyGam.github.io/index.html) 
+* Notas de clase [Revisame si quieres aprender](https://acturio.github.io/amt22_03intro2mls2/) 
 * Documento del taller de [Scoping](https://docs.google.com/spreadsheets/d/1hCRt00nYyZvbkfi9yOMRSR0R30lPRtKzaNKKlgAE78M/edit?usp=sharing).
 
 <div class="watermark"><img src="img/header.png" width="400"></div>
