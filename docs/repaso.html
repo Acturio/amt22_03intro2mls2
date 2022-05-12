@@ -32,7 +32,7 @@
   
   
 <link rel="prev" href="index.html"/>
-<link rel="next" href="supervised-machine-learning.html"/>
+<link rel="next" href="support-vector-machine-svm.html"/>
 <script src="libs/header-attrs-2.11/header-attrs.js"></script>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
@@ -55,70 +55,6 @@
 <script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
 
 
-<style type="text/css">
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-    color: #aaaaaa;
-  }
-pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
-code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code span.at { color: #7d9029; } /* Attribute */
-code span.bn { color: #40a070; } /* BaseN */
-code span.bu { } /* BuiltIn */
-code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code span.ch { color: #4070a0; } /* Char */
-code span.cn { color: #880000; } /* Constant */
-code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code span.dt { color: #902000; } /* DataType */
-code span.dv { color: #40a070; } /* DecVal */
-code span.er { color: #ff0000; font-weight: bold; } /* Error */
-code span.ex { } /* Extension */
-code span.fl { color: #40a070; } /* Float */
-code span.fu { color: #06287e; } /* Function */
-code span.im { } /* Import */
-code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code span.op { color: #666666; } /* Operator */
-code span.ot { color: #007020; } /* Other */
-code span.pp { color: #bc7a00; } /* Preprocessor */
-code span.sc { color: #4070a0; } /* SpecialChar */
-code span.ss { color: #bb6688; } /* SpecialString */
-code span.st { color: #4070a0; } /* String */
-code span.va { color: #19177c; } /* Variable */
-code span.vs { color: #4070a0; } /* VerbatimString */
-code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-</style>
 
 
 <link rel="stylesheet" href="style.css" type="text/css" />
@@ -153,28 +89,25 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="2" data-path="repaso.html"><a href="repaso.html"><i class="fa fa-check"></i><b>2</b> Repaso</a>
 <ul>
-<li class="chapter" data-level="2.1" data-path="repaso.html"><a href="repaso.html#tipos-de-aprendizaje"><i class="fa fa-check"></i><b>2.1</b> Tipos de aprendizaje</a></li>
-</ul></li>
-<li class="chapter" data-level="3" data-path="supervised-machine-learning.html"><a href="supervised-machine-learning.html"><i class="fa fa-check"></i><b>3</b> Supervised Machine Learning</a>
+<li class="chapter" data-level="2.1" data-path="repaso.html"><a href="repaso.html#machine-learning"><i class="fa fa-check"></i><b>2.1</b> Machine Learning</a></li>
+<li class="chapter" data-level="2.2" data-path="repaso.html"><a href="repaso.html#tipos-de-aprendizaje"><i class="fa fa-check"></i><b>2.2</b> Tipos de aprendizaje</a>
 <ul>
-<li class="chapter" data-level="3.1" data-path="supervised-machine-learning.html"><a href="supervised-machine-learning.html#support-vector-machine-svm"><i class="fa fa-check"></i><b>3.1</b> Support Vector Machine (SVM)</a>
-<ul>
-<li class="chapter" data-level="3.1.1" data-path="supervised-machine-learning.html"><a href="supervised-machine-learning.html#maximum-margin-classifier"><i class="fa fa-check"></i><b>3.1.1</b> Maximum Margin Classifier</a></li>
-<li class="chapter" data-level="3.1.2" data-path="supervised-machine-learning.html"><a href="supervised-machine-learning.html#support-vector-classifiers"><i class="fa fa-check"></i><b>3.1.2</b> Support Vector Classifiers</a></li>
-<li class="chapter" data-level="3.1.3" data-path="supervised-machine-learning.html"><a href="supervised-machine-learning.html#support-vector-machine"><i class="fa fa-check"></i><b>3.1.3</b> Support Vector Machine</a></li>
-<li class="chapter" data-level="3.1.4" data-path="supervised-machine-learning.html"><a href="supervised-machine-learning.html#el-truco-del-kernel"><i class="fa fa-check"></i><b>3.1.4</b> El truco del Kernel</a></li>
-<li class="chapter" data-level="3.1.5" data-path="supervised-machine-learning.html"><a href="supervised-machine-learning.html#ventajas-y-desventajas"><i class="fa fa-check"></i><b>3.1.5</b> Ventajas y desventajas</a></li>
-<li class="chapter" data-level="3.1.6" data-path="supervised-machine-learning.html"><a href="supervised-machine-learning.html#ajuste-del-modelo-con-r"><i class="fa fa-check"></i><b>3.1.6</b> Ajuste del modelo con R</a></li>
+<li class="chapter" data-level="2.2.1" data-path="repaso.html"><a href="repaso.html#aprendizaje-supervisado"><i class="fa fa-check"></i><b>2.2.1</b> Aprendizaje supervisado</a></li>
+<li class="chapter" data-level="2.2.2" data-path="repaso.html"><a href="repaso.html#aprendizaje-no-supervisado"><i class="fa fa-check"></i><b>2.2.2</b> Aprendizaje no supervisado</a></li>
 </ul></li>
+<li class="chapter" data-level="2.3" data-path="repaso.html"><a href="repaso.html#el-proceso-de-machine-learning"><i class="fa fa-check"></i><b>2.3</b> El proceso de Machine Learning</a></li>
+<li class="chapter" data-level="2.4" data-path="repaso.html"><a href="repaso.html#errores-sesgo-vs-varianza"><i class="fa fa-check"></i><b>2.4</b> Errores: Sesgo vs varianza</a></li>
+<li class="chapter" data-level="2.5" data-path="repaso.html"><a href="repaso.html#ingeniería-de-características-feature-engineering"><i class="fa fa-check"></i><b>2.5</b> Ingeniería de características (Feature Engineering)</a></li>
+<li class="chapter" data-level="2.6" data-path="repaso.html"><a href="repaso.html#medidas-de-error"><i class="fa fa-check"></i><b>2.6</b> Medidas de error</a></li>
 </ul></li>
-<li class="chapter" data-level="4" data-path="support-vector-machine-svm-1.html"><a href="support-vector-machine-svm-1.html"><i class="fa fa-check"></i><b>4</b> Support Vector Machine (SVM)</a>
+<li class="chapter" data-level="3" data-path="support-vector-machine-svm.html"><a href="support-vector-machine-svm.html"><i class="fa fa-check"></i><b>3</b> Support Vector Machine (SVM)</a>
 <ul>
-<li class="chapter" data-level="4.1" data-path="support-vector-machine-svm-1.html"><a href="support-vector-machine-svm-1.html#maximum-margin-classifier-1"><i class="fa fa-check"></i><b>4.1</b> Maximum Margin Classifier</a></li>
-<li class="chapter" data-level="4.2" data-path="support-vector-machine-svm-1.html"><a href="support-vector-machine-svm-1.html#support-vector-classifiers-1"><i class="fa fa-check"></i><b>4.2</b> Support Vector Classifiers</a></li>
-<li class="chapter" data-level="4.3" data-path="support-vector-machine-svm-1.html"><a href="support-vector-machine-svm-1.html#support-vector-machine-1"><i class="fa fa-check"></i><b>4.3</b> Support Vector Machine</a></li>
-<li class="chapter" data-level="4.4" data-path="support-vector-machine-svm-1.html"><a href="support-vector-machine-svm-1.html#el-truco-del-kernel-1"><i class="fa fa-check"></i><b>4.4</b> El truco del Kernel</a></li>
-<li class="chapter" data-level="4.5" data-path="support-vector-machine-svm-1.html"><a href="support-vector-machine-svm-1.html#ventajas-y-desventajas-1"><i class="fa fa-check"></i><b>4.5</b> Ventajas y desventajas</a></li>
-<li class="chapter" data-level="4.6" data-path="support-vector-machine-svm-1.html"><a href="support-vector-machine-svm-1.html#ajuste-del-modelo-con-r-1"><i class="fa fa-check"></i><b>4.6</b> Ajuste del modelo con R</a></li>
+<li class="chapter" data-level="3.1" data-path="support-vector-machine-svm.html"><a href="support-vector-machine-svm.html#maximum-margin-classifier"><i class="fa fa-check"></i><b>3.1</b> Maximum Margin Classifier</a></li>
+<li class="chapter" data-level="3.2" data-path="support-vector-machine-svm.html"><a href="support-vector-machine-svm.html#support-vector-classifiers"><i class="fa fa-check"></i><b>3.2</b> Support Vector Classifiers</a></li>
+<li class="chapter" data-level="3.3" data-path="support-vector-machine-svm.html"><a href="support-vector-machine-svm.html#support-vector-machine"><i class="fa fa-check"></i><b>3.3</b> Support Vector Machine</a></li>
+<li class="chapter" data-level="3.4" data-path="support-vector-machine-svm.html"><a href="support-vector-machine-svm.html#el-truco-del-kernel"><i class="fa fa-check"></i><b>3.4</b> El truco del Kernel</a></li>
+<li class="chapter" data-level="3.5" data-path="support-vector-machine-svm.html"><a href="support-vector-machine-svm.html#ventajas-y-desventajas"><i class="fa fa-check"></i><b>3.5</b> Ventajas y desventajas</a></li>
+<li class="chapter" data-level="3.6" data-path="support-vector-machine-svm.html"><a href="support-vector-machine-svm.html#ajuste-del-modelo-con-r"><i class="fa fa-check"></i><b>3.6</b> Ajuste del modelo con R</a></li>
 </ul></li>
 <li class="divider"></li>
 <li><a href="./"><img src="img/amat-logo.png" width="280"></a></li>
@@ -198,16 +131,100 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
             <section class="normal" id="section-">
 <div id="repaso" class="section level1" number="2">
 <h1><span class="header-section-number">Capítulo 2</span> Repaso</h1>
-<p>Vale la pena hacer un breve repaso de lo que hemos estudiado hasta el momento.</p>
-<div id="tipos-de-aprendizaje" class="section level2" number="2.1">
-<h2><span class="header-section-number">2.1</span> Tipos de aprendizaje</h2>
+<p>En los cursos anteriores, hemos hablando a cerca del proceso completo de Ciencia de Datos, para poder empezar con la segunda parte del curso de Analisis Supervisado, valele la pena hacer un breve repaso de lo que hemos estudiado hasta el momento.</p>
+<div id="machine-learning" class="section level2" number="2.1">
+<h2><span class="header-section-number">2.1</span> Machine Learning</h2>
+<p><strong>Machine Learning</strong> o –aprendizaje automático– es una rama de la inteligencia artificial que permite que las máquinas aprendan de los patrones existentes en los datos. Se usan métodos computacionales para aprender de datos con el fin de producir reglas para mejorar el desempeño en alguna tarea o toma de decisión. (Está enfocado en la programación de máquinas para aprender de los patrones existentes en datos principalmente estructurados y anticiparse al futuro)</p>
+<p><img src="img/01-repaso/02_ml.png" width="600pt" style="display: block; margin: auto;" /></p>
+<p><img src="img/01-repaso/03_supervisado_robo.png" width="600pt" style="display: block; margin: auto;" /></p>
+</div>
+<div id="tipos-de-aprendizaje" class="section level2" number="2.2">
+<h2><span class="header-section-number">2.2</span> Tipos de aprendizaje</h2>
 <p>Platicamos en el módulo pasado que al hablar de Machine Learning, existen distintos tipos de aprendizaje, siendo los más comúnes:</p>
 <ul>
 <li>Aprendizaje supervisado</li>
 <li>Aprendizaje no supervisado</li>
+</ul>
+<p>Otreos ejemplos de especialidades son</p>
+<ul>
 <li>Aprendizaje profundo</li>
 <li>Aprendizaje por refuerzo</li>
 </ul>
+<p>La diferencia entre el análisis supervisado y el no supervisado es la etiqueta, es decir, en el análisis supervisado tenemos una etiqueta “correcta” y el objetivo de los algoritmos es predecir esta etiqueta.</p>
+<div id="aprendizaje-supervisado" class="section level3" number="2.2.1">
+<h3><span class="header-section-number">2.2.1</span> Aprendizaje supervisado</h3>
+<ul>
+<li><p>Conocemos la respuesta correcta de antemano.</p></li>
+<li><p>Esta respuesta correcta fue “etiquetada” por un humano (la mayoría de las veces, en algunas circunstancias puede ser generada por otro algoritmo).</p></li>
+<li><p>Debido a que conocemos la respuesta correcta, existen muchas métricas de desempeño del modelo para verificar que nuestro algoritmo está haciendo las cosas “bien”.</p></li>
+</ul>
+<div id="tipos-de-aprendizaje-supervisado-regresión-vs-clasificación" class="section level4" number="2.2.1.1">
+<h4><span class="header-section-number">2.2.1.1</span> Tipos de aprendizaje supervisado (Regresión vs clasificación)</h4>
+<p>Existen dos tipos principales de aprendizaje supervisado, esto depende del tipo de la variable respuesta:</p>
+<ul>
+<li><p>Los algoritmos de <strong>clasificación</strong> se usan cuando el resultado deseado es una etiqueta discreta, es decir, clasifican un elemento dentro de diversas clases.</p></li>
+<li><p>En un problema de <strong>regresión</strong>, la variable target o variable a predecir es un valor numérico.</p></li>
+</ul>
+<p><br/></p>
+<p><img src="img/01-repaso/13_regresion_clasificacion.png" width="700pt" height="450pt" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="aprendizaje-no-supervisado" class="section level3" number="2.2.2">
+<h3><span class="header-section-number">2.2.2</span> Aprendizaje no supervisado</h3>
+<ul>
+<li><p>Aquí no tenemos la respuesta correcta de antemano ¿cómo podemos saber que el algoritmo está bien o mal?</p></li>
+<li><p>Estadísticamente podemos verificar que el algoritmo está bien</p></li>
+<li><p>Siempre tenemos que verificar con el cliente si los resultados que estamos obteniendo tienen sentido de negocio. Por ejemplo, número de grupos y características</p></li>
+</ul>
+<p><img src="img/01-repaso/14_nosupervisado_robo.png" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="el-proceso-de-machine-learning" class="section level2" number="2.3">
+<h2><span class="header-section-number">2.3</span> El proceso de Machine Learning</h2>
+<p>La cuestión no es solo saber para qué sirve el Machine Learning, sino que saber cómo funciona y cómo poder implementarlo en la industria para aprovecharse de sus beneficios.
+Hay ciertos pasos que usualmente se siguen para crear un modelo de Machine Learning. Estos son típicamente realizados por científicos de los datos que trabajan en estrecha colaboración con los profesionales de los negocios para los que se está desarrollando el modelo.</p>
+<ol style="list-style-type: decimal">
+<li><strong>Seleccionar y preparar un conjunto de datos de entrenamiento</strong>:
+Los <strong>datos de entrenamiento</strong> son un conjunto de datos representativos de los datos que el modelo de Machine Learning ingerirá para resolver el problema que está diseñado para resolver.
+Los datos de entrenamiento deben prepararse adecuadamente: aleatorizados y comprobados en busca de desequilibrios o sesgos que puedan afectar al entrenamiento. También deben dividirse en dos subconjuntos: el <strong>subconjunto de entrenamiento</strong>, que se utilizará para entrenar el algoritmo, y el <strong>subconjunto de validación</strong>, que se utilizará para probarlo y perfeccionarlo.</li>
+</ol>
+<p><img src="img/01-repaso/train-and-test.png" width="600pt" style="display: block; margin: auto;" /></p>
+<ol start="2" style="list-style-type: decimal">
+<li><p><strong>Elegir un algoritmo para ejecutarlo en el conjunto de datos de entrenamiento</strong>:
+Este es uno de los pasos más importantes, ya que se debe elegir qué algoritmo utilizar, siendo este un conjunto de pasos de procesamiento estadístico. El tipo de algoritmo depende del tipo (supervisado o no supervisado), la cantidad de datos del conjunto de datos de entrenamiento y del tipo de problema que se debe resolver.</p></li>
+<li><p><strong>Entrenamiento del algoritmo para crear el modelo</strong>:
+El entrenamiento del algoritmo es un proceso iterativo: implica ejecutar las variables a través del algoritmo, comparar el resultado con los resultados que debería haber producido, ajustar los pesos y los sesgos dentro del algoritmo que podrían dar un resultado más exacto, y ejecutar las variables de nuevo hasta que el algoritmo devuelva el resultado correcto la mayoría de las veces. El algoritmo resultante, entrenado y preciso, es el modelo de Machine Learning.</p></li>
+<li><p><strong>Usar y mejorar el modelo</strong>:
+El paso final es utilizar el modelo con nuevos datos y, en el mejor de los casos, para que mejore en precisión y eficacia con el tiempo. De dónde procedan los nuevos datos dependerá del problema que se resuelva. Por ejemplo, un modelo de Machine Learning diseñado para identificar el spam ingerirá mensajes de correo electrónico, mientras que un modelo de Machine Learning que maneja una aspiradora robot ingerirá datos que resulten de la interacción en el mundo real con muebles movidos o nuevos objetos en la habitación.</p></li>
+</ol>
+</div>
+<div id="errores-sesgo-vs-varianza" class="section level2" number="2.4">
+<h2><span class="header-section-number">2.4</span> Errores: Sesgo vs varianza</h2>
+<p>En el mundo de Machine Learning cuando desarrollamos un modelo nos esforzamos para hacer que sea lo más preciso, ajustando los parámetros, pero la realidad es que no se puede construir un modelo 100% preciso ya que nunca pueden estar libres de errores.</p>
+<p>Comprender cómo las diferentes fuentes de error generan sesgo y varianza nos ayudará a mejorar el proceso de ajuste de datos, lo que resulta en modelos más precisos, adicionalmente también evitará el error de sobreajuste y falta de ajuste.</p>
+<ul>
+<li><strong>Error por sesgo:</strong></li>
+</ul>
+<p>Es la diferencia entre la predicción esperada de nuestro modelo y los valores verdaderos. Aunque al final nuestro objetivo es siempre construir modelos que puedan predecir datos muy cercanos a los valores verdaderos, no siempre es tan fácil porque algunos algoritmos son simplemente demasiado rígidos para aprender señales complejas del conjunto de datos.</p>
+<p>Imagina ajustar una regresión lineal a un conjunto de datos que tiene un patrón no lineal, no importa cuántas observaciones más recopiles, una regresión lineal no podrá modelar las curvas en esos datos. Esto se conoce como <em>underfitting</em>.</p>
+<ul>
+<li><strong>Error por varianza:</strong></li>
+</ul>
+<p>Se refiere a la cantidad que la estimación de la función objetivo cambiará si se utiliza diferentes datos de entrenamiento. La función objetivo se estima a partir de los datos de entrenamiento mediante un algoritmo de Machine Learning, por lo que deberíamos esperar que el algoritmo tenga alguna variación. Idealmente no debería cambiar demasiado de un conjunto de datos de entrenamiento a otro.</p>
+<p><img src="img/01-repaso/3-1-3-biasvar.png" width="650pt" height="350pt" style="display: block; margin: auto;" /></p>
+<p>Los algoritmos de Machine Learning que tienen una gran varianza están fuertemente influenciados por los detalles de los datos de entrenamiento, esto significa que los detalles de la capacitación influyen en el número y los tipos de parámetros utilizados para caracterizar la función de mapeo.</p>
+<ul>
+<li><strong>Error irreducible:</strong>
+El error irreducible no se puede reducir, independientemente de qué algoritmo se usa. También se le conoce como ruido y, por lo general, proviene por factores como variables desconocidas que influyen en el mapeo de las variables de entrada a la variable de salida, un conjunto de características incompleto o un problema mal enmarcado. Acá es importante comprender que no importa cuán bueno hagamos nuestro modelo, nuestros datos tendrán cierta cantidad de ruido o un error irreductible que no se puede eliminar.</li>
+</ul>
+</div>
+<div id="ingeniería-de-características-feature-engineering" class="section level2" number="2.5">
+<h2><span class="header-section-number">2.5</span> Ingeniería de características (Feature Engineering)</h2>
+<p>En este curso analizaremos distintos métodos de machine learning que permitirán predecir una respuesta numérica o categórica. Usaremos el lenguaje de programación <em>R</em>.</p>
+</div>
+<div id="medidas-de-error" class="section level2" number="2.6">
+<h2><span class="header-section-number">2.6</span> Medidas de error</h2>
+
 </div>
 </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -238,7 +255,7 @@ $('.pipehover_select_one_row tr').hover(function() {
         </div>
       </div>
 <a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="supervised-machine-learning.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="support-vector-machine-svm.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -292,20 +309,6 @@ gitbook.start({
 });
 </script>
 
-<!-- dynamically load mathjax for compatibility with self-contained -->
-<script>
-  (function () {
-    var script = document.createElement("script");
-    script.type = "text/javascript";
-    var src = "true";
-    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
-    if (location.protocol !== "file:")
-      if (/^https?:/.test(src))
-        src = src.replace(/^https?:/, '');
-    script.src = src;
-    document.getElementsByTagName("head")[0].appendChild(script);
-  })();
-</script>
 </body>
 
 </html>

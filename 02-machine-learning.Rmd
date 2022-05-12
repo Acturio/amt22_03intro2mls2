@@ -6,7 +6,7 @@
 Support vector machine, llamadas SVM, son un algoritmo de aprendizaje supervisado que se puede utilizar para problemas de clasificación y regresión. Se utiliza para conjuntos de datos más pequeños, ya que tarda demasiado en procesarse.
 
 ```{r, fig.align='center', out.height='400pt', out.width='800pt',echo=F}
-knitr::include_graphics("img/03-svm/01_inseparable_classes.png")
+knitr::include_graphics("img/02-svm/01_inseparable_classes.png")
 ```
 
 El principal objetivo de esta técnica es encontrar el **Hiperplano de Separación Óptima**, también conocido como *Boundary Decision*, el cual separa a las clases involucradas. 
@@ -38,7 +38,7 @@ $$\beta_0 + \beta_1X_1 + \beta_2X_2<0$$
 El clasificador de margen máximo a menudo falla en la situación de casos no separables en los que no puede asignar un hiperplano diferente para clasificar datos no separables. Para tales casos, un clasificador de vectores de soporte viene al rescate.
 
 ```{r, fig.align='center', out.height='380pt', out.width='900pt',echo=F}
-knitr::include_graphics("img/03-svm/02_maximum_margin_classifier.png")
+knitr::include_graphics("img/02-svm/02_maximum_margin_classifier.png")
 ```
 
 Del diagrama anterior, podemos suponer infinitos hiperplanos (izquierda). El clasificador de margen máximo viene con un solo hiperplano que divide los datos como en la gráfica de la derecha. **Los datos que tocan los hiperplanos positivo y negativo se denominan vectores de soporte**.
@@ -51,7 +51,7 @@ Del diagrama anterior, podemos suponer infinitos hiperplanos (izquierda). El cla
 Usando estos vectores de soporte, maximizamos el margen del clasificador. Eliminar los vectores de soporte cambiará la posición del hiperplano. Estos son los puntos que nos ayudan a construir nuestro *SVM*. Consideremos un **parámetro de ajuste C**. En este clasificador, el alto valor de *C* puede darnos un modelo robusto. Un valor más bajo de *C* nos da un modelo flexible. Entendamos con el siguiente diagrama.
 
 ```{r, fig.align='center', out.height='380pt', out.width='900pt',echo=F}
-knitr::include_graphics("img/03-svm/03_support_vector_classifier.png")
+knitr::include_graphics("img/02-svm/03_support_vector_classifier.png")
 ```
 
 Podemos ver en el gráfico de la izquierda que los valores más altos de *C* generaron más errores que se consideran una **violación o infracción**. El diagrama de la derecha muestra un valor más bajo de *C* y no brinda suficientes posibilidades de infracción al reducir el ancho del margen.
@@ -64,13 +64,13 @@ El enfoque de la máquina de vectores de soporte se considera durante una decisi
 Cuando es casi imposible separar clases de manera no lineal, aplicamos el truco llamado **truco del kernel** el cual ayuda a manejar la separación de los datos.
 
 ```{r, fig.align='center', out.height='380pt', out.width='900pt',echo=F}
-knitr::include_graphics("img/03-svm/04_polinomial_kernel_plot.png")
+knitr::include_graphics("img/02-svm/04_polinomial_kernel_plot.png")
 ```
 
 En el gráfico anterior, los datos que eran inseparables en una dimensión se separaron una vez que se transformaron a un espacio de dos dimensiones después de aplicar una **transformación mediante kernel polinomial de segundo grado**. Ahora veamos cómo manejar los datos bidimensionales linealmente inseparables.
 
 ```{r, fig.align='center', out.height='380pt', out.width='900pt',echo=F}
-knitr::include_graphics("img/03-svm/05_kernel_polinomial_plot2.png")
+knitr::include_graphics("img/02-svm/05_kernel_polinomial_plot2.png")
 ```
 
 En datos bidimensionales, el núcleo polinomial de segundo grado se aplica utilizando un plano lineal después de transformarlo a dimensiones superiores.
@@ -82,7 +82,7 @@ Las funciones Kernel son métodos con los que se utilizan clasificadores lineale
 El truco del kernel ofrece una **forma de calcular las relaciones entre los puntos de datos** utilizando funciones del kernel y representar los datos de una manera más eficiente con menos cómputo. Los modelos que utilizan esta técnica se denominan **"modelos kernelizados"**.
 
 ```{r, fig.align='center', out.height='500pt', out.width='700pt',echo=F}
-knitr::include_graphics("img/03-svm/06_kernels.png")
+knitr::include_graphics("img/02-svm/06_kernels.png")
 ```
 
 Hay varias funciones que utiliza SVM para realizar esta tarea. Algunos de los más comunes son:
@@ -103,7 +103,7 @@ $$K(x, y)=(c+ x^T \cdot y)^p$$
 Cuando se emplea $p=1$ y $c=0$, el resultado es el mismo que el de un kernel lineal. Si $p>1$, se generan límites de decisión no lineales, aumentando la no linealidad a medida que aumenta *p*. No suele ser recomendable emplear valores de *p* mayores 5 por problemas de **overfitting**.
 
 ```{r, fig.align='center', out.height='400pt', out.width='400pt',echo=F}
-knitr::include_graphics("img/03-svm/3-15-1-poli.png")
+knitr::include_graphics("img/02-svm/3-15-1-poli.png")
 ```
 
 3. **La función de base radial (RBF):** Esta función se comporta como un "modelo de vecino más cercano ponderado". Transforma los datos representándolos en dimensiones infinitas, 
@@ -115,7 +115,7 @@ $$f(x)=w^T \cdot \phi(x) + b$$
 Se realiza un mapeo de x a $\phi(x)$ en donde los datos son separables
 
 ```{r, fig.align='center', out.height='400pt', out.width='400pt',echo=F}
-knitr::include_graphics("img/03-svm/svm_radial.png")
+knitr::include_graphics("img/02-svm/svm_radial.png")
 ```
 
 Es recomendable probar el kernel **RBF**. Este kernel tiene dos ventajas: que solo tiene dos hiperparámetros que optimizar ($\gamma$ y la penalización $C$ común a todos los SVM) y que su flexibilidad puede ir desde un clasificador lineal a uno muy complejo.
