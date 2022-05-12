@@ -11,9 +11,7 @@ biblio-style: apalike
 link-citations: yes
 description: "AMAT Curso 2 : Ciencia de Datos y Machine Learning 2"
 always_allow_html: true
-
 ---
-
 
 # BIENVENIDA 
 

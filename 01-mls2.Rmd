@@ -2,6 +2,16 @@
 
 # Repaso
 
+Vale la pena hacer un breve repaso de lo que hemos estudiado hasta el momento.
+
+## Tipos de aprendizaje
+
+Platicamos en el módulo pasado que al hablar de Machine Learning, existen distintos tipos de aprendizaje, siendo los más comúnes:
+
+* Aprendizaje supervisado
+* Aprendizaje no supervisado
+* Aprendizaje profundo
+* Aprendizaje por refuerzo
 
 
 # Supervised Machine Learning
