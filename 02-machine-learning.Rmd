@@ -277,8 +277,9 @@ knitr::include_graphics("img/04-ml/knn3.gif")
 
 Este algoritmo es altamente usado para imputación de datos faltantes, ¿tiene lógica, cierto?, con **recipes**  podemos aplicar un paso con la función: **_step_impute_knn_** antes llamada **_step_knnimpute()_**, podemos observar la documentación de la función en el siguiente [enlace](https://recipes.tidymodels.org/reference/step_impute_knn.html). 
 
-Veámos cómo funciona: 
+### Implementación en R
 
+Veámos cómo funciona: 
 
 
 ```{r, eval=FALSE}
@@ -287,23 +288,25 @@ step_impute_knn(
   ...,
   neighbors = 5,
   impute_with = imp_vars(all_predictors()),
-  options = list(nthread = 1, eps = 1e-08),
-  ref_data = NULL,
-  columns = NULL,  # Los nombres de las columnas que se imputarán y utilizarán para la imputación.
-  skip = FALSE,
+  columns = NULL,  
   id = rand_id("impute_knn")
 )
 ```
 
-La función utiliza el conjunto de entrenamiento para imputar cualquier otro conjunto de datos. La única función de distancia disponible es la distancia de **Gower**, que se puede utilizar para combinaciones de datos nominales y numéricos.
-
-
-_Acerca de **Gower**_ El coeficiente de similitud de Gower propuesto en 1971 permite la manipulación simultánea de variables cuantitativas y cualitativas en una base de datos, mediante la aplicación de este coeficiente se logra hallar la similitud entre individuos a los cuales se les han medido una serie de características en común. Una similaridad alta, es decir cercana a 1, indicara gran homogeneidad entre los individuos; por el contrario, una similaridad cercana a cero indica que los individuos son diferentes
-
 A cerca de los parámetros: 
 
-* neighbors: Número de vecinos
-* impute_with : Una llamada a _imp_vars_ para especificar qué variables se usan para imputar las variables. Si una columna se incluye en ambas listas para ser imputada y para ser un predictor de imputación, se eliminará de esta última y no se usará para imputarse a sí misma.
+* *neighbors:* Número de vecinos
+* *impute_with:* Una llamada a _imp_vars_ para especificar qué variables se usan para imputar las variables. Si una columna se incluye en ambas listas para ser imputada y para ser un predictor de imputación, se eliminará de esta última y no se usará para imputarse a sí misma.
+* *columns* Los nombres de las columnas que se imputarán y utilizarán para la imputación. 
+* *id:* Una cadena de caracteres que es exclusiva de este paso para identificarlo.
+
+
+La función utiliza el conjunto de entrenamiento para imputar cualquier otro conjunto de datos. La única función de distancia disponible es la distancia de **Gower**, que se puede utilizar para combinaciones de datos nominales y numéricos.
+
+::: {.infobox .note data-latex="{note}"}
+_Acerca de **Gower**_ El coeficiente de similitud de Gower propuesto en 1971 permite la manipulación simultánea de variables cuantitativas y cualitativas en una base de datos, mediante la aplicación de este coeficiente se logra hallar la similitud entre individuos a los cuales se les han medido una serie de características en común. Una similaridad alta, es decir cercana a 1, indicara gran homogeneidad entre los individuos; por el contrario, una similaridad cercana a cero indica que los individuos son diferentes
+:::
+
 
 
 Vamos a utilizar los datos de *biomass*  de la libreria _modeldata_ que
