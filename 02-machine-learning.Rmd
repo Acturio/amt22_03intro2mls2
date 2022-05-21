@@ -315,7 +315,6 @@ step_impute_knn(
   ...,
   neighbors = 5,
   impute_with = imp_vars(all_predictors()),
-  columns = NULL,  
   id = rand_id("impute_knn")
 )
 ```
@@ -324,7 +323,6 @@ A cerca de los parámetros:
 
 * *neighbors:* Número de vecinos
 * *impute_with:* Una llamada a _imp_vars_ para especificar qué variables se usan para imputar las variables. Si una columna se incluye en ambas listas para ser imputada y para ser un predictor de imputación, se eliminará de esta última y no se usará para imputarse a sí misma.
-* *columns* Los nombres de las columnas que se imputarán y utilizarán para la imputación. 
 * *id:* Una cadena de caracteres que es exclusiva de este paso para identificarlo.
 
 
@@ -339,58 +337,79 @@ _Acerca de **Gower**_ El coeficiente de similitud de Gower propuesto en 1971 per
 Vamos a utilizar los datos de *biomass*  de la libreria _modeldata_ que
 contiene un conjunto de datos donde diferentes combustibles de biomasa se caracterizan por la cantidad de ciertas moléculas (carbono, hidrógeno, oxígeno, nitrógeno y azufre) y el poder calorífico superior correspondiente (HHV). En esta base hemos retirado valores aleatoriamente sobre dos variables para realizar el ejercicio. 
 
-```{r, echo= FALSE, message=FALSE, warning=FALSE}
+```{r, message=FALSE, warning=FALSE}
 library(recipes)
 library(modeldata)
 library(DataExplorer)
 data(biomass)
 
-biomass_tr <- biomass[biomass$dataset == "Training", ]
-biomass_te <- biomass[biomass$dataset == "Testing", ]
-biomass_te_whole <- biomass_te
+biomass_te_whole <- biomass
 
 # induce some missing data at random
 set.seed(9039)
-carb_missing <- sample(1:nrow(biomass_te), 5)
-nitro_missing <- sample(1:nrow(biomass_te), 5)
+carb_missing <- sample(1:nrow(biomass_te_whole), 25)
+nitro_missing <- sample(1:nrow(biomass_te_whole), 15)
 
-biomass_te$carbon[carb_missing] <- NA
-biomass_te$nitrogen[nitro_missing] <- NA
+biomass_te_whole$carbon[carb_missing] <- NA
+biomass_te_whole$nitrogen[nitro_missing] <- NA
+
+biomass_tr <- biomass_te_whole %>% filter( dataset == 'Training')
+biomass_te <- biomass_te_whole %>% filter( dataset == "Testing") 
+
+
+
+biomass_te_whole[nitro_missing,]
 ```
 
 
 ```{r}
-glimpse(biomass_te)
-summary(biomass_te)
-biomass_te %>% DataExplorer::plot_missing()
+biomass_tr %>% DataExplorer::plot_missing( title = "Train" )
+biomass_te %>% DataExplorer::plot_missing( title = "Test" )
+
 ```
 
 
+
+
+En la primera opción vamos a aplicar el paso de immputación indicando qué columnas quieren ser imputadas y con cuáles variables queremos que se haga el proceso. 
+
+
 ```{r}
-recipe <- recipe(HHV ~ carbon + hydrogen + oxygen + 
-                 nitrogen + sulfur,
+recipe_esp <- recipe(HHV ~ carbon + hydrogen + oxygen + nitrogen + sulfur, data = biomass_tr) %>% 
+              step_impute_knn(carbon, nitrogen,
+                          impute_with= imp_vars(hydrogen, oxygen),
+                          neighbors = 3
+                          ) %>% prep()
+
+imputed_esp_train <- bake(recipe_esp, biomass_tr)
+
+imputed_esp_test <- bake(recipe_esp, biomass_te) ## Probando la receta con un test
+
+imputed_esp_train %>% DataExplorer::plot_missing( title = "Imputacion Train")
+imputed_esp_test%>% DataExplorer::plot_missing(title = "Imputacion Test")
+```
+
+Sin embargo, siempre podemos pedirle al modelo que haga la imputación de todas las variables que tengan nulos, con toda la información de las demás variables disponibles (no nulas). 
+
+```{r}
+recipe <- recipe(HHV ~ carbon + hydrogen + oxygen + nitrogen + sulfur,
                  data = biomass_tr) %>% 
           step_impute_knn(all_predictors(), neighbors = 3) %>% 
           prep()
 
-imputed <- bake(recipe, biomass_te)
-
+imputed <- bake(recipe, biomass_te) # prueba con test
 imputed %>% DataExplorer::plot_missing()
 
 
 ```
 
 
+```{r}
 
 
+plot(cbind( biomass%>%  filter( dataset == 'Testing') %>% select(nitrogen) , imputed[,4]))
 
-
-
-
-
-
-
-
+```
 
 
 
