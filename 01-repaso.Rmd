@@ -65,33 +65,6 @@ knitr::include_graphics("img/01-repaso/13_regresion_clasificacion.png")
 knitr::include_graphics("img/01-repaso/14_nosupervisado_robo.png")
 ```
 
-
-## El proceso de Machine Learning
-
-
-La cuestión no es solo saber para qué sirve el Machine Learning, sino que saber cómo funciona y cómo poder implementarlo en la industria para aprovecharse de sus beneficios.
-Hay ciertos pasos que usualmente se siguen para crear un modelo de Machine Learning.  Estos son típicamente realizados por científicos de los datos que trabajan en estrecha colaboración con los profesionales de los negocios para los que se está desarrollando el modelo.
-
-1.  **Seleccionar y preparar un conjunto de datos de entrenamiento**: 
-Los **datos de entrenamiento** son un conjunto de datos representativos de los datos que el modelo de Machine Learning ingerirá para resolver el problema que está diseñado para resolver. 
-Los datos de entrenamiento deben prepararse adecuadamente: aleatorizados y comprobados en busca de desequilibrios o sesgos que puedan afectar al entrenamiento. También deben dividirse en dos subconjuntos: el **subconjunto de entrenamiento**, que se utilizará para entrenar el algoritmo, y el **subconjunto de validación**, que se utilizará para probarlo y perfeccionarlo.
-
-```{r, echo=FALSE, out.width = "600pt", fig.align='center'}
-knitr::include_graphics("img/01-repaso/train-and-test.png")
-```
-
-2.  **Elegir un algoritmo para ejecutarlo en el conjunto de datos de entrenamiento**: 
-Este es uno de los pasos más importantes, ya que se debe elegir qué algoritmo utilizar, siendo este un conjunto de pasos de procesamiento estadístico. El tipo de algoritmo depende del tipo (supervisado o no supervisado), la cantidad de datos del conjunto de datos de entrenamiento y del tipo de problema que se debe resolver.
-
-3.  **Entrenamiento del algoritmo para crear el modelo**: 
-El entrenamiento del algoritmo es un proceso iterativo: implica ejecutar las variables a través del algoritmo, comparar el resultado con los resultados que debería haber producido, ajustar los pesos y los sesgos dentro del algoritmo que podrían dar un resultado más exacto, y ejecutar las variables de nuevo hasta que el algoritmo devuelva el resultado correcto la mayoría de las veces. El algoritmo resultante, entrenado y preciso, es el modelo de Machine Learning.
-
-
-4. **Usar y mejorar el modelo**: 
-El paso final es utilizar el modelo con nuevos datos y, en el mejor de los casos, para que mejore en precisión y eficacia con el tiempo. De dónde procedan los nuevos datos dependerá del problema que se resuelva. Por ejemplo, un modelo de Machine Learning diseñado para identificar el spam ingerirá mensajes de correo electrónico, mientras que un modelo de Machine Learning que maneja una aspiradora robot ingerirá datos que resulten de la interacción en el mundo real con muebles movidos o nuevos objetos en la habitación.
-
-
-
 ## Errores: Sesgo vs varianza
 
 
@@ -120,6 +93,145 @@ Los algoritmos de Machine Learning que tienen una gran varianza están fuertemen
 
 - **Error irreducible:**
 El error irreducible no se puede reducir, independientemente de qué algoritmo se usa. También se le conoce como ruido y, por lo general, proviene por factores como variables desconocidas que influyen en el mapeo de las variables de entrada a la variable de salida, un conjunto de características incompleto o un problema mal enmarcado. Acá es importante comprender que no importa cuán bueno hagamos nuestro modelo, nuestros datos tendrán cierta cantidad de ruido o un error irreductible que no se puede eliminar. 
+
+## Partición de datos
+
+```{r, fig.align='left', out.height='150pt', out.width='150pt', echo=F, include=TRUE}
+knitr::include_graphics("img/04-ml/3-5-particion-datos.jpg")
+```
+
+Cuando hay una gran cantidad de datos disponibles, una estrategia inteligente es asignar subconjuntos específicos de datos para diferentes tareas, en lugar de asignar la mayor cantidad posible solo a la estimación de los parámetros del modelo. 
+
+Si el conjunto inicial de datos no es lo suficientemente grande, habrá cierta superposición
+de cómo y cuándo se asignan nuestros datos, y es importante contar con una metodología
+sólida para la partición de datos.
+
+
+### Métodos comunes para particionar datos
+
+El enfoque principal para la validación del modelo es dividir el conjunto de datos existente en dos conjuntos distintos:
+
+* **Entrenamiento:** Este conjunto suele contener la mayoría de los datos, los cuales
+sirven para la construcción de modelos donde se pueden ajustar diferentes modelos,
+se investigan estrategias de ingeniería de características, etc. 
+
+  La mayor parte del proceso de modelado se utiliza este conjunto.
+
+* **Prueba:**  La otra parte de las observaciones se coloca en este conjunto.
+Estos datos se mantienen en reserva hasta que se elijan uno o dos modelos como los de mejor rendimiento. 
+
+  El conjunto de prueba se utiliza como árbitro final para determinar la eficiencia del modelo, 
+  por lo que es fundamental mirar el conjunto de prueba una sola vez. 
+
+Supongamos que asignamos el $80\%$ de los datos al conjunto de entrenamiento y el $20\%$ restante a las pruebas. El método más común es utilizar un muestreo aleatorio simple.
+El paquete *rsample* tiene herramientas para realizar divisiones de datos como esta; 
+la función `initial_split()` fue creada para este propósito.
+
+```{r}
+library(tidymodels)
+
+tidymodels_prefer()
+
+# Fijar un número aleatorio con para que los resultados puedan ser reproducibles 
+set.seed(123)
+
+# Partición 80/20 de los datos
+ames_split <- initial_split(ames, prop = 0.80)
+ames_split
+```
+
+La información impresa denota la cantidad de datos en el conjunto de entrenamiento
+$(n = 2,344)$, la cantidad en el conjunto de prueba $(n = 586)$
+y el tamaño del grupo original de muestras $(n = 2,930)$.
+
+El objeto `ames_split` es un objeto *rsplit* y solo contiene la información de partición; para obtener los conjuntos de datos resultantes, aplicamos dos funciones más:
+
+```{r}
+ames_train <- training(ames_split)
+ames_test  <-  testing(ames_split)
+
+dim(ames_train)
+```
+
+El muestreo aleatorio simple es apropiado en muchos casos, pero hay excepciones. 
+
+Cuando hay un desbalance de clases en los problemas de clasificación, el uso de una muestra aleatoria simple puede asignar al azar estas muestras poco frecuentes de manera desproporcionada al conjunto de entrenamiento o prueba. 
+
+Para evitar esto, se puede utilizar un muestreo estratificado. La división de entrenamiento/prueba se lleva a cabo por separado dentro de cada clase y luego estas submuestras se combinan en el conjunto general de entrenamiento y prueba. 
+
+Para los problemas de regresión, los datos de los resultados se pueden agrupar artificialmente en cuartiles y luego realizar un muestreo estratificado cuatro veces por separado. Este es un método eficaz para mantener similares las distribuciones del resultado entre el conjunto de entrenamiento y prueba.
+
+```{r, echo=FALSE}
+a <- quantile(log(ames$Sale_Price), prob = 0.25)
+b <- quantile(log(ames$Sale_Price), prob = 0.5)
+c <- quantile(log(ames$Sale_Price), prob = 0.75)
+
+
+ggplot(ames, aes(x = log(Sale_Price)))+
+  geom_density(alpha = .2)+
+  geom_vline(aes(xintercept = a), linetype ="longdash", size = .5)+
+  geom_vline(aes(xintercept = b), linetype ="longdash", size = .5)+
+  geom_vline(aes(xintercept = c), linetype ="longdash", size = .5)+
+  ylab('y')+
+  theme_minimal()
+
+```
+
+Observamos que la distribución del precio de venta está sesgada a la derecha.
+Las casas más caras no estarían bien representadas en el conjunto de entrenamiento con una simple partición; esto aumentaría el riesgo de que nuestro modelo sea ineficaz para predecir el precio de dichas propiedades. 
+
+Las líneas verticales punteadas indican los cuatro cuartiles para estos datos.
+Una muestra aleatoria estratificada llevaría a cabo la división 80/20 dentro de cada uno de estos subconjuntos de datos y luego combinaría los resultados. En *rsample*, esto se logra usando el argumento de estratos:
+
+```{r}
+set.seed(123)
+ames_split <- initial_split(ames, prop = 0.80, strata = Sale_Price)
+ames_train <- training(ames_split)
+ames_test  <-  testing(ames_split)
+```
+
+**Hay muy pocas desventajas en el uso de muestreo estratificado.**
+
+Un caso es cuando los datos tienen un componente de tiempo, como los datos de series de tiempo. 
+Aquí, es más común utilizar los datos más recientes como conjunto de prueba.
+
+El paquete *rsample* contiene una función llamada `initial_time_split()` 
+que es muy similar a `initial_split()`. En lugar de usar un muestreo aleatorio, el argumento `prop`
+denota qué proporción de la primera parte de los datos debe usarse como conjunto de entrenamiento;
+la función asume que los datos se han clasificado previamente en un orden apropiado.
+
+### ¿Qué proporción debería ser usada?
+
+No hay un porcentaje de división óptimo para el conjunto de entrenamiento y prueba.
+Muy pocos datos en el conjunto de entrenamiento obstaculizan la capacidad del modelo para encontrar estimaciones de parámetros adecuadas y muy pocos datos en el conjunto de prueba reducen la calidad de las estimaciones de rendimiento.
+
+Se debe elegir un porcentaje que cumpla con los objetivos de nuestro proyecto con consideraciones que incluyen:
+
+  * Costo computacional en el entrenamiento del modelo.
+  * Costo computacional en la evaluación del modelo.
+  * Representatividad del conjunto de formación.
+  * Representatividad del conjunto de pruebas.
+    
+
+ Los porcentajes de división más comunes comunes son:
+
+  * Entrenamiento: $80\%$, Prueba: $20\%$
+  * Entrenamiento: $67\%$, Prueba: $33\%$
+  * Entrenamiento: $50\%$, Prueba: $50\%$
+    
+### Conjunto de validación 
+
+El conjunto de validación se definió originalmente cuando los investigadores se dieron cuenta de que medir el rendimiento del conjunto de entrenamiento conducía a resultados que eran demasiado optimistas.
+
+Esto llevó a modelos que se sobreajustaban, lo que significa que se desempeñaron muy bien en el conjunto de entrenamiento pero mal en el conjunto de prueba.
+
+Para combatir este problema, se retuvo un pequeño conjunto de datos de *validación* y se utilizó para medir el rendimiento del modelo mientras este está siendo entrenado. Una vez que la tasa de error del conjunto de validación comenzara a aumentar, la capacitación se detendría.
+
+En otras palabras, el conjunto de validación es un medio para tener una idea aproximada de qué tan bien se desempeñó el modelo antes del conjunto de prueba.
+
+```{r, fig.align='center', out.height='250pt', out.width='500pt', echo=F, include=TRUE}
+knitr::include_graphics("img/04-ml/3-5-3-conjunto-validacion.png")
+```
 
 
 ## Ingeniería de características (Feature Engineering)
@@ -280,6 +392,145 @@ edades %>%
 
 La ingeniería y el pre-procesamiento de datos también pueden implicar el reformateo requerido por el modelo. Algunos modelos utilizan métricas de distancia geométrica y, en consecuencia, los predictores numéricos deben centrarse y escalar para que estén todos en las mismas unidades. De lo contrario, los valores de distancia estarían sesgados por la escala de cada columna.
 
+
+## Partición de datos
+
+```{r, fig.align='left', out.height='150pt', out.width='150pt', echo=F, include=TRUE}
+knitr::include_graphics("img/04-ml/3-5-particion-datos.jpg")
+```
+
+Cuando hay una gran cantidad de datos disponibles, una estrategia inteligente es asignar subconjuntos específicos de datos para diferentes tareas, en lugar de asignar la mayor cantidad posible solo a la estimación de los parámetros del modelo. 
+
+Si el conjunto inicial de datos no es lo suficientemente grande, habrá cierta superposición
+de cómo y cuándo se asignan nuestros datos, y es importante contar con una metodología
+sólida para la partición de datos.
+
+
+### Métodos comunes para particionar datos
+
+El enfoque principal para la validación del modelo es dividir el conjunto de datos existente en dos conjuntos distintos:
+
+* **Entrenamiento:** Este conjunto suele contener la mayoría de los datos, los cuales
+sirven para la construcción de modelos donde se pueden ajustar diferentes modelos,
+se investigan estrategias de ingeniería de características, etc. 
+
+  La mayor parte del proceso de modelado se utiliza este conjunto.
+
+* **Prueba:**  La otra parte de las observaciones se coloca en este conjunto.
+Estos datos se mantienen en reserva hasta que se elijan uno o dos modelos como los de mejor rendimiento. 
+
+  El conjunto de prueba se utiliza como árbitro final para determinar la eficiencia del modelo, 
+  por lo que es fundamental mirar el conjunto de prueba una sola vez. 
+
+Supongamos que asignamos el $80\%$ de los datos al conjunto de entrenamiento y el $20\%$ restante a las pruebas. El método más común es utilizar un muestreo aleatorio simple.
+El paquete *rsample* tiene herramientas para realizar divisiones de datos como esta; 
+la función `initial_split()` fue creada para este propósito.
+
+```{r}
+library(tidymodels)
+
+tidymodels_prefer()
+
+# Fijar un número aleatorio con para que los resultados puedan ser reproducibles 
+set.seed(123)
+
+# Partición 80/20 de los datos
+ames_split <- initial_split(ames, prop = 0.80)
+ames_split
+```
+
+La información impresa denota la cantidad de datos en el conjunto de entrenamiento
+$(n = 2,344)$, la cantidad en el conjunto de prueba $(n = 586)$
+y el tamaño del grupo original de muestras $(n = 2,930)$.
+
+El objeto `ames_split` es un objeto *rsplit* y solo contiene la información de partición; para obtener los conjuntos de datos resultantes, aplicamos dos funciones más:
+
+```{r}
+ames_train <- training(ames_split)
+ames_test  <-  testing(ames_split)
+
+dim(ames_train)
+```
+
+El muestreo aleatorio simple es apropiado en muchos casos, pero hay excepciones. 
+
+Cuando hay un desbalance de clases en los problemas de clasificación, el uso de una muestra aleatoria simple puede asignar al azar estas muestras poco frecuentes de manera desproporcionada al conjunto de entrenamiento o prueba. 
+
+Para evitar esto, se puede utilizar un muestreo estratificado. La división de entrenamiento/prueba se lleva a cabo por separado dentro de cada clase y luego estas submuestras se combinan en el conjunto general de entrenamiento y prueba. 
+
+Para los problemas de regresión, los datos de los resultados se pueden agrupar artificialmente en cuartiles y luego realizar un muestreo estratificado cuatro veces por separado. Este es un método eficaz para mantener similares las distribuciones del resultado entre el conjunto de entrenamiento y prueba.
+
+```{r, echo=FALSE}
+a <- quantile(log(ames$Sale_Price), prob = 0.25)
+b <- quantile(log(ames$Sale_Price), prob = 0.5)
+c <- quantile(log(ames$Sale_Price), prob = 0.75)
+
+
+ggplot(ames, aes(x = log(Sale_Price)))+
+  geom_density(alpha = .2)+
+  geom_vline(aes(xintercept = a), linetype ="longdash", size = .5)+
+  geom_vline(aes(xintercept = b), linetype ="longdash", size = .5)+
+  geom_vline(aes(xintercept = c), linetype ="longdash", size = .5)+
+  ylab('y')+
+  theme_minimal()
+
+```
+
+Observamos que la distribución del precio de venta está sesgada a la derecha.
+Las casas más caras no estarían bien representadas en el conjunto de entrenamiento con una simple partición; esto aumentaría el riesgo de que nuestro modelo sea ineficaz para predecir el precio de dichas propiedades. 
+
+Las líneas verticales punteadas indican los cuatro cuartiles para estos datos.
+Una muestra aleatoria estratificada llevaría a cabo la división 80/20 dentro de cada uno de estos subconjuntos de datos y luego combinaría los resultados. En *rsample*, esto se logra usando el argumento de estratos:
+
+```{r}
+set.seed(123)
+ames_split <- initial_split(ames, prop = 0.80, strata = Sale_Price)
+ames_train <- training(ames_split)
+ames_test  <-  testing(ames_split)
+```
+
+**Hay muy pocas desventajas en el uso de muestreo estratificado.**
+
+Un caso es cuando los datos tienen un componente de tiempo, como los datos de series de tiempo. 
+Aquí, es más común utilizar los datos más recientes como conjunto de prueba.
+
+El paquete *rsample* contiene una función llamada `initial_time_split()` 
+que es muy similar a `initial_split()`. En lugar de usar un muestreo aleatorio, el argumento `prop`
+denota qué proporción de la primera parte de los datos debe usarse como conjunto de entrenamiento;
+la función asume que los datos se han clasificado previamente en un orden apropiado.
+
+### ¿Qué proporción debería ser usada?
+
+No hay un porcentaje de división óptimo para el conjunto de entrenamiento y prueba.
+Muy pocos datos en el conjunto de entrenamiento obstaculizan la capacidad del modelo para encontrar estimaciones de parámetros adecuadas y muy pocos datos en el conjunto de prueba reducen la calidad de las estimaciones de rendimiento.
+
+Se debe elegir un porcentaje que cumpla con los objetivos de nuestro proyecto con consideraciones que incluyen:
+
+  * Costo computacional en el entrenamiento del modelo.
+  * Costo computacional en la evaluación del modelo.
+  * Representatividad del conjunto de formación.
+  * Representatividad del conjunto de pruebas.
+    
+
+ Los porcentajes de división más comunes comunes son:
+
+  * Entrenamiento: $80\%$, Prueba: $20\%$
+  * Entrenamiento: $67\%$, Prueba: $33\%$
+  * Entrenamiento: $50\%$, Prueba: $50\%$
+    
+### Conjunto de validación 
+
+El conjunto de validación se definió originalmente cuando los investigadores se dieron cuenta de que medir el rendimiento del conjunto de entrenamiento conducía a resultados que eran demasiado optimistas.
+
+Esto llevó a modelos que se sobreajustaban, lo que significa que se desempeñaron muy bien en el conjunto de entrenamiento pero mal en el conjunto de prueba.
+
+Para combatir este problema, se retuvo un pequeño conjunto de datos de *validación* y se utilizó para medir el rendimiento del modelo mientras este está siendo entrenado. Una vez que la tasa de error del conjunto de validación comenzara a aumentar, la capacitación se detendría.
+
+En otras palabras, el conjunto de validación es un medio para tener una idea aproximada de qué tan bien se desempeñó el modelo antes del conjunto de prueba.
+
+```{r, fig.align='center', out.height='250pt', out.width='500pt', echo=F, include=TRUE}
+knitr::include_graphics("img/04-ml/3-5-3-conjunto-validacion.png")
+```
 
 ## Recetas
 
@@ -618,144 +869,7 @@ variables según su nombre, tipo o función.
 La guía completa de las familia de funciones *step* puede consultarse en la [documentación oficial](https://recipes.tidymodels.org/reference/index.html)
 
 
-## Partición de datos
 
-```{r, fig.align='left', out.height='150pt', out.width='150pt', echo=F, include=TRUE}
-knitr::include_graphics("img/04-ml/3-5-particion-datos.jpg")
-```
-
-Cuando hay una gran cantidad de datos disponibles, una estrategia inteligente es asignar subconjuntos específicos de datos para diferentes tareas, en lugar de asignar la mayor cantidad posible solo a la estimación de los parámetros del modelo. 
-
-Si el conjunto inicial de datos no es lo suficientemente grande, habrá cierta superposición
-de cómo y cuándo se asignan nuestros datos, y es importante contar con una metodología
-sólida para la partición de datos.
-
-
-### Métodos comunes para particionar datos
-
-El enfoque principal para la validación del modelo es dividir el conjunto de datos existente en dos conjuntos distintos:
-
-* **Entrenamiento:** Este conjunto suele contener la mayoría de los datos, los cuales
-sirven para la construcción de modelos donde se pueden ajustar diferentes modelos,
-se investigan estrategias de ingeniería de características, etc. 
-
-  La mayor parte del proceso de modelado se utiliza este conjunto.
-
-* **Prueba:**  La otra parte de las observaciones se coloca en este conjunto.
-Estos datos se mantienen en reserva hasta que se elijan uno o dos modelos como los de mejor rendimiento. 
-
-  El conjunto de prueba se utiliza como árbitro final para determinar la eficiencia del modelo, 
-  por lo que es fundamental mirar el conjunto de prueba una sola vez. 
-
-Supongamos que asignamos el $80\%$ de los datos al conjunto de entrenamiento y el $20\%$ restante a las pruebas. El método más común es utilizar un muestreo aleatorio simple.
-El paquete *rsample* tiene herramientas para realizar divisiones de datos como esta; 
-la función `initial_split()` fue creada para este propósito.
-
-```{r}
-library(tidymodels)
-
-tidymodels_prefer()
-
-# Fijar un número aleatorio con para que los resultados puedan ser reproducibles 
-set.seed(123)
-
-# Partición 80/20 de los datos
-ames_split <- initial_split(ames, prop = 0.80)
-ames_split
-```
-
-La información impresa denota la cantidad de datos en el conjunto de entrenamiento
-$(n = 2,344)$, la cantidad en el conjunto de prueba $(n = 586)$
-y el tamaño del grupo original de muestras $(n = 2,930)$.
-
-El objeto `ames_split` es un objeto *rsplit* y solo contiene la información de partición; para obtener los conjuntos de datos resultantes, aplicamos dos funciones más:
-
-```{r}
-ames_train <- training(ames_split)
-ames_test  <-  testing(ames_split)
-
-dim(ames_train)
-```
-
-El muestreo aleatorio simple es apropiado en muchos casos, pero hay excepciones. 
-
-Cuando hay un desbalance de clases en los problemas de clasificación, el uso de una muestra aleatoria simple puede asignar al azar estas muestras poco frecuentes de manera desproporcionada al conjunto de entrenamiento o prueba. 
-
-Para evitar esto, se puede utilizar un muestreo estratificado. La división de entrenamiento/prueba se lleva a cabo por separado dentro de cada clase y luego estas submuestras se combinan en el conjunto general de entrenamiento y prueba. 
-
-Para los problemas de regresión, los datos de los resultados se pueden agrupar artificialmente en cuartiles y luego realizar un muestreo estratificado cuatro veces por separado. Este es un método eficaz para mantener similares las distribuciones del resultado entre el conjunto de entrenamiento y prueba.
-
-```{r, echo=FALSE}
-a <- quantile(log(ames$Sale_Price), prob = 0.25)
-b <- quantile(log(ames$Sale_Price), prob = 0.5)
-c <- quantile(log(ames$Sale_Price), prob = 0.75)
-
-
-ggplot(ames, aes(x = log(Sale_Price)))+
-  geom_density(alpha = .2)+
-  geom_vline(aes(xintercept = a), linetype ="longdash", size = .5)+
-  geom_vline(aes(xintercept = b), linetype ="longdash", size = .5)+
-  geom_vline(aes(xintercept = c), linetype ="longdash", size = .5)+
-  ylab('y')+
-  theme_minimal()
-
-```
-
-Observamos que la distribución del precio de venta está sesgada a la derecha.
-Las casas más caras no estarían bien representadas en el conjunto de entrenamiento con una simple partición; esto aumentaría el riesgo de que nuestro modelo sea ineficaz para predecir el precio de dichas propiedades. 
-
-Las líneas verticales punteadas indican los cuatro cuartiles para estos datos.
-Una muestra aleatoria estratificada llevaría a cabo la división 80/20 dentro de cada uno de estos subconjuntos de datos y luego combinaría los resultados. En *rsample*, esto se logra usando el argumento de estratos:
-
-```{r}
-set.seed(123)
-ames_split <- initial_split(ames, prop = 0.80, strata = Sale_Price)
-ames_train <- training(ames_split)
-ames_test  <-  testing(ames_split)
-```
-
-**Hay muy pocas desventajas en el uso de muestreo estratificado.**
-
-Un caso es cuando los datos tienen un componente de tiempo, como los datos de series de tiempo. 
-Aquí, es más común utilizar los datos más recientes como conjunto de prueba.
-
-El paquete *rsample* contiene una función llamada `initial_time_split()` 
-que es muy similar a `initial_split()`. En lugar de usar un muestreo aleatorio, el argumento `prop`
-denota qué proporción de la primera parte de los datos debe usarse como conjunto de entrenamiento;
-la función asume que los datos se han clasificado previamente en un orden apropiado.
-
-### ¿Qué proporción debería ser usada?
-
-No hay un porcentaje de división óptimo para el conjunto de entrenamiento y prueba.
-Muy pocos datos en el conjunto de entrenamiento obstaculizan la capacidad del modelo para encontrar estimaciones de parámetros adecuadas y muy pocos datos en el conjunto de prueba reducen la calidad de las estimaciones de rendimiento.
-
-Se debe elegir un porcentaje que cumpla con los objetivos de nuestro proyecto con consideraciones que incluyen:
-
-  * Costo computacional en el entrenamiento del modelo.
-  * Costo computacional en la evaluación del modelo.
-  * Representatividad del conjunto de formación.
-  * Representatividad del conjunto de pruebas.
-    
-
- Los porcentajes de división más comunes comunes son:
-
-  * Entrenamiento: $80\%$, Prueba: $20\%$
-  * Entrenamiento: $67\%$, Prueba: $33\%$
-  * Entrenamiento: $50\%$, Prueba: $50\%$
-    
-### Conjunto de validación 
-
-El conjunto de validación se definió originalmente cuando los investigadores se dieron cuenta de que medir el rendimiento del conjunto de entrenamiento conducía a resultados que eran demasiado optimistas.
-
-Esto llevó a modelos que se sobreajustaban, lo que significa que se desempeñaron muy bien en el conjunto de entrenamiento pero mal en el conjunto de prueba.
-
-Para combatir este problema, se retuvo un pequeño conjunto de datos de *validación* y se utilizó para medir el rendimiento del modelo mientras este está siendo entrenado. Una vez que la tasa de error del conjunto de validación comenzara a aumentar, la capacitación se detendría.
-
-En otras palabras, el conjunto de validación es un medio para tener una idea aproximada de qué tan bien se desempeñó el modelo antes del conjunto de prueba.
-
-```{r, fig.align='center', out.height='250pt', out.width='500pt', echo=F, include=TRUE}
-knitr::include_graphics("img/04-ml/3-5-3-conjunto-validacion.png")
-```
 
 Los conjuntos de validación se utilizan a menudo cuando el conjunto de datos original es muy grande. En este caso, una sola partición grande puede ser adecuada para caracterizar el rendimiento del modelo sin tener que realizar múltiples iteraciones de remuestreo.
 
