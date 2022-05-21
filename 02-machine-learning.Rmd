@@ -99,23 +99,18 @@ Agregar componentes adicionales hace que la estimación del conjunto de datos to
 
 ### Eigenvalores y eigenvectores
 
-Al igual que muchas cosas en la vida, los vectores propios y los valores propios vienen en pares: cada vector propio tiene un valor propio correspondiente. En pocas palabras, **un vector propio es una dirección**, como "vertical" o "45 grados", mientras que un **valor propio es un número que indica cuánta variación hay en los datos en esa dirección**. 
+Al igual que muchas cosas en la vida, los vectores propios y los valores propios vienen en pares: cada vector propio tiene un valor propio correspondiente. Los vectores propios son la ponderación que permite crear la combinación lineal de las variables para conformar cada componente principal, mientras que el valor propio es la varianza asociada a cada componente principal. Desde un punto de vista geométrico, el eigenvector es la dirección del vector determinado por la componente principal y el eigenvalor es la magnitud de dicho vector.
 
 ::: {.infobox .pin data-latex="{pin}"}
 
-* El vector propio con el valor propio más alto es, por lo tanto, el primer componente principal. Siendo el valor propio, la varianza de este.
+* El vector propio con el valor propio más alto es la primer componente principal y el valor propio, la varianza de este.
 
 * La suma acumulada de los primeros $j$ eigenvalores representa la varianza acumulada de las primeras $j$ componentes principales
 :::
 
-
-
 El número de valores propios y vectores propios que existe es igual al número de dimensiones que tiene el conjunto de datos.
 
-Podemos reformular un conjunto de datos en términos de estos vectores propios y valores propios sin cambiar la información subyacente. Tomemos en cuenta que reformular un conjunto de datos con respecto a un conjunto de valores propios y vectores propios no implica cambiar los datos en sí, solo los estaremos observando desde un ángulo diferente, lo cual debería representar mejor los datos.
-
-
-### Interpretación en R
+### Implementación en R
 
 ```{r, warning=FALSE, message=FALSE}
 library(sf)
@@ -132,7 +127,7 @@ indice_marg %>% dplyr::count(GM, sort = TRUE)
 pca_recipe <- recipe(IM ~ ., data = indice_marg) %>%
   update_role(NOM_ENT, GM, new_role = "id") %>%
   step_normalize(ANALF, SPRIM, OVSDE, OVSEE, OVSAE, VHAC, OVPT, PL_5000, PO2SM) %>%
-  step_pca(ANALF, SPRIM, OVSDE, OVSEE, OVSAE, VHAC, OVPT, PL_5000, PO2SM, num_comp = 9) %>% 
+  step_pca(ANALF, SPRIM, OVSDE, OVSEE, OVSAE, VHAC, OVPT, PL_5000, PO2SM, num_comp=9) %>% 
   step_rm(LUGAR, AÑO, POB_TOT) %>% 
   prep()
 
@@ -175,7 +170,7 @@ tidied_pca %>%
   ggtitle("Aportación de variables a cada componente principal")
 ```
 
-Podemos observar que en la primera componente principal, las $9$ variables que utilizó en Consejo Nacional de Población para obtener el [Índice de Marginación 2010](http://www.conapo.gob.mx/work/models/CONAPO/Resource/862/4/images/06_C_AGEB.pdf) aportan de manera positiva en el primer componente principal.
+Podemos observar que en la primera componente principal, las $9$ variables que utilizó el Consejo Nacional de Población para obtener el [Índice de Marginación 2010](http://www.conapo.gob.mx/work/models/CONAPO/Resource/862/4/images/06_C_AGEB.pdf) aportan de manera positiva en el primer componente principal.
 
 
 ```{r}
@@ -201,7 +196,7 @@ tidied_pca %>%
 Notamos que las $9$ variables aportan entre el $25\%$ y el $35\%$ a la
 primera componente principal.
 
-**¿Cómo están distribuídos los estados de la República en las primeras dos componentes principales?**
+### Representación gráfica
 
 ```{r}
 library(ggrepel)
@@ -215,12 +210,39 @@ juice(pca_recipe) %>%
   ggtitle("Grado de marginación de entidades")
 
 ```
+```{r, message=FALSE, warning=FALSE}
+library(factoextra)
+library(FactoMineR)
+
+res.pca <- indice_marg %>%
+  select(ANALF, SPRIM, OVSDE, OVSEE, OVSAE, VHAC, OVPT, PL_5000, PO2SM) %>% 
+  as.data.frame() %>% 
+  set_rownames(indice_marg$NOM_ENT) %>% 
+  PCA(graph=FALSE) 
+
+fviz_pca_biplot(X = res.pca, repel = T, addEllipses=F, geom = c("point", "text"),
+                habillage=as.factor(indice_marg$GM))
+```
 
 Finalmente, podemos observar como (de izquierda a derecha) los estados con grado de marginación Muy bajo, Bajo, Medio, Alto y Muy Alto respectivamente. 
 
+```{r}
+juice(pca_recipe) %>% 
+  ggplot(aes(x = IM, y = PC1)) +
+  geom_smooth(method = "lm") +
+  geom_point(size = 2) +
+  ggtitle("Comparación: Índice Marginación Vs PCA CP1")
+```
 
+### ¿Cuántas componentes retener?
 
+Existe en la literatura basta información sobre el número de componentes a retener en un análisis de PCA. El siguiente gráfico lleva por nombre **gráfico de codo** y muestra el porcentaje de varianza explicado por cada componente principal.
 
+```{r, message=FALSE, warning=FALSE}
+fviz_eig(res.pca, addlabels=TRUE, ylim=c(0, 100))
+```
+
+El grafico anterior muestra que hay una diferencia muy grande entre la varianza retenida por la 1er componente principal y el resto de las variables. Dependiendo del objetivo del analisis podra elegirse el numero adecuado de componentes a retener, no obstante, la literatura sugiere retener 1 o 2 componentes principales.
 
 
 
