@@ -51,7 +51,34 @@ $$Y\sim X_1+X_1^2 + ... + X_1^k$$
 
 Estas transformaciones son posibles realizarlas a múltiples variables que conforman el conjunto de datos que sirve de insumo para el modelo. A través de los pasos secuenciales en las recetas podemos integrar esta tarea a través de la función `step_poly( )`. Veamos un ejemplo:
 
+```{r, message=FALSE, warning=FALSE}
+library(tidymodels)
 
+n = 100
+set.seed(12345)
+original_data <- tibble(x = seq(-10, 10, lengt=n)) %>% 
+  mutate(y = x^3 + rnorm(n, mean = 0, sd = 100))
+  
+poly_recipe <- recipe(y ~ x, data = original_data) %>% 
+  step_poly(x, degree = 3) %>% 
+  prep()
+
+juice(poly_recipe)
+
+juice(poly_recipe) %>% lm(y ~ x_poly_1 + x_poly_2 + x_poly_3, data = .)
+
+juice(poly_recipe) %>% 
+  mutate(
+    x = seq(-10, 10, lengt=n),
+    y_est = 24.52 + 3643.95 * x_poly_1 -34.12 * x_poly_2 + 1541.84 * x_poly_3) %>% 
+  ggplot(aes(x = x, y = y)) +
+  geom_point() +
+  geom_smooth(aes(y = y_est)) +
+  ggtitle("Regresión polinomial")
+```
+En el ejemplo anterior puede mostrarse que es a través de la ponderación de los términos polinomiales que se logra estimar a la variable de respuesta *Y*. 
+
+Este mismo procedimiento puede usarse en la receta de la ingeniería de datos para realizar la predicción de una variable de respuesta mediante cualquier otro algoritmo predictivo.
 
 
 
