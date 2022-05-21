@@ -228,6 +228,121 @@ Finalmente, podemos observar como (de izquierda a derecha) los estados con grado
 
 ## Imputación KNN
 
+Antes de aprender el uso de la función de imputación, recordaremos brevemente como funciona el algoritmo de K-Nearest-Neighbor (KNN)
+
+KNN es un algoritmo de aprendizaje supervisado que podemos usar tanto para regresión como clasificación. Es un algoritmo fácil de interpretar y que permite ser flexible en el balance entre sesgo y varianza (dependiendo de los hiper-parámetros seleccionados).
+
+El algoritmo de K vecinos más cercanos realiza comparaciones entre un nuevo elemento y las observaciones anteriores que ya cuentan con etiqueta. La esencia de este algoritmo está en **etiquetar a un nuevo elemento de manera similar a como están etiquetados aquellos _K_ elementos que más se le parecen**. Veremos este proceso para cada uno de los posibles casos:
+
+```{r, fig.align='center', out.height='400pt', out.width='800pt',echo=F}
+knitr::include_graphics("img/04-ml/knn3.gif")
+```
+
+### **Ventajas del Clasificador KNN**
+
+
+* KNN no hace ninguna suposición subyacente sobre los datos.
+* Con la adición de más puntos de datos, el clasificador evoluciona constantemente y es capaz de adaptarse rápidamente a los cambios en el conjunto de datos de entrada.
+* Le da al usuario la flexibilidad de elegir la [métrica de medida de distancia](https://www.maartengrootendorst.com/blog/distances/).
+
+
+### **Limitaciones del Clasificador KNN**
+
+* KNN es muy sensible a los valores atípicos.
+* No funciona con datos faltantes.
+* A medida que crece el conjunto de datos, la clasificación se vuelve más lenta.
+* Existe la llamada maldición de la dimensionalidad.
+
+Este algoritmo es altamente usado para imputación de datos faltantes, ¿tiene lógica, cierto?, con **recipes**  podemos aplicar un paso con la función: **_step_impute_knn_** antes llamada **_step_knnimpute()_**, podemos observar la documentación de la función en el siguiente [enlace](https://recipes.tidymodels.org/reference/step_impute_knn.html). 
+
+Veámos cómo funciona: 
+
+
+
+```{r, eval=FALSE}
+step_impute_knn(
+  recipe,
+  ...,
+  neighbors = 5,
+  impute_with = imp_vars(all_predictors()),
+  options = list(nthread = 1, eps = 1e-08),
+  ref_data = NULL,
+  columns = NULL,  # Los nombres de las columnas que se imputarán y utilizarán para la imputación.
+  skip = FALSE,
+  id = rand_id("impute_knn")
+)
+```
+
+La función utiliza el conjunto de entrenamiento para imputar cualquier otro conjunto de datos. La única función de distancia disponible es la distancia de **Gower**, que se puede utilizar para combinaciones de datos nominales y numéricos.
+
+
+_Acerca de **Gower**_ El coeficiente de similitud de Gower propuesto en 1971 permite la manipulación simultánea de variables cuantitativas y cualitativas en una base de datos, mediante la aplicación de este coeficiente se logra hallar la similitud entre individuos a los cuales se les han medido una serie de características en común. Una similaridad alta, es decir cercana a 1, indicara gran homogeneidad entre los individuos; por el contrario, una similaridad cercana a cero indica que los individuos son diferentes
+
+A cerca de los parámetros: 
+
+* neighbors: Número de vecinos
+* impute_with : Una llamada a _imp_vars_ para especificar qué variables se usan para imputar las variables. Si una columna se incluye en ambas listas para ser imputada y para ser un predictor de imputación, se eliminará de esta última y no se usará para imputarse a sí misma.
+
+
+Vamos a utilizar los datos de *biomass*  de la libreria _modeldata_ que
+contiene un conjunto de datos donde diferentes combustibles de biomasa se caracterizan por la cantidad de ciertas moléculas (carbono, hidrógeno, oxígeno, nitrógeno y azufre) y el poder calorífico superior correspondiente (HHV). En esta base hemos retirado valores aleatoriamente sobre dos variables para realizar el ejercicio. 
+
+```{r, echo= FALSE, message=FALSE, warning=FALSE}
+library(recipes)
+library(modeldata)
+library(DataExplorer)
+data(biomass)
+
+biomass_tr <- biomass[biomass$dataset == "Training", ]
+biomass_te <- biomass[biomass$dataset == "Testing", ]
+biomass_te_whole <- biomass_te
+
+# induce some missing data at random
+set.seed(9039)
+carb_missing <- sample(1:nrow(biomass_te), 5)
+nitro_missing <- sample(1:nrow(biomass_te), 5)
+
+biomass_te$carbon[carb_missing] <- NA
+biomass_te$nitrogen[nitro_missing] <- NA
+```
+
+
+```{r}
+glimpse(biomass_te)
+summary(biomass_te)
+biomass_te %>% DataExplorer::plot_missing()
+```
+
+
+```{r}
+recipe <- recipe(HHV ~ carbon + hydrogen + oxygen + 
+                 nitrogen + sulfur,
+                 data = biomass_tr) %>% 
+          step_impute_knn(all_predictors(), neighbors = 3) %>% 
+          prep()
+
+imputed <- bake(recipe, biomass_te)
+
+imputed %>% DataExplorer::plot_missing()
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Support Vector Machine (SVM)
 
 Support vector machine, llamadas SVM, son un algoritmo de aprendizaje supervisado que se puede utilizar para problemas de clasificación y regresión. Se utiliza para conjuntos de datos más pequeños, ya que tarda demasiado en procesarse.
