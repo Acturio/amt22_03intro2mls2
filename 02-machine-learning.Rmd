@@ -1,5 +1,50 @@
 <div class="watermark"><img src="img/header.png" width="400"></div>
 
+# Feature Engineering
+
+## Transformación polinomial 
+
+Es común encontrar en la literatura este tema como regresión polinomial, sin embargo, debido a que el alcance de esta transformación va a más allá de la regresión, preferimos manejar este tema como parte de la ingeniería de variables y no como un modelo per se.
+
+El objetivo de la transformación polinomial dentro de la ingeniería de variables es crear nuevas variables que puedan explicar la relación entre variable de respuesta y variable explicativa a través de un polinomia de grado *k*.
+
+En el siguiente gráfico se representa mediante una línea roja a la regresión lineal y mediante una curva azul al polinomia que relaciona a las variables independiente y dependiente.
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+library(ggplot2)
+library(dplyr)
+library(patchwork)
+
+n = 100
+
+x2 <- tibble(x = seq(0, 10, lengt=n)) %>% 
+  mutate(y = x^2 + rnorm(n, mean = 0, sd = 5)) %>% 
+  ggplot(aes(x = x, y = y)) +
+  geom_point() +
+  geom_smooth() +
+  geom_smooth(method = "lm", col = "red") +
+  ggtitle("Regresión polinomial Vs Regresión lineal") +
+  xlab("Variable dependiente") +
+  ylab("Variable de Respuesta")
+
+x3 <- tibble(x = seq(-10, 10, lengt=n)) %>% 
+  mutate(y = x^3 + rnorm(n, mean = 0, sd = 100)) %>% 
+  ggplot(aes(x = x, y = y)) +
+  geom_point() +
+  geom_smooth() +
+  geom_smooth(method = "lm", col = "red") +
+  ggtitle("Regresión polinomial Vs Regresión lineal") +
+  xlab("Variable dependiente") +
+  ylab("Variable de Respuesta")
+
+x2 + x3
+
+```
+Es evidente que existe un mucho mejor ajuste cuando se considera un polinomio de grado *k* en vez de la componente lineal. Este método ofrece mayor flexibilidad para el ajuste de un modelo. Será importante **mediar posteriormente entre el sesgo y la varianza** de forma que podamos tener un mejor ajuste sin caer en el sobreajuste.
+
+## Análisis de Componentes Principales
+
+## Imputación KNN
 
 # Support Vector Machine (SVM)
 
