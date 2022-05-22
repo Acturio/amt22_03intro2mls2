@@ -186,6 +186,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="3.3.2" data-path="feature-engineering.html"><a href="feature-engineering.html#limitaciones-del-clasificador-knn"><i class="fa fa-check"></i><b>3.3.2</b> <strong>Limitaciones del Clasificador KNN</strong></a></li>
 <li class="chapter" data-level="3.3.3" data-path="feature-engineering.html"><a href="feature-engineering.html#implementación-en-r-1"><i class="fa fa-check"></i><b>3.3.3</b> Implementación en R</a></li>
 </ul></li>
+<li class="chapter" data-level="3.4" data-path="feature-engineering.html"><a href="feature-engineering.html#ejercicio"><i class="fa fa-check"></i><b>3.4</b> Ejercicio</a></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="support-vector-machine-svm.html"><a href="support-vector-machine-svm.html"><i class="fa fa-check"></i><b>4</b> Support Vector Machine (SVM)</a>
 <ul>
@@ -449,11 +450,7 @@ primera componente principal.</p>
 <span id="cb22-5"><a href="feature-engineering.html#cb22-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(ANALF, SPRIM, OVSDE, OVSEE, OVSAE, VHAC, OVPT, PL_5000, PO2SM) <span class="sc">%&gt;%</span> </span>
 <span id="cb22-6"><a href="feature-engineering.html#cb22-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.data.frame</span>() <span class="sc">%&gt;%</span> </span>
 <span id="cb22-7"><a href="feature-engineering.html#cb22-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_rownames</span>(indice_marg<span class="sc">$</span>NOM_ENT) <span class="sc">%&gt;%</span> </span>
-<span id="cb22-8"><a href="feature-engineering.html#cb22-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">PCA</span>(<span class="at">graph=</span><span class="cn">FALSE</span>) </span>
-<span id="cb22-9"><a href="feature-engineering.html#cb22-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-10"><a href="feature-engineering.html#cb22-10" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_pca_biplot</span>(<span class="at">X =</span> res.pca, <span class="at">repel =</span> T, <span class="at">addEllipses=</span>F, <span class="at">geom =</span> <span class="fu">c</span>(<span class="st">&quot;point&quot;</span>, <span class="st">&quot;text&quot;</span>),</span>
-<span id="cb22-11"><a href="feature-engineering.html#cb22-11" aria-hidden="true" tabindex="-1"></a>                <span class="at">habillage=</span><span class="fu">as.factor</span>(indice_marg<span class="sc">$</span>GM))</span></code></pre></div>
-<p><img src="amt22_03intro2mls2_files/figure-html/unnamed-chunk-25-1.png" width="672" /></p>
+<span id="cb22-8"><a href="feature-engineering.html#cb22-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">PCA</span>(<span class="at">graph=</span><span class="cn">FALSE</span>)</span></code></pre></div>
 <p>Finalmente, podemos observar como (de izquierda a derecha) los estados con grado de marginación Muy bajo, Bajo, Medio, Alto y Muy Alto respectivamente.</p>
 <div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="feature-engineering.html#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">juice</span>(pca_recipe) <span class="sc">%&gt;%</span> </span>
 <span id="cb23-2"><a href="feature-engineering.html#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> IM, <span class="at">y =</span> PC1)) <span class="sc">+</span></span>
@@ -461,13 +458,13 @@ primera componente principal.</p>
 <span id="cb23-4"><a href="feature-engineering.html#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
 <span id="cb23-5"><a href="feature-engineering.html#cb23-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Comparación: Índice Marginación Vs PCA CP1&quot;</span>)</span></code></pre></div>
 <pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
-<p><img src="amt22_03intro2mls2_files/figure-html/unnamed-chunk-26-1.png" width="672" /></p>
+<p><img src="amt22_03intro2mls2_files/figure-html/unnamed-chunk-27-1.png" width="672" /></p>
 </div>
 <div id="cuántas-componentes-retener" class="section level3 hasAnchor" number="3.2.4">
 <h3><span class="header-section-number">3.2.4</span> ¿Cuántas componentes retener?<a href="feature-engineering.html#cuántas-componentes-retener" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Existe en la literatura basta información sobre el número de componentes a retener en un análisis de PCA. El siguiente gráfico lleva por nombre <strong>gráfico de codo</strong> y muestra el porcentaje de varianza explicado por cada componente principal.</p>
 <div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="feature-engineering.html#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_eig</span>(res.pca, <span class="at">addlabels=</span><span class="cn">TRUE</span>, <span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">100</span>))</span></code></pre></div>
-<p><img src="amt22_03intro2mls2_files/figure-html/unnamed-chunk-27-1.png" width="672" /></p>
+<p><img src="amt22_03intro2mls2_files/figure-html/unnamed-chunk-28-1.png" width="672" /></p>
 <p>El grafico anterior muestra que hay una diferencia muy grande entre la varianza retenida por la 1er componente principal y el resto de las variables. Dependiendo del objetivo del analisis podra elegirse el numero adecuado de componentes a retener, no obstante, la literatura sugiere retener 1 o 2 componentes principales.</p>
 </div>
 </div>
@@ -555,9 +552,9 @@ contiene un conjunto de datos donde diferentes combustibles de biomasa se caract
 ## 14 Fir Char                 Traini…   49.9     4      24.5       NA   0.1   19.2
 ## 15 White Oak Wood           Traini…   49.5     5.38   43.1       NA   0.01  19.4</code></pre>
 <div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="feature-engineering.html#cb29-1" aria-hidden="true" tabindex="-1"></a>biomass_tr <span class="sc">%&gt;%</span> DataExplorer<span class="sc">::</span><span class="fu">plot_missing</span>( <span class="at">title =</span> <span class="st">&quot;Train&quot;</span> )</span></code></pre></div>
-<p><img src="amt22_03intro2mls2_files/figure-html/unnamed-chunk-31-1.png" width="672" /></p>
+<p><img src="amt22_03intro2mls2_files/figure-html/unnamed-chunk-32-1.png" width="672" /></p>
 <div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="feature-engineering.html#cb30-1" aria-hidden="true" tabindex="-1"></a>biomass_te <span class="sc">%&gt;%</span> DataExplorer<span class="sc">::</span><span class="fu">plot_missing</span>( <span class="at">title =</span> <span class="st">&quot;Test&quot;</span> )</span></code></pre></div>
-<p><img src="amt22_03intro2mls2_files/figure-html/unnamed-chunk-31-2.png" width="672" /></p>
+<p><img src="amt22_03intro2mls2_files/figure-html/unnamed-chunk-32-2.png" width="672" /></p>
 <p>En la primera opción vamos a aplicar el paso de immputación indicando qué columnas quieren ser imputadas y con cuáles variables queremos que se haga el proceso.</p>
 <div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="feature-engineering.html#cb31-1" aria-hidden="true" tabindex="-1"></a>recipe_esp <span class="ot">&lt;-</span> <span class="fu">recipe</span>(</span>
 <span id="cb31-2"><a href="feature-engineering.html#cb31-2" aria-hidden="true" tabindex="-1"></a>  HHV <span class="sc">~</span> carbon <span class="sc">+</span> hydrogen <span class="sc">+</span> oxygen <span class="sc">+</span> nitrogen <span class="sc">+</span> sulfur, </span>
@@ -573,9 +570,9 @@ contiene un conjunto de datos donde diferentes combustibles de biomasa se caract
 <span id="cb31-12"><a href="feature-engineering.html#cb31-12" aria-hidden="true" tabindex="-1"></a>imputed_esp_test <span class="ot">&lt;-</span> <span class="fu">bake</span>(recipe_esp, biomass_te) <span class="do">## Probando la receta con un test</span></span>
 <span id="cb31-13"><a href="feature-engineering.html#cb31-13" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb31-14"><a href="feature-engineering.html#cb31-14" aria-hidden="true" tabindex="-1"></a>imputed_esp_train <span class="sc">%&gt;%</span> DataExplorer<span class="sc">::</span><span class="fu">plot_missing</span>( <span class="at">title =</span> <span class="st">&quot;Imputacion Train&quot;</span>)</span></code></pre></div>
-<p><img src="amt22_03intro2mls2_files/figure-html/unnamed-chunk-32-1.png" width="672" /></p>
+<p><img src="amt22_03intro2mls2_files/figure-html/unnamed-chunk-33-1.png" width="672" /></p>
 <div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="feature-engineering.html#cb32-1" aria-hidden="true" tabindex="-1"></a>imputed_esp_test<span class="sc">%&gt;%</span> DataExplorer<span class="sc">::</span><span class="fu">plot_missing</span>(<span class="at">title =</span> <span class="st">&quot;Imputacion Test&quot;</span>)</span></code></pre></div>
-<p><img src="amt22_03intro2mls2_files/figure-html/unnamed-chunk-32-2.png" width="672" /></p>
+<p><img src="amt22_03intro2mls2_files/figure-html/unnamed-chunk-33-2.png" width="672" /></p>
 <p>Sin embargo, siempre podemos pedirle al modelo que haga la imputación de todas las variables que tengan nulos, con toda la información de las demás variables disponibles (no nulas).</p>
 <div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="feature-engineering.html#cb33-1" aria-hidden="true" tabindex="-1"></a>recipe <span class="ot">&lt;-</span> <span class="fu">recipe</span>(</span>
 <span id="cb33-2"><a href="feature-engineering.html#cb33-2" aria-hidden="true" tabindex="-1"></a>  HHV <span class="sc">~</span> carbon <span class="sc">+</span> hydrogen <span class="sc">+</span> oxygen <span class="sc">+</span> nitrogen <span class="sc">+</span> sulfur,</span>
@@ -585,14 +582,23 @@ contiene un conjunto de datos donde diferentes combustibles de biomasa se caract
 <span id="cb33-6"><a href="feature-engineering.html#cb33-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb33-7"><a href="feature-engineering.html#cb33-7" aria-hidden="true" tabindex="-1"></a>imputed <span class="ot">&lt;-</span> <span class="fu">bake</span>(recipe, biomass_te) <span class="co"># prueba con test</span></span>
 <span id="cb33-8"><a href="feature-engineering.html#cb33-8" aria-hidden="true" tabindex="-1"></a>imputed <span class="sc">%&gt;%</span> DataExplorer<span class="sc">::</span><span class="fu">plot_missing</span>()</span></code></pre></div>
-<p><img src="amt22_03intro2mls2_files/figure-html/unnamed-chunk-33-1.png" width="672" /></p>
+<p><img src="amt22_03intro2mls2_files/figure-html/unnamed-chunk-34-1.png" width="672" /></p>
 <div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="feature-engineering.html#cb34-1" aria-hidden="true" tabindex="-1"></a>biomass <span class="sc">%&gt;%</span>  </span>
 <span id="cb34-2"><a href="feature-engineering.html#cb34-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(dataset <span class="sc">==</span> <span class="st">&#39;Testing&#39;</span>) <span class="sc">%&gt;%</span> </span>
 <span id="cb34-3"><a href="feature-engineering.html#cb34-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(nitrogen) <span class="sc">%&gt;%</span> </span>
-<span id="cb34-4"><a href="feature-engineering.html#cb34-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cbind</span>(imputed[,<span class="dv">4</span>]) <span class="sc">%&gt;%</span> </span>
-<span id="cb34-5"><a href="feature-engineering.html#cb34-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>()</span></code></pre></div>
-<p><img src="amt22_03intro2mls2_files/figure-html/unnamed-chunk-34-1.png" width="672" /></p>
+<span id="cb34-4"><a href="feature-engineering.html#cb34-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_cols</span>(imputed[,<span class="dv">4</span>]) <span class="sc">%&gt;%</span> </span>
+<span id="cb34-5"><a href="feature-engineering.html#cb34-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> <span class="st">`</span><span class="at">nitrogen...1</span><span class="st">`</span>, <span class="at">y =</span> <span class="st">`</span><span class="at">nitrogen...2</span><span class="st">`</span>)) <span class="sc">+</span></span>
+<span id="cb34-6"><a href="feature-engineering.html#cb34-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()</span></code></pre></div>
+<p><img src="amt22_03intro2mls2_files/figure-html/unnamed-chunk-35-1.png" width="672" /></p>
 </div>
+</div>
+<div id="ejercicio" class="section level2 hasAnchor" number="3.4">
+<h2><span class="header-section-number">3.4</span> Ejercicio<a href="feature-engineering.html#ejercicio" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<ol style="list-style-type: decimal">
+<li><p>Cada equipo estará a cargo de desarrollar una receta de <em>feature engineering</em> utilizando los pasos vistos en el curso pasado y el actual.</p></li>
+<li><p>Tendrán 15 días para probar distintas estrategias que mejoren las predicciones del precio de ventas.</p></li>
+<li><p>Se deberá entregar y explicar el código creado por el equipo. Este código servirá para los ejercicios de optimización de modelos en los siguientes capítulos.</p></li>
+</ol>
 </div>
 </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>

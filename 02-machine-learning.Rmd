@@ -238,6 +238,7 @@ juice(pca_recipe) %>%
   ggtitle("Grado de marginación de entidades")
 
 ```
+
 ```{r, message=FALSE, warning=FALSE}
 library(factoextra)
 library(FactoMineR)
@@ -246,8 +247,11 @@ res.pca <- indice_marg %>%
   select(ANALF, SPRIM, OVSDE, OVSEE, OVSAE, VHAC, OVPT, PL_5000, PO2SM) %>% 
   as.data.frame() %>% 
   set_rownames(indice_marg$NOM_ENT) %>% 
-  PCA(graph=FALSE) 
+  PCA(graph=FALSE)
+```
 
+
+```{r, message=FALSE, warning=FALSE, eval=FALSE, echo=FALSE}
 fviz_pca_biplot(X = res.pca, repel = T, addEllipses=F, geom = c("point", "text"),
                 habillage=as.factor(indice_marg$GM))
 ```
@@ -395,12 +399,13 @@ imputed %>% DataExplorer::plot_missing()
 ```
 
 
-```{r}
+```{r, warning=FALSE, message=FALSE}
 biomass %>%  
   filter(dataset == 'Testing') %>% 
   select(nitrogen) %>% 
-  cbind(imputed[,4]) %>% 
-  plot()
+  bind_cols(imputed[,4]) %>% 
+  ggplot(aes(x = `nitrogen...1`, y = `nitrogen...2`)) +
+  geom_point()
 ```
 
 ## Ejercicio

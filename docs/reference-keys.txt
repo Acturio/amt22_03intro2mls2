@@ -31,6 +31,7 @@ imputación-knn
 ventajas-del-clasificador-knn
 limitaciones-del-clasificador-knn
 implementación-en-r-1
+ejercicio
 support-vector-machine-svm
 maximum-margin-classifier
 support-vector-classifiers
