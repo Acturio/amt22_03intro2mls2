@@ -139,14 +139,16 @@ En esta clase estaremos usando:
 
 * R [da click aquí si aún no lo descargas](https://cran.r-project.org/)
 * RStudio [da click aquí también](https://www.rstudio.com/products/rstudio/download/)
-* Miro [úsame](https://miro.com/welcomeonboard/c3huendzNURhRUVGbHlsWGVFYlBBMXRaSncybXRrbjBRU2R5WWg2eDFKUXY1VlJ1SGJFdmc4ZmRuWEgwcllpenwzMDc0NDU3MzYxMzQwNDIyODEy?invite_link_id=152058640259)
 * Zoom [Clases](https://us02web.zoom.us/j/5155440751?pwd=YzJCOGF0VnlZdlZlS0Fpc3MvZEhadz09)
   - Pulgar arriba: Voy bien, estoy entendiendo! 
   - Pulgar abajo: Eso no quedó muy claro
   - Mano arriba: Quiero participar/preguntar ó Ya estoy listo para iniciar 
-* Grupo de WhatsApp [El chismecito está aquí]()
-* [Google Drive]()
+* Grupo de WhatsApp [El chismecito está aquí](https://chat.whatsapp.com/GgL9amuW4W8LALV6oqqvzu)
+* [Google Drive](https://drive.google.com/drive/folders/1mlDGHvUy-81qfvQi_iB7tqMb9yhy3vyh?usp=sharing)
 * Notas de clase [Revisame si quieres aprender](https://acturio.github.io/amt22_03intro2mls2/) 
+* Finalmente, de dejaran ejercicios que serán clave para el éxito del aprendizaje de los capítulos, por lo que se trabajará en equipo para lograr adquirir el mayor aprendizaje. En este grupo se trabajará en equipos de 3 y 4 personas para enriquecer el aprendizaje y participación de todos.
+
+
 
 
 <div class="watermark"><img src="img/header.png" width="400"></div>
