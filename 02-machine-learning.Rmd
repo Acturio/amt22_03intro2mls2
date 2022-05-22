@@ -403,6 +403,17 @@ biomass %>%
   plot()
 ```
 
+## Ejercicio
+
+Los siguientes ejercicios serán clave en el éxito del los siguientes capítulos, por lo que se trabajará en equipo para lograr adquirir el mayor aprendizaje. 
+
+1. Se crearán 3 o 4 equipos para enriquecer el aprendizaje y participación de todos
+
+2. Cada equipo estará a cargo de desarrollar una receta de *feature engineering* utilizando los pasos vistos en el curso pasado y el actual.
+
+3. Tendrán 15 días para probar distintas estrategias que mejoren las predicciones del precio de ventas.
+
+4. Se deberá entregar y explicar el código creado por el equipo. Este código servirá para los ejercicios de optimización de modelos en los siguientes capítulos.
 
 # Support Vector Machine (SVM)
 
