@@ -115,7 +115,7 @@ Al finalizar el módulo, el participante sabrá plantear un proyecto de ciencia 
 **4. Interpretación de modelos (4 HRS)**
 
 * LIME
-* ghv
+* DALExtra
 
 **5. Aplicación a negocios (6 HRS)**
 

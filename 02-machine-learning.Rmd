@@ -2,13 +2,13 @@
 
 # Feature Engineering
 
-## Transformación polinomial 
+## Regresión polinomial 
 
-Es común encontrar en la literatura este tema como regresión polinomial, sin embargo, debido a que el alcance de esta transformación va a más allá de la regresión, preferimos manejar este tema como parte de la ingeniería de variables y no como un modelo per se.
+Es común encontrar en la literatura este tema junto con la regresión múltiple, sin embargo, el alcance de esta transformación va a más allá de la regresión, por lo que preferimos manejar este tema como parte de la ingeniería de variables y no como un modelo per se.
 
-El objetivo de la transformación polinomial dentro de la ingeniería de variables es crear nuevas variables que puedan explicar la relación entre variable de respuesta y variable explicativa a través de un polinomia de grado *k*.
+El objetivo de la transformación polinomial dentro de la ingeniería de variables es crear nuevas variables que puedan explicar la relación entre variable de respuesta y variable explicativa a través de un polinomio de grado *k*.
 
-En el siguiente gráfico se representa mediante una línea roja a la regresión lineal y mediante una curva azul al polinomia que relaciona a las variables independiente y dependiente.
+En el siguiente gráfico se representa mediante una línea roja a la regresión lineal y mediante una curva azul al polinomio que relaciona a las variables independiente y dependiente.
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 library(ggplot2)
@@ -76,6 +76,7 @@ juice(poly_recipe) %>%
   geom_smooth(aes(y = y_est)) +
   ggtitle("Regresión polinomial")
 ```
+
 En el ejemplo anterior puede mostrarse que es a través de la ponderación de los términos polinomiales que se logra estimar a la variable de respuesta *Y*. 
 
 Este mismo procedimiento puede usarse en la receta de la ingeniería de datos para realizar la predicción de una variable de respuesta mediante cualquier otro algoritmo predictivo.
@@ -289,11 +290,9 @@ knitr::include_graphics("img/04-ml/knn3.gif")
 
 ### **Ventajas del Clasificador KNN**
 
-
 * KNN no hace ninguna suposición subyacente sobre los datos.
 * Con la adición de más puntos de datos, el clasificador evoluciona constantemente y es capaz de adaptarse rápidamente a los cambios en el conjunto de datos de entrada.
 * Le da al usuario la flexibilidad de elegir la [métrica de medida de distancia](https://www.maartengrootendorst.com/blog/distances/).
-
 
 ### **Limitaciones del Clasificador KNN**
 
@@ -307,7 +306,6 @@ Este algoritmo es altamente usado para imputación de datos faltantes, ¿tiene l
 ### Implementación en R
 
 Veámos cómo funciona: 
-
 
 ```{r, eval=FALSE}
 step_impute_knn(
@@ -325,14 +323,11 @@ A cerca de los parámetros:
 * *impute_with:* Una llamada a _imp_vars_ para especificar qué variables se usan para imputar las variables. Si una columna se incluye en ambas listas para ser imputada y para ser un predictor de imputación, se eliminará de esta última y no se usará para imputarse a sí misma.
 * *id:* Una cadena de caracteres que es exclusiva de este paso para identificarlo.
 
-
 La función utiliza el conjunto de entrenamiento para imputar cualquier otro conjunto de datos. La única función de distancia disponible es la distancia de **Gower**, que se puede utilizar para combinaciones de datos nominales y numéricos.
 
 ::: {.infobox .note data-latex="{note}"}
 _Acerca de **Gower**_ El coeficiente de similitud de Gower propuesto en 1971 permite la manipulación simultánea de variables cuantitativas y cualitativas en una base de datos, mediante la aplicación de este coeficiente se logra hallar la similitud entre individuos a los cuales se les han medido una serie de características en común. Una similaridad alta, es decir cercana a 1, indicara gran homogeneidad entre los individuos; por el contrario, una similaridad cercana a cero indica que los individuos son diferentes
 :::
-
-
 
 Vamos a utilizar los datos de *biomass*  de la libreria _modeldata_ que
 contiene un conjunto de datos donde diferentes combustibles de biomasa se caracterizan por la cantidad de ciertas moléculas (carbono, hidrógeno, oxígeno, nitrógeno y azufre) y el poder calorífico superior correspondiente (HHV). En esta base hemos retirado valores aleatoriamente sobre dos variables para realizar el ejercicio. 
@@ -343,7 +338,7 @@ library(modeldata)
 library(DataExplorer)
 data(biomass)
 
-biomass_te_whole <- biomass
+biomass_te_whole <- as_tibble(biomass)
 
 # induce some missing data at random
 set.seed(9039)
@@ -356,8 +351,6 @@ biomass_te_whole$nitrogen[nitro_missing] <- NA
 biomass_tr <- biomass_te_whole %>% filter( dataset == 'Training')
 biomass_te <- biomass_te_whole %>% filter( dataset == "Testing") 
 
-
-
 biomass_te_whole[nitro_missing,]
 ```
 
@@ -365,21 +358,20 @@ biomass_te_whole[nitro_missing,]
 ```{r}
 biomass_tr %>% DataExplorer::plot_missing( title = "Train" )
 biomass_te %>% DataExplorer::plot_missing( title = "Test" )
-
 ```
-
-
-
 
 En la primera opción vamos a aplicar el paso de immputación indicando qué columnas quieren ser imputadas y con cuáles variables queremos que se haga el proceso. 
 
 
 ```{r}
-recipe_esp <- recipe(HHV ~ carbon + hydrogen + oxygen + nitrogen + sulfur, data = biomass_tr) %>% 
-              step_impute_knn(carbon, nitrogen,
-                          impute_with= imp_vars(hydrogen, oxygen),
-                          neighbors = 3
-                          ) %>% prep()
+recipe_esp <- recipe(
+  HHV ~ carbon + hydrogen + oxygen + nitrogen + sulfur, 
+  data = biomass_tr) %>% 
+  step_impute_knn(
+    carbon, nitrogen,
+    impute_with= imp_vars(hydrogen, oxygen),
+    neighbors = 3) %>% 
+  prep()
 
 imputed_esp_train <- bake(recipe_esp, biomass_tr)
 
@@ -392,26 +384,24 @@ imputed_esp_test%>% DataExplorer::plot_missing(title = "Imputacion Test")
 Sin embargo, siempre podemos pedirle al modelo que haga la imputación de todas las variables que tengan nulos, con toda la información de las demás variables disponibles (no nulas). 
 
 ```{r}
-recipe <- recipe(HHV ~ carbon + hydrogen + oxygen + nitrogen + sulfur,
-                 data = biomass_tr) %>% 
-          step_impute_knn(all_predictors(), neighbors = 3) %>% 
-          prep()
+recipe <- recipe(
+  HHV ~ carbon + hydrogen + oxygen + nitrogen + sulfur,
+  data = biomass_tr) %>% 
+  step_impute_knn(all_predictors(), neighbors = 3) %>% 
+  prep()
 
 imputed <- bake(recipe, biomass_te) # prueba con test
 imputed %>% DataExplorer::plot_missing()
-
-
 ```
 
 
 ```{r}
-
-
-plot(cbind( biomass%>%  filter( dataset == 'Testing') %>% select(nitrogen) , imputed[,4]))
-
+biomass %>%  
+  filter(dataset == 'Testing') %>% 
+  select(nitrogen) %>% 
+  cbind(imputed[,4]) %>% 
+  plot()
 ```
-
-
 
 
 # Support Vector Machine (SVM)

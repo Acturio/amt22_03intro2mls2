@@ -6,11 +6,10 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>References | AMAT- Ciencia de Datos y Machine Learning 2</title>
   <meta name="description" content="AMAT Curso 2 : Ciencia de Datos y Machine Learning 2" />
-  <meta name="generator" content="bookdown 0.22 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.26 and GitBook 2.6.7" />
 
   <meta property="og:title" content="References | AMAT- Ciencia de Datos y Machine Learning 2" />
   <meta property="og:type" content="book" />
-  
   
   <meta property="og:description" content="AMAT Curso 2 : Ciencia de Datos y Machine Learning 2" />
   
@@ -31,10 +30,10 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="supervised-machine-learning.html"/>
+<link rel="prev" href="support-vector-machine-svm.html"/>
 
-<script src="libs/header-attrs-2.10/header-attrs.js"></script>
-<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
@@ -50,9 +49,9 @@
 
 
 
-
-<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
-<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
 
 
 <style type="text/css">
@@ -142,7 +141,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> BIENVENIDA</a>
 <ul>
 <li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#objetivo"><i class="fa fa-check"></i><b>1.1</b> Objetivo</a></li>
-<li class="chapter" data-level="1.2" data-path="index.html"><a href="index.html#quienes-somos"><i class="fa fa-check"></i><b>1.2</b> ¿Quienes somos?</a></li>
+<li class="chapter" data-level="1.2" data-path="index.html"><a href="index.html#instructores"><i class="fa fa-check"></i><b>1.2</b> Instructores</a></li>
 <li class="chapter" data-level="1.3" data-path="index.html"><a href="index.html#ciencia-de-datos-en-r"><i class="fa fa-check"></i><b>1.3</b> Ciencia de Datos en R</a></li>
 <li class="chapter" data-level="1.4" data-path="index.html"><a href="index.html#estructura-del-curso-actual"><i class="fa fa-check"></i><b>1.4</b> Estructura del curso actual</a>
 <ul>
@@ -151,17 +150,51 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="1.5" data-path="index.html"><a href="index.html#duración-y-evaluación-del-curso"><i class="fa fa-check"></i><b>1.5</b> Duración y evaluación del curso</a></li>
 <li class="chapter" data-level="1.6" data-path="index.html"><a href="index.html#recursos-y-dinámica-de-clase"><i class="fa fa-check"></i><b>1.6</b> Recursos y dinámica de clase</a></li>
 </ul></li>
-<li class="chapter" data-level="2" data-path="supervised-machine-learning.html"><a href="supervised-machine-learning.html"><i class="fa fa-check"></i><b>2</b> Supervised Machine Learning</a>
+<li class="chapter" data-level="2" data-path="repaso.html"><a href="repaso.html"><i class="fa fa-check"></i><b>2</b> Repaso</a>
 <ul>
-<li class="chapter" data-level="2.1" data-path="supervised-machine-learning.html"><a href="supervised-machine-learning.html#support-vector-machine-svm"><i class="fa fa-check"></i><b>2.1</b> Support Vector Machine (SVM)</a>
+<li class="chapter" data-level="2.1" data-path="repaso.html"><a href="repaso.html#machine-learning"><i class="fa fa-check"></i><b>2.1</b> Machine Learning</a></li>
+<li class="chapter" data-level="2.2" data-path="repaso.html"><a href="repaso.html#tipos-de-aprendizaje"><i class="fa fa-check"></i><b>2.2</b> Tipos de aprendizaje</a>
 <ul>
-<li class="chapter" data-level="2.1.1" data-path="supervised-machine-learning.html"><a href="supervised-machine-learning.html#maximum-margin-classifier"><i class="fa fa-check"></i><b>2.1.1</b> Maximum Margin Classifier</a></li>
-<li class="chapter" data-level="2.1.2" data-path="supervised-machine-learning.html"><a href="supervised-machine-learning.html#support-vector-classifiers"><i class="fa fa-check"></i><b>2.1.2</b> Support Vector Classifiers</a></li>
-<li class="chapter" data-level="2.1.3" data-path="supervised-machine-learning.html"><a href="supervised-machine-learning.html#support-vector-machine"><i class="fa fa-check"></i><b>2.1.3</b> Support Vector Machine</a></li>
-<li class="chapter" data-level="2.1.4" data-path="supervised-machine-learning.html"><a href="supervised-machine-learning.html#el-truco-del-kernel"><i class="fa fa-check"></i><b>2.1.4</b> El truco del Kernel</a></li>
-<li class="chapter" data-level="2.1.5" data-path="supervised-machine-learning.html"><a href="supervised-machine-learning.html#ventajas-y-desventajas"><i class="fa fa-check"></i><b>2.1.5</b> Ventajas y desventajas</a></li>
-<li class="chapter" data-level="2.1.6" data-path="supervised-machine-learning.html"><a href="supervised-machine-learning.html#ajuste-del-modelo-con-r"><i class="fa fa-check"></i><b>2.1.6</b> Ajuste del modelo con R</a></li>
+<li class="chapter" data-level="2.2.1" data-path="repaso.html"><a href="repaso.html#aprendizaje-supervisado"><i class="fa fa-check"></i><b>2.2.1</b> Aprendizaje supervisado</a></li>
+<li class="chapter" data-level="2.2.2" data-path="repaso.html"><a href="repaso.html#aprendizaje-no-supervisado"><i class="fa fa-check"></i><b>2.2.2</b> Aprendizaje no supervisado</a></li>
 </ul></li>
+<li class="chapter" data-level="2.3" data-path="repaso.html"><a href="repaso.html#errores-sesgo-vs-varianza"><i class="fa fa-check"></i><b>2.3</b> Errores: Sesgo vs varianza</a></li>
+<li class="chapter" data-level="2.4" data-path="repaso.html"><a href="repaso.html#partición-de-datos"><i class="fa fa-check"></i><b>2.4</b> Partición de datos</a>
+<ul>
+<li class="chapter" data-level="2.4.1" data-path="repaso.html"><a href="repaso.html#métodos-comunes-para-particionar-datos"><i class="fa fa-check"></i><b>2.4.1</b> Métodos comunes para particionar datos</a></li>
+<li class="chapter" data-level="2.4.2" data-path="repaso.html"><a href="repaso.html#conjunto-de-validación"><i class="fa fa-check"></i><b>2.4.2</b> Conjunto de validación</a></li>
+</ul></li>
+<li class="chapter" data-level="2.5" data-path="repaso.html"><a href="repaso.html#recetas-y-tratamiento-de-datos"><i class="fa fa-check"></i><b>2.5</b> Recetas y tratamiento de datos</a>
+<ul>
+<li class="chapter" data-level="2.5.1" data-path="repaso.html"><a href="repaso.html#pre-procesamiento-de-datos"><i class="fa fa-check"></i><b>2.5.1</b> Pre-procesamiento de datos</a></li>
+<li class="chapter" data-level="2.5.2" data-path="repaso.html"><a href="repaso.html#recetas"><i class="fa fa-check"></i><b>2.5.2</b> Recetas</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="feature-engineering.html"><a href="feature-engineering.html"><i class="fa fa-check"></i><b>3</b> Feature Engineering</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="feature-engineering.html"><a href="feature-engineering.html#regresión-polinomial"><i class="fa fa-check"></i><b>3.1</b> Regresión polinomial</a></li>
+<li class="chapter" data-level="3.2" data-path="feature-engineering.html"><a href="feature-engineering.html#análisis-de-componentes-principales"><i class="fa fa-check"></i><b>3.2</b> Análisis de Componentes Principales</a>
+<ul>
+<li class="chapter" data-level="3.2.1" data-path="feature-engineering.html"><a href="feature-engineering.html#eigenvalores-y-eigenvectores"><i class="fa fa-check"></i><b>3.2.1</b> Eigenvalores y eigenvectores</a></li>
+<li class="chapter" data-level="3.2.2" data-path="feature-engineering.html"><a href="feature-engineering.html#implementación-en-r"><i class="fa fa-check"></i><b>3.2.2</b> Implementación en R</a></li>
+<li class="chapter" data-level="3.2.3" data-path="feature-engineering.html"><a href="feature-engineering.html#representación-gráfica"><i class="fa fa-check"></i><b>3.2.3</b> Representación gráfica</a></li>
+<li class="chapter" data-level="3.2.4" data-path="feature-engineering.html"><a href="feature-engineering.html#cuántas-componentes-retener"><i class="fa fa-check"></i><b>3.2.4</b> ¿Cuántas componentes retener?</a></li>
+</ul></li>
+<li class="chapter" data-level="3.3" data-path="feature-engineering.html"><a href="feature-engineering.html#imputación-knn"><i class="fa fa-check"></i><b>3.3</b> Imputación KNN</a>
+<ul>
+<li class="chapter" data-level="3.3.1" data-path="feature-engineering.html"><a href="feature-engineering.html#ventajas-del-clasificador-knn"><i class="fa fa-check"></i><b>3.3.1</b> <strong>Ventajas del Clasificador KNN</strong></a></li>
+<li class="chapter" data-level="3.3.2" data-path="feature-engineering.html"><a href="feature-engineering.html#limitaciones-del-clasificador-knn"><i class="fa fa-check"></i><b>3.3.2</b> <strong>Limitaciones del Clasificador KNN</strong></a></li>
+<li class="chapter" data-level="3.3.3" data-path="feature-engineering.html"><a href="feature-engineering.html#implementación-en-r-1"><i class="fa fa-check"></i><b>3.3.3</b> Implementación en R</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="support-vector-machine-svm.html"><a href="support-vector-machine-svm.html"><i class="fa fa-check"></i><b>4</b> Support Vector Machine (SVM)</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="support-vector-machine-svm.html"><a href="support-vector-machine-svm.html#maximum-margin-classifier"><i class="fa fa-check"></i><b>4.1</b> Maximum Margin Classifier</a></li>
+<li class="chapter" data-level="4.2" data-path="support-vector-machine-svm.html"><a href="support-vector-machine-svm.html#support-vector-classifiers"><i class="fa fa-check"></i><b>4.2</b> Support Vector Classifiers</a></li>
+<li class="chapter" data-level="4.3" data-path="support-vector-machine-svm.html"><a href="support-vector-machine-svm.html#support-vector-machine"><i class="fa fa-check"></i><b>4.3</b> Support Vector Machine</a></li>
+<li class="chapter" data-level="4.4" data-path="support-vector-machine-svm.html"><a href="support-vector-machine-svm.html#el-truco-del-kernel"><i class="fa fa-check"></i><b>4.4</b> El truco del Kernel</a></li>
+<li class="chapter" data-level="4.5" data-path="support-vector-machine-svm.html"><a href="support-vector-machine-svm.html#ventajas-y-desventajas"><i class="fa fa-check"></i><b>4.5</b> Ventajas y desventajas</a></li>
+<li class="chapter" data-level="4.6" data-path="support-vector-machine-svm.html"><a href="support-vector-machine-svm.html#ajuste-del-modelo-con-r"><i class="fa fa-check"></i><b>4.6</b> Ajuste del modelo con R</a></li>
 </ul></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
 <li class="divider"></li>
@@ -184,8 +217,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="references" class="section level1 unnumbered">
-<h1>References</h1>
+<div id="references" class="section level1 unnumbered hasAnchor">
+<h1>References<a href="references.html#references" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <p><a href="https://towardsdatascience.com/svm-and-kernel-svm-fed02bef1200" class="uri">https://towardsdatascience.com/svm-and-kernel-svm-fed02bef1200</a></p>
 <p><a href="https://towardsdatascience.com/support-vector-machine-explained-8bfef2f17e71" class="uri">https://towardsdatascience.com/support-vector-machine-explained-8bfef2f17e71</a></p>
 <p><a href="https://medium.com/swlh/the-support-vector-machine-basic-concept-a5106bd3cc5f" class="uri">https://medium.com/swlh/the-support-vector-machine-basic-concept-a5106bd3cc5f</a></p>
@@ -221,12 +254,11 @@ $('.pipehover_select_one_row tr').hover(function() {
           </div>
         </div>
       </div>
-<a href="supervised-machine-learning.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="support-vector-machine-svm.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
 
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
-<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
 <script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
@@ -266,6 +298,10 @@ gitbook.start({
 "text": null
 },
 "download": ["amt22_03intro2mls2.pdf"],
+"search": {
+"engine": "fuse",
+"options": null
+},
 "toc": {
 "collapse": "subsection"
 }
