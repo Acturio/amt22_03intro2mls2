@@ -87,9 +87,9 @@ Este mismo procedimiento puede usarse en la receta de la ingeniería de datos pa
 
 ## Análisis de Componentes Principales
 
-El análisis PCA (por sus siglas en inglés) es una **técnica de reducción de dimensión** útil tanto para el proceso de análisis exploratorio, el inferencial y el predictivos. Es una técnica ampliamente usada en muchos estudios, pues permite sintetizar la información relevante y desechar aquello que no aporta tanto a un estudio.Es particularmente útil en el caso de conjuntos de datos "amplios" en donde las **variables están correlacionadas entre sí**, donde se tienen muchas variables para cada observación. 
+El análisis PCA (por sus siglas en inglés) es una **técnica de reducción de dimensión** útil tanto para el proceso de análisis exploratorio, el inferencial y predictivo. Es una técnica ampliamente usada en muchos estudios, pues permite sintetizar la información relevante y desechar aquello que no aporta tanto. Es particularmente útil en el caso de conjuntos de datos "amplios" en donde las **variables están correlacionadas entre sí** y donde se tienen muchas variables para cada observación. 
 
-En los conjuntos de datos donde hay muchas variables presentes, no es fácil trazar los datos en su formato original, lo que dificulta tener una idea de las tendencias presentes en ellos. PCA permite ver la "forma" general de los datos, identificando qué observaciones son similares entre sí y cuáles son muy diferentes. Esto puede permitirnos identificar grupos de muestras que son similares y determinar qué variables hacen que un grupo sea diferente de otro.
+En los conjuntos de datos donde hay muchas variables presentes, no es fácil trazar los datos en su formato original, lo que dificulta tener una idea de las tendencias presentes en ellos. PCA permite ver la estructura general de los datos, identificando qué observaciones son similares entre sí y cuáles son diferentes. Esto puede permitirnos identificar grupos de muestras que son similares y determinar qué variables hacen a un grupo diferente de otro.
 
 La idea detrás de esta técnica es la siguiente:
 
@@ -113,7 +113,7 @@ $$Z_1 \perp\!\!\!\perp Z_2 \quad \& \quad Var(Z_1)>Var(Z_2)>Var(Z_i)$$
 ::: {.infobox .note data-latex="{note}"}
 **¡¡ RECORDAR !!**
 
-* **A través de CPA se logra retener la mayor cantidad de varianza útil pero usando menos componentes que número de variables originales.**
+* **A través de CPA se logra retener la mayor cantidad de varianza útil pero usando menos componentes que el número de variables originales.**
 
 * **Para que este proceso sea efectivo, debe existir ALTA correlación entre las variables originales.**
 :::
@@ -127,11 +127,11 @@ Agregar componentes adicionales hace que la estimación del conjunto de datos to
 
 ### Eigenvalores y eigenvectores
 
-Al igual que muchas cosas en la vida, los vectores propios y los valores propios vienen en pares: cada vector propio tiene un valor propio correspondiente. Los vectores propios son la ponderación que permite crear la combinación lineal de las variables para conformar cada componente principal, mientras que el valor propio es la varianza asociada a cada componente principal. Desde un punto de vista geométrico, el eigenvector es la dirección del vector determinado por la componente principal y el eigenvalor es la magnitud de dicho vector.
+Los vectores propios y los valores propios vienen en pares: **cada vector propio tiene un valor propio correspondiente**. Los vectores propios son la ponderación que permite crear la combinación lineal de las variables para conformar cada componente principal, mientras que el valor propio es la varianza asociada a cada componente principal. Desde un punto de vista geométrico, el eigenvector es la dirección del vector determinado por la componente principal y el eigenvalor es la magnitud de dicho vector.
 
 ::: {.infobox .pin data-latex="{pin}"}
 
-* El vector propio con el valor propio más alto es la primer componente principal y el valor propio, la varianza de este.
+* El valor propio de una componente es la varianza de este.
 
 * La suma acumulada de los primeros $j$ eigenvalores representa la varianza acumulada de las primeras $j$ componentes principales
 :::
@@ -182,7 +182,7 @@ A continuación se muestran la desviación estándar, porcentaje de varianza y p
 summary(pca_recipe$steps[[2]]$res)
 ```
 
-```{r}
+```{r, echo=FALSE, eval=FALSE}
 library(forcats)
 
 tidied_pca <- tidy(pca_recipe, 2)
@@ -204,10 +204,12 @@ Podemos observar que en la primera componente principal, las $9$ variables que u
 ```{r}
 library(tidytext)
 
+tidied_pca <- tidy(pca_recipe, 2)
+
 tidied_pca %>%
   filter(component %in% paste0("PC", 1:4)) %>%
   group_by(component) %>%
-  top_n(8, abs(value)) %>%
+  top_n(9, abs(value)) %>%
   ungroup() %>%
   mutate(terms = reorder_within(terms, abs(value), component)) %>%
   ggplot(aes(abs(value), terms, fill = value > 0)) +
@@ -276,9 +278,41 @@ fviz_eig(res.pca, addlabels=TRUE, ylim=c(0, 100))
 
 El grafico anterior muestra que hay una diferencia muy grande entre la varianza retenida por la 1er componente principal y el resto de las variables. Dependiendo del objetivo del analisis podra elegirse el numero adecuado de componentes a retener, no obstante, la literatura sugiere retener 1 o 2 componentes principales.
 
+Regresando al tema de **feature engineering**, es posible realizar el proceso de componentes principales y elegir una de las dos opciones siguientes:
 
+1. Especificar el número de componentes a retener
 
+2. Indicar el porcentaje de varianza a alcanzar
 
+La segunda opción elegirá tantas componentes como sean necesarias hasta alcanzar el hiperparámetro mínimo indicado. A continuación se ejemplifica:
+
+**Caso 1:**
+
+```{r}
+pca_recipe <- recipe(IM ~ ., data = indice_marg) %>%
+  update_role(NOM_ENT, GM, new_role = "id") %>%
+  step_normalize(ANALF, SPRIM, OVSDE, OVSEE, OVSAE, VHAC, OVPT, PL_5000, PO2SM) %>%
+  step_pca(ANALF, SPRIM, OVSDE, OVSEE, OVSAE, VHAC, OVPT, PL_5000, PO2SM,num_comp=2) %>% 
+  step_rm(LUGAR, AÑO, POB_TOT) %>% 
+  prep()
+
+juice(pca_recipe)
+```
+
+**Caso 2:**
+
+```{r}
+pca_recipe <- recipe(IM ~ ., data = indice_marg) %>%
+  update_role(NOM_ENT, GM, new_role = "id") %>%
+  step_normalize(ANALF, SPRIM, OVSDE, OVSEE, OVSAE, VHAC, OVPT, PL_5000, PO2SM) %>%
+  step_pca(ANALF, SPRIM, OVSDE, OVSEE, OVSAE, VHAC, OVPT, PL_5000, PO2SM,threshold=0.90) %>% 
+  step_rm(LUGAR, AÑO, POB_TOT) %>% 
+  prep()
+
+juice(pca_recipe)
+```
+
+Así es como usaremos el análisis de componentes principales para mejorar la estructura de variables que sirven de input para cualquiera de los modelos posteriores. Continuaremos con un paso más de pre-procesamiento antes de comenzar a aprender nuevos modelos.
 
 ## Imputación KNN
 
