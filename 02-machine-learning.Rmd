@@ -155,7 +155,7 @@ indice_marg %>% dplyr::count(GM, sort = TRUE)
 pca_recipe <- recipe(IM ~ ., data = indice_marg) %>%
   update_role(NOM_ENT, GM, new_role = "id") %>%
   step_normalize(ANALF, SPRIM, OVSDE, OVSEE, OVSAE, VHAC, OVPT, PL_5000, PO2SM) %>%
-  step_pca(ANALF, SPRIM, OVSDE, OVSEE, OVSAE, VHAC, OVPT, PL_5000, PO2SM, num_comp=9) %>% 
+  step_pca(ANALF, SPRIM, OVSDE, OVSEE, OVSAE, VHAC, OVPT, PL_5000, PO2SM, num_comp=9, res="res") %>% 
   step_rm(LUGAR, AÑO, POB_TOT) %>% 
   prep()
 
@@ -241,23 +241,6 @@ juice(pca_recipe) %>%
 
 ```
 
-```{r, message=FALSE, warning=FALSE}
-library(factoextra)
-library(FactoMineR)
-
-res.pca <- indice_marg %>%
-  select(ANALF, SPRIM, OVSDE, OVSEE, OVSAE, VHAC, OVPT, PL_5000, PO2SM) %>% 
-  as.data.frame() %>% 
-  set_rownames(indice_marg$NOM_ENT) %>% 
-  PCA(graph=FALSE)
-```
-
-
-```{r, message=FALSE, warning=FALSE, eval=FALSE, echo=FALSE}
-fviz_pca_biplot(X = res.pca, repel = T, addEllipses=F, geom = c("point", "text"),
-                habillage=as.factor(indice_marg$GM))
-```
-
 Finalmente, podemos observar como (de izquierda a derecha) los estados con grado de marginación Muy bajo, Bajo, Medio, Alto y Muy Alto respectivamente. 
 
 ```{r}
@@ -273,7 +256,21 @@ juice(pca_recipe) %>%
 Existe en la literatura basta información sobre el número de componentes a retener en un análisis de PCA. El siguiente gráfico lleva por nombre **gráfico de codo** y muestra el porcentaje de varianza explicado por cada componente principal.
 
 ```{r, message=FALSE, warning=FALSE}
+library(factoextra)
+library(FactoMineR)
+
+res.pca <- indice_marg %>%
+  select(ANALF, SPRIM, OVSDE, OVSEE, OVSAE, VHAC, OVPT, PL_5000, PO2SM) %>% 
+  as.data.frame() %>% 
+  set_rownames(indice_marg$NOM_ENT) %>% 
+  PCA(graph=FALSE)
+
 fviz_eig(res.pca, addlabels=TRUE, ylim=c(0, 100))
+```
+
+```{r, message=FALSE, warning=FALSE, eval=FALSE, echo=FALSE}
+fviz_pca_biplot(X = res.pca, repel = T, addEllipses=F, geom = c("point", "text"),
+                habillage=as.factor(indice_marg$GM))
 ```
 
 El grafico anterior muestra que hay una diferencia muy grande entre la varianza retenida por la 1er componente principal y el resto de las variables. Dependiendo del objetivo del analisis podra elegirse el numero adecuado de componentes a retener, no obstante, la literatura sugiere retener 1 o 2 componentes principales.
