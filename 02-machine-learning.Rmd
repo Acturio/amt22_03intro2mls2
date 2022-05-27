@@ -680,16 +680,16 @@ Recordemos los pasos a seguir al ajustar un modelo
 4. Inicialización de workflow o pipeline
 5. Creación de grid search
 6. **Entrenamiento de modelos con hiperparámetros definidos** (salvar los modelos entrenados)
-7. Análisis de métricas de error e hiperparámetros (Vuelve al paso  3 si es necesario)
+7. Análisis de métricas de error e hiperparámetros (Vuelve al paso 3, si es necesario)
 8. Selección de modelo a usar
-9. Ajuste de modelo final con todos los datos
+9. Ajuste de modelo final con todos los datos (Vuelve al paso 2, si es necesario)
 10. Validar poder predictivo con datos de prueba.
 
 ### Implementación de SVR en R
 
 A continuación, revisaremos paso por paso este procedimiento usando SVM como modelo. Los datos corresponden a nuestro ya conocido problema predictivo de precio de casas. Se puede encontrar los datos y documentación en el siguiente [enlace]()
 
-**Paso 1:**
+**Paso 1: Separación inicial de datos ( test, train <KFCV> )**
 ```{r, warning=FALSE,message=FALSE}
 library(tidymodels)
 
@@ -704,7 +704,8 @@ ames_folds <- vfold_cv(ames_train)
 
 Contando con datos de entrenamiento, procedemos a realizar el feature engineering para extraer las mejores características que permitirán realizar las estimaciones en el modelo.
 
-**Paso 2:**
+**Paso 2: Pre-procesamiento e ingeniería de variables**
+
 ```{r, warning=FALSE,message=FALSE}
 receta_casas <- recipe(Sale_Price ~ . , data = ames_train) %>%
   step_unknown(Alley) %>%
@@ -742,7 +743,7 @@ Una vez que la receta de transformación de datos está lista, procedemos a impl
 * Base polinomial: svm_poly()
 * Base radial: svm_rbf()
 
-**Paso 3:**
+**Paso 3: Selección de tipo de modelo con hiperparámetros iniciales**
 ```{r, warning=FALSE,message=FALSE}
 svm_model <- svm_rbf(
   mode = "regression",
@@ -754,7 +755,7 @@ set_engine("kernlab")
 svm_model
 ```
 
-**Paso 4:**
+**Paso 4: Inicialización de workflow o pipeline**
 ```{r, warning=FALSE,message=FALSE}
 svm_workflow <- workflow() %>% 
   add_recipe(receta_casas) %>% 
@@ -763,7 +764,7 @@ svm_workflow <- workflow() %>%
 svm_workflow
 ```
 
-**Paso 5:**
+**Paso 5: Creación de grid search**
 ```{r, warning=FALSE,message=FALSE}
 svm_parameters_set <- svm_workflow %>% 
   hardhat::extract_parameter_set_dials() %>% 
@@ -781,7 +782,7 @@ svm_grid
 ctrl_grid <- control_grid(save_pred = T, verbose = T)
 ```
 
-**Paso 6:**
+**Paso 6: Entrenamiento de modelos con hiperparámetros definidos**
 ```{r, warning=FALSE,message=FALSE, eval=FALSE}
 library(doParallel)
 
@@ -812,7 +813,7 @@ svm_tune_result <- readRDS("models/svm_model_reg.rds")
 unnest(svm_tune_result, .metrics)
 ```
 
-**Paso 7:**
+**Paso 7: Análisis de métricas de error e hiperparámetros (Vuelve al paso 3, si es necesario)**
 ```{r}
 collect_metrics(svm_tune_result)
 ```
@@ -827,7 +828,7 @@ svm_tune_result %>% autoplot()
 svm_tune_result %>% show_best(n = 10, metric = "mape")
 ```
 
-**Paso 8:**
+**Paso 8: Selección de modelo a usar**
 ```{r}
 # Selección del mejor modelo según la métrica MAPE
 
@@ -838,11 +839,12 @@ svm_regression_best_model
 
 ```{r}
 # Selección del modelo más regularizado a menos de una desviación estandar, según la métrica MAPE
-svm_regression_best_1se_model <- select_by_one_std_err(svm_tune_result, metric = "mape", "mape")
+svm_regression_best_1se_model <- svm_tune_result %>% 
+  select_by_one_std_err(metric = "mape", "mape")
 svm_regression_best_1se_model
 ```
 
-**Paso 9:**
+**Paso 9: Ajuste de modelo final con todos los datos (Vuelve al paso 2, si es necesario)**
 ```{r}
 # Modelo final 
 svm_regression_final_model <- svm_workflow %>%
@@ -852,9 +854,47 @@ svm_regression_final_model <- svm_workflow %>%
 svm_regression_final_model
 ```
 
-Como hemos hablado anteriormente, este último objeto es el modelo final entrenado, el cual contiene toda la información del pre-procesamiento de datos, por lo que en caso de ponerse en producción el modelo, sólo se necesita de este último elemento para poder realizar nuevas predicciones. Imaginemos por un momento que pasa un mes de tiempo desde que hicimos nuestro modelo, es hora de ponerlo a prueba prediciendo valores de nuevos elementos:
+Como hemos hablado anteriormente, este último objeto es el modelo final entrenado, el cual contiene toda la información del pre-procesamiento de datos, por lo que en caso de ponerse en producción el modelo, sólo se necesita de este último elemento para poder realizar nuevas predicciones. 
 
-**Paso 10:**
+Antes de pasar al siguiente paso, es importante validar que hayamos hecho un uso correcto de las variables predictivas. En este momento es posible detectar variables que no estén aportando valor o variables que no debiéramos estar usando debido a que cometeríamos [data leakage](https://towardsdatascience.com/data-leakage-in-machine-learning-6161c167e8ba). Para enfrentar esto, ayuda estimar y ordenar el valor de importancia del modelo
+
+```{r, eval=FALSE}
+library(vip)
+
+ames_importance <- svm_regression_final_model %>% 
+  extract_fit_parsnip() %>% 
+  vi(
+    method = "permute",
+    nsim = 10,
+    target = "Sale_Price",
+    metric = "rmse",
+    pred_wrapper = kernlab::predict, 
+    train = juice(receta_casas)
+  )
+
+ames_importance %>% saveRDS("models/vip_ames_svm.rds")
+```
+
+```{r}
+ames_importance <- readRDS("models/vip_telco_svm.rds")
+
+ames_importance
+
+ames_importance %>%
+  mutate(Variable = fct_reorder(Variable, Importance)) %>%
+  slice_max(Importance, n = 20) %>%
+  ggplot(aes(Importance, Variable, color = Variable)) +
+  geom_errorbar(aes(xmin = Importance - StDev, xmax = Importance + StDev),
+    alpha = 0.5, size = 1.3) +
+  geom_point(size = 3) +
+  theme(legend.position = "none") +
+  ggtitle("Variable Importance Measure")
+```
+
+**Paso 10: Validar poder predictivo con datos de prueba**
+
+Imaginemos por un momento que pasa un mes de tiempo desde que hicimos nuestro modelo, es hora de ponerlo a prueba prediciendo valores de nuevos elementos:
+
 ```{r}
 # Predicciones
 results <- predict(svm_regression_final_model, ames_test) %>% 
@@ -886,6 +926,7 @@ results %>%
   ggtitle("Comparisson")
 ```
 
+
 ### Implementación de SVM en R
 
 Es turno de revisar la implementación de SVM con nuestro bien conocido problema de predicción de cancelación de servicios de telecomunicaciones. Los datos se encuentran disponibles en el siguiente [enlace]():
@@ -893,13 +934,16 @@ Es turno de revisar la implementación de SVM con nuestro bien conocido problema
 Los pasos para implementar en *R* este modelo predictivo son los mismos, cambiando únicamente las especificaciones del tipo de modelo, pre-procesamiento e hiper-parámetros.
 
 ```{r, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(tidymodels)
 library(readr)
 
 telco <- read_csv("data/Churn.csv")
 glimpse(telco)
 ```
 
-**Paso 1:**
+**Paso 1: Separación inicial de datos ( test, train <KFCV> )**
+
 ```{r}
 set.seed(1234)
 telco_split <- initial_split(telco, prop = .70)
@@ -911,7 +955,8 @@ telco_folds <- vfold_cv(telco_train)
 telco_folds
 ```
 
-**Paso 2:**
+**Paso 2: Pre-procesamiento e ingeniería de variables**
+
 ```{r}
 binner <- function(x) {
   x <- cut(x, breaks = c(0, 12, 24, 36,48,60,72), include.lowest = TRUE)
@@ -920,8 +965,9 @@ binner <- function(x) {
 
 telco_rec <- recipe(Churn ~ ., data = telco_train) %>% 
   update_role(customerID, new_role = "id variable") %>% 
-  step_num2factor(tenure, transform = binner, 
-                  levels = c("0-1 year", "1-2 years", "2-3 years", "3-4 years", "4-5 years", "5-6 years")) %>%
+  step_num2factor(
+    tenure, transform = binner, 
+    levels = c("0-1 year", "1-2 years", "2-3 years", "3-4 years", "4-5 years", "5-6 years")) %>%
   step_normalize(all_numeric_predictors()) %>% 
   step_dummy(all_nominal_predictors()) %>% 
   step_impute_median(all_numeric_predictors()) %>% 
@@ -931,7 +977,7 @@ telco_rec <- recipe(Churn ~ ., data = telco_train) %>%
 telco_rec
 ```
 
-**Paso 3:**
+**Paso 3: Selección de tipo de modelo con hiperparámetros iniciales**
 ```{r}
 svm_class_model <- svm_rbf(
   mode = "classification",
@@ -943,7 +989,7 @@ set_engine("kernlab")
 svm_class_model
 ```
 
-**Paso 4:**
+**Paso 4: Inicialización de workflow o pipeline**
 ```{r}
 svm_class_workflow <- workflow() %>% 
   add_recipe(telco_rec) %>% 
@@ -952,7 +998,8 @@ svm_class_workflow <- workflow() %>%
 svm_class_workflow
 ```
 
-**Paso 5:**
+
+**Paso 5: Creación de grid search**
 ```{r}
 svm_class_parameters_set <- svm_class_workflow %>% 
   hardhat::extract_parameter_set_dials() %>% 
@@ -970,7 +1017,7 @@ svm_class_grid
 ctrl_grid <- control_grid(save_pred = T, verbose = T)
 ```
 
-**Paso 6:**
+**Paso 6: Entrenamiento de modelos con hiperparámetros definidos**
 ```{r, warning=FALSE, message=FALSE, eval=FALSE}
 library(doParallel)
 
@@ -999,7 +1046,7 @@ svm_tune_class_result <- readRDS("models/svm_model_class.rds")
 unnest(svm_tune_class_result, .metrics)
 ```
 
-**Paso 7:**
+**Paso 7: Análisis de métricas de error e hiperparámetros (Vuelve al paso 3, si es necesario)**
 ```{r}
 collect_metrics(svm_tune_class_result)
 ```
@@ -1012,36 +1059,76 @@ svm_tune_class_result %>% autoplot()
 svm_tune_class_result %>% show_best(n = 10, metric = "roc_auc")
 ```
 
-**Paso 8:**
+**Paso 8: Selección de modelo a usar**
 ```{r}
-# Selección del mejor modelo según la métrica MAPE
+# Selección del mejor modelo según la métrica ROC AUC
 
 svm_classification_best_model <- select_best(svm_tune_class_result, metric = "roc_auc")
 svm_classification_best_model
 ```
 
 ```{r}
-# Selección del modelo más regularizado a menos de una desviación estandar, según la métrica MAPE
+# Selección del modelo más regularizado a menos de una desviación estandar, según la métrica ROC AUC
 
-svm_classification_best_1se_model <- select_by_one_std_err(svm_tune_class_result, metric = "roc_auc", "roc_auc")
+svm_classification_best_1se_model <- svm_tune_class_result %>% 
+  select_by_one_std_err(metric = "roc_auc", "roc_auc")
 svm_classification_best_1se_model
 ```
 
-**Paso 9:**
+**Paso 9: Ajuste de modelo final con todos los datos (Vuelve al paso 2, si es necesario)**
+
 ```{r}
 # Modelo final 
+set.seed(1352)
 svm_classification_final_model <- svm_class_workflow %>%
-  finalize_workflow(svm_classification_best_1se_model) %>%
+  finalize_workflow(svm_classification_best_model) %>%
   parsnip::fit(data = telco_train)
   
 svm_classification_final_model
 ```
 
-Como hemos hablado anteriormente, este último objeto es el modelo final entrenado, el cual contiene toda la información del pre-procesamiento de datos, por lo que en caso de ponerse en producción el modelo, sólo se necesita de este último elemento para poder realizar nuevas predicciones. Imaginemos por un momento que pasa un mes de tiempo desde que hicimos nuestro modelo, es hora de ponerlo a prueba prediciendo valores de nuevos elementos:
+Como hemos hablado anteriormente, este último objeto es el modelo final entrenado, el cual contiene toda la información del pre-procesamiento de datos, por lo que en caso de ponerse en producción el modelo, sólo se necesita de este último elemento para poder realizar nuevas predicciones. 
 
-**Paso 10:**
+Antes de pasar al siguiente paso, es importante validar que hayamos hecho un uso correcto de las variables predictivas. En este momento es posible detectar variables que no estén aportando valor o variables que no debiéramos estar usando debido a que cometeríamos [data leakage](https://towardsdatascience.com/data-leakage-in-machine-learning-6161c167e8ba). Para enfrentar esto, ayuda estimar y ordenar el valor de importancia del modelo.
+
+```{r, eval=FALSE}
+churn_importance <- svm_classification_final_model %>% 
+  extract_fit_parsnip() %>% 
+  vi(
+    method = "permute",
+    nsim = 10,
+    target = "Churn",
+    metric = "auc",
+    reference_class = "Yes",
+    pred_wrapper = kernlab::predict, 
+    train = juice(telco_rec)
+  )
+
+churn_importance %>% saveRDS("models/vip_telco_svm.rds")
+```
+
+```{r}
+churn_importance <- readRDS("models/vip_telco_svm.rds")
+
+churn_importance
+
+churn_importance %>%
+  mutate(Variable = fct_reorder(Variable, Importance)) %>%
+  ggplot(aes(Importance, Variable, color = Variable)) +
+  geom_errorbar(aes(xmin = Importance - StDev, xmax = Importance + StDev),
+    alpha = 0.5, size = 1.3) +
+  geom_point(size = 3) +
+  theme(legend.position = "none") +
+  ggtitle("Variable Importance Measure")
+```
+
+**Paso 10: Validar poder predictivo con datos de prueba**
+
+Imaginemos por un momento que pasa un mes de tiempo desde que hicimos nuestro modelo, es hora de ponerlo a prueba prediciendo valores de nuevos elementos:
+
 ```{r}
 # Predicciones
+telco_test  <- testing(telco_split)
 results_cla <- predict(svm_classification_final_model, telco_test, type = "prob") %>% 
   dplyr::bind_cols(truth = telco_test$Churn) %>% 
   mutate(truth = factor(truth, levels = c('No', 'Yes'), labels = c('No', 'Yes')))
@@ -1090,7 +1177,6 @@ pr_curve_plot
 ```
 
 Pueden usar la app de [shiny](https://acturio.shinyapps.io/confusion_matrix/?_ga=2.157345976.322506426.1653670259-130075619.1646374742) que nos permite jugar con el treshold de clasificación para tomar la mejor decisión.
-
 
 
 
