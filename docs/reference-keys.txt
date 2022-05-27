@@ -1,11 +1,3 @@
-bienvenida
-objetivo
-instructores
-ciencia-de-datos-en-r
-estructura-del-curso-actual
-alcances-del-curso
-duración-y-evaluación-del-curso
-recursos-y-dinámica-de-clase
 repaso
 machine-learning
 tipos-de-aprendizaje
@@ -30,7 +22,7 @@ cuántas-componentes-retener
 imputación-knn
 ventajas-y-limitaciones-del-clasificador-knn
 implementación-en-r-1
-ejercicio
+ejercicios
 support-vector-machine-svm-svr
 maximum-margin-classifier
 support-vector-classifiers
@@ -41,3 +33,4 @@ ventajas-y-desventajas
 ajuste-del-modelo-con-r
 implementación-de-svr-en-r
 implementación-de-svm-en-r
+ejercicios-1

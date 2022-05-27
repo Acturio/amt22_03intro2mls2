@@ -13,9 +13,9 @@ description: "AMAT Curso 2 : Ciencia de Datos y Machine Learning 2"
 always_allow_html: true
 ---
 
-# BIENVENIDA 
+# BIENVENIDA {-}
 
-## Objetivo
+## Objetivo {-}
 
 Desarrollar conocimiento y habilidades para implementar modelos complejos de Machine Learning a través de un flujo de trabajo limpio, ordenado y sistematizado a mediante las librerías en *R* más novedosas que han sido desarrolladas hasta el momento. Al finalizar este curso, el participante será capáz de combinar distintas clases de modelos para dar una solución compleja y precisa a problemas predictivos. Aprenderá a cuantificar los problemas éticos asociados al sesgo o inequidad producidos por modelos de machine learning, así como su interpretación en el mundo productivo. Finalmente, se estudiará la manera de desarrollar un diseño de experimento para implementarse en el ámbito empresarial de modo que el participante pueda tomar mejores decisiones para contribuir en su ambiente laboral.
 
@@ -25,7 +25,7 @@ Desarrollar conocimiento y habilidades para implementar modelos complejos de Mac
 :::
 
 
-## Instructores 
+## Instructores {-} 
 
 **ACT. ARTURO BRINGAS** 
 
@@ -65,7 +65,7 @@ RakenDataGroup Consulting, entre otros.
 knitr::include_graphics("img/00-presentacion/lizzy.png")
 ```
 
-## Ciencia de Datos en R
+## Ciencia de Datos en R {-}
 
 ```{r echo=FALSE,fig.align='center',  out.width='600pt'}
 knitr::include_graphics("img/00-presentacion/DataScienceVerse.png")
@@ -73,9 +73,9 @@ knitr::include_graphics("img/00-presentacion/DataScienceVerse.png")
  
 
 
-## Estructura del curso actual
+## Estructura del curso actual {-}
 
-### Alcances del curso
+### Alcances del curso {-}
 
 Al finalizar el módulo, el participante sabrá plantear un proyecto de ciencia de datos, desde sus requerimientos hasta sus implementación comercial. Sabrá crear flujos de trabajo limpios y ordenados para crear poderosos modelos de Machine Learning. Podrá comparar múltiples modelos y seleccionar el que más aportación realice a su negocio considerando la ética alrededor del sesgo e inequidad producida por modelos. Profundizará su conocimiento en la interpretación de modelos complejos y aprenderá a cuantificar el beneficio comercial de la implementación de modelos. 
 
@@ -122,7 +122,7 @@ Al finalizar el módulo, el participante sabrá plantear un proyecto de ciencia 
 * Diseño de experimentos en campañas de retención
 * Valuación de implementación de modelos
 
-## Duración y evaluación del curso
+## Duración y evaluación del curso {-}
 
 * El programa tiene una duración de 32 hrs.
 
@@ -133,7 +133,7 @@ Al finalizar el módulo, el participante sabrá plantear un proyecto de ciencia 
 * Al final del curso se solicitará un proyecto final, el cual **deberá ser entregado para ser acreedor a la constancia de participación**.
 
 
-## Recursos y dinámica de clase
+## Recursos y dinámica de clase {-}
 
 En esta clase estaremos usando: 
 

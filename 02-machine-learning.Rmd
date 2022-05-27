@@ -460,7 +460,7 @@ biomass %>%
   ylab("Real")
 ```
 
-## Ejercicio
+## Ejercicios
 
 1. Cada equipo estará a cargo de desarrollar una receta de *feature engineering* utilizando los pasos vistos en el curso pasado y el actual.
 
@@ -1178,8 +1178,17 @@ pr_curve_plot
 
 Pueden usar la app de [shiny](https://acturio.shinyapps.io/confusion_matrix/?_ga=2.157345976.322506426.1653670259-130075619.1646374742) que nos permite jugar con el treshold de clasificación para tomar la mejor decisión.
 
+## Ejercicios
 
+1. Crear un workflow de principio a fin usando SVM con kernel lineal
 
+2. Crear un workflow de principio a fin usando SVM con kernel polinomial
+
+3. Crear un workflow de principio a fin usando SVR con kernel lineal
+
+4. Crear un workflow de principio a fin usando SVR con kernel polinomial
+
+5. Comparar resultados con ejercicio desarrollado en clase
 
 
 
