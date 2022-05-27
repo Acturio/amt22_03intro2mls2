@@ -39,3 +39,5 @@ el-truco-del-kernel
 support-vector-regression
 ventajas-y-desventajas
 ajuste-del-modelo-con-r
+implementación-de-svr-en-r
+implementación-de-svm-en-r
