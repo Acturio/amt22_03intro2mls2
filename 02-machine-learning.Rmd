@@ -766,7 +766,7 @@ svm_workflow
 **Paso 5:**
 ```{r, warning=FALSE,message=FALSE}
 svm_parameters_set <- svm_workflow %>% 
-  parameters() %>% 
+  hardhat::extract_parameter_set_dials() %>% 
   update(
    cost = cost(c(0, 0.5)),
    rbf_sigma = rbf_sigma(c(-3, 3)), 
@@ -817,7 +817,7 @@ unnest(svm_tune_result, .metrics)
 collect_metrics(svm_tune_result)
 ```
 
-En la siguiente gráfica observamos el error cuadrático medio de las distintas métricas:
+En la siguiente gráfica observamos las distintas métricas de error asociados a los hiperparámetros elegidos:
 
 ```{r}
 svm_tune_result %>% autoplot()
@@ -891,6 +891,208 @@ results %>%
 Es turno de revisar la implementación de SVM con nuestro bien conocido problema de predicción de cancelación de servicios de telecomunicaciones. Los datos se encuentran disponibles en el siguiente [enlace]():
 
 Los pasos para implementar en *R* este modelo predictivo son los mismos, cambiando únicamente las especificaciones del tipo de modelo, pre-procesamiento e hiper-parámetros.
+
+```{r, warning=FALSE, message=FALSE}
+library(readr)
+
+telco <- read_csv("data/Churn.csv")
+glimpse(telco)
+```
+
+**Paso 1:**
+```{r}
+set.seed(1234)
+telco_split <- initial_split(telco, prop = .70)
+
+telco_train <- training(telco_split)
+telco_test  <- testing(telco_split)
+telco_folds <- vfold_cv(telco_train)
+
+telco_folds
+```
+
+**Paso 2:**
+```{r}
+binner <- function(x) {
+  x <- cut(x, breaks = c(0, 12, 24, 36,48,60,72), include.lowest = TRUE)
+  as.numeric(x)
+}
+
+telco_rec <- recipe(Churn ~ ., data = telco_train) %>% 
+  update_role(customerID, new_role = "id variable") %>% 
+  step_num2factor(tenure, transform = binner, 
+                  levels = c("0-1 year", "1-2 years", "2-3 years", "3-4 years", "4-5 years", "5-6 years")) %>%
+  step_normalize(all_numeric_predictors()) %>% 
+  step_dummy(all_nominal_predictors()) %>% 
+  step_impute_median(all_numeric_predictors()) %>% 
+  step_rm(customerID, skip=T) %>% 
+  prep()
+
+telco_rec
+```
+
+**Paso 3:**
+```{r}
+svm_class_model <- svm_rbf(
+  mode = "classification",
+  cost = tune(),
+  rbf_sigma = tune(),
+  margin = tune()) %>% 
+set_engine("kernlab")
+
+svm_class_model
+```
+
+**Paso 4:**
+```{r}
+svm_class_workflow <- workflow() %>% 
+  add_recipe(telco_rec) %>% 
+  add_model(svm_class_model)
+
+svm_class_workflow
+```
+
+**Paso 5:**
+```{r}
+svm_class_parameters_set <- svm_class_workflow %>% 
+  hardhat::extract_parameter_set_dials() %>% 
+  update(
+   cost = cost(c(0, 0.5)),
+   rbf_sigma = rbf_sigma(c(-3, 3)), 
+   margin = svm_margin(c(-2, 2))
+   )
+
+set.seed(123)
+svm_class_grid <- svm_class_parameters_set %>% 
+  grid_max_entropy(size = 100)
+svm_class_grid
+
+ctrl_grid <- control_grid(save_pred = T, verbose = T)
+```
+
+**Paso 6:**
+```{r, warning=FALSE, message=FALSE, eval=FALSE}
+library(doParallel)
+
+UseCores <- detectCores() - 1
+cluster <- makeCluster(UseCores)
+registerDoParallel(cluster)
+
+svm1 <- Sys.time()
+svm_tune_class_result <- tune_grid(
+  svm_class_workflow,
+  resamples = telco_folds,
+  grid = svm_class_grid,
+  metrics = metric_set(roc_auc, pr_auc),
+  control = ctrl_grid
+)
+svm2 <- Sys.time(); svm2 - svm1
+
+stopCluster(cluster)
+
+svm_tune_class_result %>% saveRDS("models/svm_model_class.rds")
+```
+
+```{r}
+svm_tune_class_result <- readRDS("models/svm_model_class.rds")
+
+unnest(svm_tune_class_result, .metrics)
+```
+
+**Paso 7:**
+```{r}
+collect_metrics(svm_tune_class_result)
+```
+
+En la siguiente gráfica observamos las distintas métricas de error asociados a los hiperparámetros elegidos.
+
+```{r}
+svm_tune_class_result %>% autoplot()
+
+svm_tune_class_result %>% show_best(n = 10, metric = "roc_auc")
+```
+
+**Paso 8:**
+```{r}
+# Selección del mejor modelo según la métrica MAPE
+
+svm_classification_best_model <- select_best(svm_tune_class_result, metric = "roc_auc")
+svm_classification_best_model
+```
+
+```{r}
+# Selección del modelo más regularizado a menos de una desviación estandar, según la métrica MAPE
+
+svm_classification_best_1se_model <- select_by_one_std_err(svm_tune_class_result, metric = "roc_auc", "roc_auc")
+svm_classification_best_1se_model
+```
+
+**Paso 9:**
+```{r}
+# Modelo final 
+svm_classification_final_model <- svm_class_workflow %>%
+  finalize_workflow(svm_classification_best_1se_model) %>%
+  parsnip::fit(data = telco_train)
+  
+svm_classification_final_model
+```
+
+Como hemos hablado anteriormente, este último objeto es el modelo final entrenado, el cual contiene toda la información del pre-procesamiento de datos, por lo que en caso de ponerse en producción el modelo, sólo se necesita de este último elemento para poder realizar nuevas predicciones. Imaginemos por un momento que pasa un mes de tiempo desde que hicimos nuestro modelo, es hora de ponerlo a prueba prediciendo valores de nuevos elementos:
+
+**Paso 10:**
+```{r}
+# Predicciones
+results_cla <- predict(svm_classification_final_model, telco_test, type = "prob") %>% 
+  dplyr::bind_cols(truth = telco_test$Churn) %>% 
+  mutate(truth = factor(truth, levels = c('No', 'Yes'), labels = c('No', 'Yes')))
+
+head(results_cla)
+```
+
+```{r}
+roc_curve_data <- roc_curve(
+  results_cla, 
+  truth = truth, 
+  estimate = .pred_Yes, 
+  event_level = 'second'
+  )
+
+roc_curve_data
+
+roc_curve_plot <- roc_curve_data %>% 
+  ggplot(aes(x = 1 - specificity, y = sensitivity)) +
+  geom_path(size = 1, colour = 'lightblue') +
+  geom_abline() +
+  coord_equal() +
+  ggtitle("ROC Curve")+
+  theme_minimal()
+
+roc_curve_plot
+
+
+pr_curve_data <- pr_curve(
+  results_cla, 
+  truth = truth, 
+  estimate = .pred_Yes, 
+  event_level = 'second'
+  )
+
+pr_curve_data
+
+pr_curve_plot <- pr_curve_data %>% 
+  ggplot(aes(x = recall, y = precision)) +
+  geom_path(size = 1, colour = 'lightblue') +
+  coord_equal() +
+  ggtitle("Precision vs Recall")+
+  theme_minimal()
+
+pr_curve_plot
+```
+
+Pueden usar la app de [shiny](https://acturio.shinyapps.io/confusion_matrix/?_ga=2.157345976.322506426.1653670259-130075619.1646374742) que nos permite jugar con el treshold de clasificación para tomar la mejor decisión.
+
+
+
 
 
 
