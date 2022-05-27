@@ -470,7 +470,9 @@ biomass %>%
 
 
 
-# Support Vector Machine (SVM)
+# Support Vector Machine (SVM / SVR)
+
+Es común encontrar en la literatura el nombre de SVM para referirse tanto al caso de regresión como al de clasificación, no obstante, SVR se refiere particularmente a *Suport Vector Regression*.
 
 Support vector machine, llamado SVM, es un algoritmo de aprendizaje supervisado que se puede utilizar para problemas de clasificación y regresión. Se utiliza para conjuntos de datos más pequeños, ya que **tarda demasiado en procesarse.**
 
@@ -609,6 +611,40 @@ $$K(x, y)= tanh(\kappa x\cdot y-\delta)$$
 *SVM* vuelve a representar los puntos de datos no lineales utilizando cualquiera de las funciones del kernel de una manera que parece que los datos se han transformado, luego encuentra el hiperplano de separación óptimo, sin embargo, en realidad, **los puntos de datos siguen siendo los mismos**, en realidad no se han transformado. Es por eso que se llama un 'truco del kernel'.
 
 
+## Support Vector Regression
+
+El problema de la regresión es encontrar una función que aproxime la relación de un dominio de datos de entrada a números reales con base en una muestra de entrenamiento. Veamos cómo funciona SVR en realidad.
+
+```{r, fig.align='center', out.height='400pt', out.width='400pt',echo=F}
+knitr::include_graphics("img/02-svm/svr.png")
+```
+
+Consideremos las dos líneas rojas como el límite de decisión y la línea verde como el hiperplano. Nuestro objetivo, cuando avanzamos con SVR, es básicamente **considerar los puntos que están dentro de la línea límite de decisión**. Nuestra línea de mejor ajuste es el hiperplano que tiene un número máximo de puntos.
+
+Lo primero que entenderemos será el límite de decisión. Consideremos estas líneas como si estuvieran a cualquier distancia, digamos 'a', del hiperplano. Entonces, estas son las líneas que dibujamos a la distancia '+a' y '-a' del hiperplano. Esta 'a' en el texto se conoce básicamente como épsilon y **representa el margen**.
+
+Suponiendo que la ecuación del hiperplano es la siguiente:
+
+$$Y_i = W^TX + b$$
+Entonces estas ecuaciones se transforman en la siguiente forma:
+
+* $W^TX + b = +a$
+
+* $W^TX + b = -a$
+
+Por lo tanto, cualquier hiperplano que satisfaga nuestra SVR debería satisfacer: $-a < Y- WX+b < +a$
+
+Nuestro objetivo principal aquí es **decidir un límite de decisión a una distancia 'a' del hiperplano original**, de modo que los puntos de datos más cercanos al hiperplano o los vectores de soporte estén dentro de esa línea límite.
+
+::: {.infobox .note data-latex="{note}"}
+
+Vamos a tomar solo aquellos puntos que están dentro del límite de decisión y tienen la menor tasa de error, o están dentro del margen de tolerancia. Esto nos da un mejor modelo de ajuste.
+
+:::
+
+
+
+
 ## Ventajas y desventajas
 
 **Ventajas**
@@ -636,8 +672,24 @@ $$K(x, y)= tanh(\kappa x\cdot y-\delta)$$
 
 Usaremos las recetas antes implementadas para ajustar tanto el modelo de regresión como el de clasificación. Exploraremos un conjunto de hiperparámetros para elegir el mejor modelo.
 
-Recordemos que es importante separar los datos de entrenamiento y prueba, así como sub-particionar en fold a los datos de entrenamiento para realizar diferentes pruebas con distintas parametrizaciones de los modelos. Finalmente, calcularemos el error promedio y los mejores hiperparámetros a implementar.
+Recordemos los pasos a seguir al ajustar un modelo
 
+1. Separación inicial de datos ( test, train <KFCV> )
+2. Pre-procesamiento e ingeniería de variables
+3. Selección de tipo de modelo con hiperparámetros iniciales
+4. Inicialización de workflow o pipeline
+5. Creación de grid search
+6. **Entrenamiento de modelos con hiperparámetros definidos** (salvar los modelos entrenados)
+7. Análisis de métricas de error e hiperparámetros (Vuelve al paso  3 si es necesario)
+8. Selección de modelo a usar
+9. Ajuste de modelo final con todos los datos
+10. Validar poder predictivo con datos de prueba.
+
+### Implementación de SVR en R
+
+A continuación, revisaremos paso por paso este procedimiento usando SVM como modelo. Los datos corresponden a nuestro ya conocido problema predictivo de precio de casas. Se puede encontrar los datos y documentación en el siguiente [enlace]()
+
+**Paso 1:**
 ```{r, warning=FALSE,message=FALSE}
 library(tidymodels)
 
@@ -652,6 +704,7 @@ ames_folds <- vfold_cv(ames_train)
 
 Contando con datos de entrenamiento, procedemos a realizar el feature engineering para extraer las mejores características que permitirán realizar las estimaciones en el modelo.
 
+**Paso 2:**
 ```{r, warning=FALSE,message=FALSE}
 receta_casas <- recipe(Sale_Price ~ . , data = ames_train) %>%
   step_unknown(Alley) %>%
@@ -689,8 +742,8 @@ Una vez que la receta de transformación de datos está lista, procedemos a impl
 * Base polinomial: svm_poly()
 * Base radial: svm_rbf()
 
+**Paso 3:**
 ```{r, warning=FALSE,message=FALSE}
-
 svm_model <- svm_rbf(
   mode = "regression",
   cost = tune(),
@@ -699,30 +752,36 @@ svm_model <- svm_rbf(
 set_engine("kernlab")
 
 svm_model
+```
 
-
+**Paso 4:**
+```{r, warning=FALSE,message=FALSE}
 svm_workflow <- workflow() %>% 
   add_recipe(receta_casas) %>% 
   add_model(svm_model)
 
 svm_workflow
+```
 
-
-svm_parameters_set <- parameters(svm_workflow) %>% 
+**Paso 5:**
+```{r, warning=FALSE,message=FALSE}
+svm_parameters_set <- svm_workflow %>% 
+  parameters() %>% 
   update(
-   rbf_sigma = rbf_sigma(c(-2.5, 2.5)), 
-   cost = cost(c(0, 15))
+   cost = cost(c(0, 0.5)),
+   rbf_sigma = rbf_sigma(c(-3, 3)), 
+   margin = svm_margin(c(-2, 2))
    )
 
 set.seed(123)
 svm_grid <- svm_parameters_set %>% 
-  grid_max_entropy(size = 80)
+  grid_max_entropy(size = 100)
 svm_grid
 
 ctrl_grid <- control_grid(save_pred = T, verbose = T)
 ```
 
-
+**Paso 6:**
 ```{r, warning=FALSE,message=FALSE, eval=FALSE}
 library(doParallel)
 
@@ -751,7 +810,10 @@ Podemos obtener las métricas de cada *fold* con el siguiente código:
 svm_tune_result <- readRDS("models/svm_model_reg.rds")
 
 unnest(svm_tune_result, .metrics)
+```
 
+**Paso 7:**
+```{r}
 collect_metrics(svm_tune_result)
 ```
 
@@ -765,6 +827,7 @@ svm_tune_result %>% autoplot()
 svm_tune_result %>% show_best(n = 10, metric = "mape")
 ```
 
+**Paso 8:**
 ```{r}
 # Selección del mejor modelo según la métrica MAPE
 
@@ -776,11 +839,10 @@ svm_regression_best_model
 ```{r}
 # Selección del modelo más regularizado a menos de una desviación estandar, según la métrica MAPE
 svm_regression_best_1se_model <- select_by_one_std_err(svm_tune_result, metric = "mape", "mape")
-
 svm_regression_best_1se_model
 ```
 
-
+**Paso 9:**
 ```{r}
 # Modelo final 
 svm_regression_final_model <- svm_workflow %>%
@@ -792,6 +854,7 @@ svm_regression_final_model
 
 Como hemos hablado anteriormente, este último objeto es el modelo final entrenado, el cual contiene toda la información del pre-procesamiento de datos, por lo que en caso de ponerse en producción el modelo, sólo se necesita de este último elemento para poder realizar nuevas predicciones. Imaginemos por un momento que pasa un mes de tiempo desde que hicimos nuestro modelo, es hora de ponerlo a prueba prediciendo valores de nuevos elementos:
 
+**Paso 10:**
 ```{r}
 # Predicciones
 results <- predict(svm_regression_final_model, ames_test) %>% 
@@ -805,6 +868,14 @@ head(results)
 results %>% yardstick::metrics(Sale_Price, pred_svm_reg)
 ```
 
+Es posible definir nuestro propio conjunto de metricas que deseamos reportar creando este objeto:
+
+```{r}
+multi_metric <- metric_set(rmse, rsq, mae, mape, ccc)
+multi_metric(results, truth = Sale_Price, estimate = pred_svm_reg) %>% 
+  mutate(.estimate = round(.estimate, 2))
+```
+
 ```{r}
 results %>% 
   ggplot(aes(x = pred_svm_reg, y = Sale_Price)) +
@@ -814,6 +885,12 @@ results %>%
   ylab("Observation") +
   ggtitle("Comparisson")
 ```
+
+### Implementación de SVM en R
+
+Es turno de revisar la implementación de SVM con nuestro bien conocido problema de predicción de cancelación de servicios de telecomunicaciones. Los datos se encuentran disponibles en el siguiente [enlace]():
+
+Los pasos para implementar en *R* este modelo predictivo son los mismos, cambiando únicamente las especificaciones del tipo de modelo, pre-procesamiento e hiper-parámetros.
 
 
 

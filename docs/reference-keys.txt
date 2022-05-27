@@ -28,14 +28,14 @@ implementación-en-r
 representación-gráfica
 cuántas-componentes-retener
 imputación-knn
-ventajas-del-clasificador-knn
-limitaciones-del-clasificador-knn
+ventajas-y-limitaciones-del-clasificador-knn
 implementación-en-r-1
 ejercicio
-support-vector-machine-svm
+support-vector-machine-svm-svr
 maximum-margin-classifier
 support-vector-classifiers
 support-vector-machine
 el-truco-del-kernel
+support-vector-regression
 ventajas-y-desventajas
 ajuste-del-modelo-con-r
