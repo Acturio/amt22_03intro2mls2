@@ -323,39 +323,43 @@ El algoritmo de K vecinos más cercanos realiza comparaciones entre un nuevo ele
 knitr::include_graphics("img/04-ml/knn3.gif")
 ```
 
-### **Ventajas del Clasificador KNN**
+### **Ventajas y limitaciones del Clasificador KNN**
+
+**Ventajas:**
 
 * KNN no hace ninguna suposición subyacente sobre los datos.
 * Con la adición de más puntos de datos, el clasificador evoluciona constantemente y es capaz de adaptarse rápidamente a los cambios en el conjunto de datos de entrada.
 * Le da al usuario la flexibilidad de elegir la [métrica de medida de distancia](https://www.maartengrootendorst.com/blog/distances/).
 
-### **Limitaciones del Clasificador KNN**
+**Desventajas:**
 
 * KNN es muy sensible a los valores atípicos.
 * No funciona con datos faltantes.
 * A medida que crece el conjunto de datos, la clasificación se vuelve más lenta.
 * Existe la llamada maldición de la dimensionalidad.
 
-Este algoritmo es altamente usado para imputación de datos faltantes, ¿tiene lógica, cierto?, con **recipes**  podemos aplicar un paso con la función: **_step_impute_knn_** antes llamada **_step_knnimpute()_**, podemos observar la documentación de la función en el siguiente [enlace](https://recipes.tidymodels.org/reference/step_impute_knn.html). 
+Este algoritmo es altamente usado para imputación de datos faltantes, ¿tiene lógica, cierto?, con **recipes**  podemos aplicar un paso con la función: **_step_impute_knn_** antes llamada **_step_knnimpute()_**, podemos observar la documentación de la función en el siguiente [enlace](https://recipes.tidymodels.org/reference/step_impute_knn.html).
 
 ### Implementación en R
 
-Veámos cómo funciona: 
+Veámos cómo implementar la imputación por *KNN* para datos faltantes en *R*: 
 
 ```{r, eval=FALSE}
 step_impute_knn(
   recipe,
-  ...,
+  ...,                                        ### Variables a imputar
   neighbors = 5,
   impute_with = imp_vars(all_predictors()),
   id = rand_id("impute_knn")
 )
 ```
 
-A cerca de los parámetros: 
+Acerca de los parámetros: 
 
 * *neighbors:* Número de vecinos
+
 * *impute_with:* Una llamada a _imp_vars_ para especificar qué variables se usan para imputar las variables. Si una columna se incluye en ambas listas para ser imputada y para ser un predictor de imputación, se eliminará de esta última y no se usará para imputarse a sí misma.
+
 * *id:* Una cadena de caracteres que es exclusiva de este paso para identificarlo.
 
 La función utiliza el conjunto de entrenamiento para imputar cualquier otro conjunto de datos. La única función de distancia disponible es la distancia de **Gower**, que se puede utilizar para combinaciones de datos nominales y numéricos.
@@ -376,12 +380,16 @@ data(biomass)
 biomass_te_whole <- as_tibble(biomass)
 
 # induce some missing data at random
-set.seed(9039)
-carb_missing <- sample(1:nrow(biomass_te_whole), 25)
-nitro_missing <- sample(1:nrow(biomass_te_whole), 15)
+set.seed(19735)
+carb_missing <- sample(1:nrow(biomass_te_whole), 75)
+nitro_missing <- sample(1:nrow(biomass_te_whole), 75)
 
 biomass_te_whole$carbon[carb_missing] <- NA
 biomass_te_whole$nitrogen[nitro_missing] <- NA
+biomass_te_whole["carb_imputed"] <- "No"
+biomass_te_whole$carb_imputed[carb_missing] <- "Yes"
+biomass_te_whole["nitro_imputed"] <- "No"
+biomass_te_whole$nitro_imputed[nitro_missing] <- "Yes"
 
 biomass_tr <- biomass_te_whole %>% filter( dataset == 'Training')
 biomass_te <- biomass_te_whole %>% filter( dataset == "Testing") 
@@ -409,34 +417,47 @@ recipe_esp <- recipe(
   prep()
 
 imputed_esp_train <- bake(recipe_esp, biomass_tr)
-
 imputed_esp_test <- bake(recipe_esp, biomass_te) ## Probando la receta con un test
 
 imputed_esp_train %>% DataExplorer::plot_missing( title = "Imputacion Train")
-imputed_esp_test%>% DataExplorer::plot_missing(title = "Imputacion Test")
+imputed_esp_test %>% DataExplorer::plot_missing(title = "Imputacion Test")
 ```
 
 Sin embargo, siempre podemos pedirle al modelo que haga la imputación de todas las variables que tengan nulos, con toda la información de las demás variables disponibles (no nulas). 
 
 ```{r}
 recipe <- recipe(
-  HHV ~ carbon + hydrogen + oxygen + nitrogen + sulfur,
+  HHV ~ carbon + hydrogen + oxygen + nitrogen + sulfur, 
   data = biomass_tr) %>% 
   step_impute_knn(all_predictors(), neighbors = 3) %>% 
   prep()
 
-imputed <- bake(recipe, biomass_te) # prueba con test
+imputed <- bake(recipe, biomass_te) %>% 
+  bind_cols(biomass_te %>% select(carb_imputed, nitro_imputed)) # prueba con test
 imputed %>% DataExplorer::plot_missing()
 ```
 
 
-```{r, warning=FALSE, message=FALSE}
+```{r, warning=FALSE, message=FALSE, echo = FALSE}
 biomass %>%  
   filter(dataset == 'Testing') %>% 
   select(nitrogen) %>% 
-  bind_cols(imputed[,4]) %>% 
-  ggplot(aes(x = `nitrogen...1`, y = `nitrogen...2`)) +
-  geom_point()
+  bind_cols(imputed[,c(4, 8)]) %>% 
+  ggplot(aes(x = `nitrogen...2`, y = `nitrogen...1`, color = nitro_imputed)) +
+  geom_point() +
+  ggtitle("Comparación de datos reales vs imputados (Nitrógeno)") +
+  xlab("Imputado") +
+  ylab("Real")
+
+biomass %>%  
+  filter(dataset == 'Testing') %>% 
+  select(carbon) %>% 
+  bind_cols(imputed[,c(1, 7)]) %>% 
+  ggplot(aes(x = `carbon...2`, y = `carbon...1`, color = carb_imputed)) +
+  geom_point() +
+  ggtitle("Comparación de datos reales vs imputados (Carbono)") +
+  xlab("Imputado") +
+  ylab("Real")
 ```
 
 ## Ejercicio
@@ -451,27 +472,27 @@ biomass %>%
 
 # Support Vector Machine (SVM)
 
-Support vector machine, llamadas SVM, son un algoritmo de aprendizaje supervisado que se puede utilizar para problemas de clasificación y regresión. Se utiliza para conjuntos de datos más pequeños, ya que tarda demasiado en procesarse.
+Support vector machine, llamado SVM, es un algoritmo de aprendizaje supervisado que se puede utilizar para problemas de clasificación y regresión. Se utiliza para conjuntos de datos más pequeños, ya que **tarda demasiado en procesarse.**
+
+El principal objetivo de esta técnica es encontrar el **Hiperplano de Separación Óptima**, también conocido como *Boundary Decision*, el cual será el margen de clasificación más grande que podamos ajustar para separar a las clases involucradas, limitando las veces que una observación viola dicho margen.
 
 ```{r, fig.align='center', out.height='400pt', out.width='800pt',echo=F}
 knitr::include_graphics("img/02-svm/01_inseparable_classes.png")
 ```
 
-El principal objetivo de esta técnica es encontrar el **Hiperplano de Separación Óptima**, también conocido como *Boundary Decision*, el cual separa a las clases involucradas. 
-
 Para entender este algoritmo es necesario entender 3 conceptos principales:
 
 > 1. Maximum margin classifiers
-
+>
 > 2. Support vector classifiers
-
+>
 > 3. Support vector machines
 
 Estudiemos cada uno de estos principios.
 
 ## Maximum Margin Classifier
 
-A menudo se generalizan con máquinas de vectores de soporte, pero SVM tiene muchos más parámetros en comparación. El *clasificador de margen máximo* considera un hiperplano con ancho de separación máxima para clasificar los datos. Sin embargo, se pueden dibujar infinitos hiperplanos en un conjunto de datos por lo que es importante elegir el hiperplano ideal para la clasificación. 
+A menudo se generalizan con máquinas de vectores de soporte, pero SVM tiene muchos más parámetros en comparación. El *clasificador de margen máximo* considera un hiperplano con ancho de separación máxima para clasificar los datos. Sin embargo, se pueden dibujar infinitos hiperplanos en un conjunto de datos por lo que es importante **elegir el hiperplano ideal para la clasificación.** 
 
 En un espacio *n-dimensional*, un hiperplano es un subespacio de la dimensión n-1. Es decir, si los datos tienen un espacio bidimensional, entonces el hiperplano puede ser una línea recta que divide el espacio de datos en dos mitades y pasa por la siguiente ecuacion:
 
@@ -483,7 +504,7 @@ $$\beta_0 + \beta_1X_1 + \beta_2X_2>0$$
 
 $$\beta_0 + \beta_1X_1 + \beta_2X_2<0$$
 
-El clasificador de margen máximo a menudo falla en la situación de casos no separables en los que no puede asignar un hiperplano diferente para clasificar datos no separables. Para tales casos, un clasificador de vectores de soporte viene al rescate.
+El clasificador de margen máximo **a menudo falla en la situación de casos no separables** en los que no puede asignar un hiperplano diferente para clasificar datos no separables. Para tales casos, un clasificador de vectores de soporte viene al rescate.
 
 ```{r, fig.align='center', out.height='380pt', out.width='900pt',echo=F}
 knitr::include_graphics("img/02-svm/02_maximum_margin_classifier.png")
@@ -496,7 +517,7 @@ Del diagrama anterior, podemos suponer infinitos hiperplanos (izquierda). El cla
 
 **Los vectores de soporte son las observaciones que están más cerca del hiperplano e influyen en la posición y orientación del hiperplano**. Este tipo de clasificador puede considerarse como una versión extendida del clasificador de margen máximo. Cuando tratamos con datos de la vida real, encontramos que la mayoría de las observaciones están en clases superpuestas. Es por eso que se implementan clasificadores de vectores de soporte. 
 
-Usando estos vectores de soporte, maximizamos el margen del clasificador. Eliminar los vectores de soporte cambiará la posición del hiperplano. Estos son los puntos que nos ayudan a construir nuestro *SVM*. Consideremos un **parámetro de ajuste C**. En este clasificador, el alto valor de *C* puede darnos un modelo robusto. Un valor más bajo de *C* nos da un modelo flexible. Entendamos con el siguiente diagrama.
+Usando estos vectores de soporte, **maximizamos el margen del clasificador**. Eliminar los vectores de soporte cambiará la posición del hiperplano. Estos son los puntos que nos ayudan a construir nuestro *SVM*. Consideremos un **parámetro de ajuste C**. Entendamos con el siguiente diagrama.
 
 ```{r, fig.align='center', out.height='380pt', out.width='900pt',echo=F}
 knitr::include_graphics("img/02-svm/03_support_vector_classifier.png")
@@ -504,6 +525,15 @@ knitr::include_graphics("img/02-svm/03_support_vector_classifier.png")
 
 Podemos ver en el gráfico de la izquierda que los valores más altos de *C* generaron más errores que se consideran una **violación o infracción**. El diagrama de la derecha muestra un valor más bajo de *C* y no brinda suficientes posibilidades de infracción al reducir el ancho del margen.
 
+::: {.infobox .note data-latex="{note}"}
+Puede considerarse al parámetro *C* como el monto de regularización, tal que:
+
+* Si **C es bajo**, el margen será más amplio y tendremos un mayor número de violaciones al margen, pero el modelo generalizará mejor
+
+* Si **C es alto**, nuestro margen será menos amplio y tendrá menos violaciones. Sin embargo, no generalizará bien.
+:::
+
+Este modelo es sensible a cambios en la escala de datos de entrada, por lo que será **importante estandarizar las variables antes de usar este modelo**.
 
 ## Support Vector Machine
 
@@ -541,8 +571,10 @@ $$K(x, y)=(x^T \cdot y)$$
 $$f(x)=w^T \cdot x + b$$
 Esta formulación se presenta como solución al problema de optimización sobre w:
 
-$$min_{w\in R^d} \parallel w \parallel ^2+ C\sum_{i}^{N}{max(0, 1-y_if(x_i))}$$
-$$s.a. \quad y_i(w^T x_i+b) \geq 1 - max(0, 1-y_if(x_i))$$
+$$min_{w\in R^d} \frac{1}{2}\parallel w \parallel ^2+ C\sum_{i}^{N}{max(0, 1-y_i f(x_i))}$$
+$$s.a. \quad y_i f(x_i) \geq 1 - max(0, 1-y_i f(x_i))$$
+En donde $1-y_i f(x_i)$ es la distancia de $x_i$ al correspondiente margen de la clase si $x_i$ se encuentra en el lado equivocado del margen y cero en caso contrario. De esta forma, los puntos que se encuentran lejos del margen del lado equivocado obtendrán una mayor penalización. Dar click en la siguiente [liga](https://towardsdatascience.com/support-vector-machines-soft-margin-formulation-and-kernel-trick-4c9729dc8efe) para mayor entendimiento del problema de optimización.
+
 
 2. **Función de núcleo polinomial:** Transforma los puntos de datos mediante el **uso del producto escalar** y la transformación de los datos en una "dimensión *n*", *n* podría ser cualquier valor de 2, 3, etcétera, es decir, la transformación será un producto al cuadrado o superior. Por lo tanto, representar datos en un espacio de mayor dimensión utilizando los nuevos puntos transformados.
 
@@ -568,11 +600,13 @@ knitr::include_graphics("img/02-svm/svm_radial.png")
 
 Es recomendable probar el kernel **RBF**. Este kernel tiene dos ventajas: que solo tiene dos hiperparámetros que optimizar ($\gamma$ y la penalización $C$ común a todos los SVM) y que su flexibilidad puede ir desde un clasificador lineal a uno muy complejo.
 
-4. **La función sigmoide:** También conocida como función tangente hiperbólica (Tanh), encuentra más aplicación en redes neuronales como función de activación. Esta función se utiliza en la clasificación de imágenes.
+4. **La función sigmoide:** También conocida como función tangente hiperbólica (Tanh), encuentra más aplicación en redes neuronales como función de activación. Esta función mapea los valores de entrada al intervalo [-1, 1].
 
 $$K(x, y)= tanh(\kappa x\cdot y-\delta)$$
 
-¿Por qué se llama un "truco del kernel"? *SVM* vuelve a representar hábilmente los puntos de datos no lineales utilizando cualquiera de las funciones del kernel de una manera que parece que los datos se han transformado, luego encuentra el hiperplano de separación óptimo. Sin embargo, en realidad, los puntos de datos siguen siendo los mismos, en realidad no se han transformado. Es por eso que se llama un 'truco del kernel'.
+**¿Por qué se llama un "truco del kernel"?** 
+
+*SVM* vuelve a representar los puntos de datos no lineales utilizando cualquiera de las funciones del kernel de una manera que parece que los datos se han transformado, luego encuentra el hiperplano de separación óptimo, sin embargo, en realidad, **los puntos de datos siguen siendo los mismos**, en realidad no se han transformado. Es por eso que se llama un 'truco del kernel'.
 
 
 ## Ventajas y desventajas
@@ -613,7 +647,7 @@ set.seed(4595)
 ames_split <- initial_split(ames, prop = 0.75)
 ames_train <- training(ames_split)
 ames_test  <- testing(ames_split)
-ames_folds<- vfold_cv(ames_train)
+ames_folds <- vfold_cv(ames_train)
 ```
 
 Contando con datos de entrenamiento, procedemos a realizar el feature engineering para extraer las mejores características que permitirán realizar las estimaciones en el modelo.
@@ -643,11 +677,17 @@ receta_casas <- recipe(Sale_Price ~ . , data = ames_train) %>%
     Gr_Liv_Area, Sale_Type_Oth, Sale_Type_VWD
   ) %>% 
   prep()
+
+receta_casas
 ```
 
 Recordemos que la función **recipe()** solo son los pasos a seguir, necesitamos usar la función **prep()** que nos devuelve una receta actualizada con las estimaciones y la función **juice()** que nos devuelve la matriz de diseño.
 
-Una vez que la receta de transformación de datos está lista, procedemos a implementar el pipeline del modelo de interés.
+Una vez que la receta de transformación de datos está lista, procedemos a implementar el pipeline del modelo de interés. Existen diversas funciones dentro de *tidymodels* para implementar estos modelos, entra las cuales se encuentran:
+
+* Base lineal: svm_lineal()
+* Base polinomial: svm_poly()
+* Base radial: svm_rbf()
 
 ```{r, warning=FALSE,message=FALSE}
 
@@ -658,9 +698,15 @@ svm_model <- svm_rbf(
   margin = tune()) %>% 
 set_engine("kernlab")
 
+svm_model
+
+
 svm_workflow <- workflow() %>% 
   add_recipe(receta_casas) %>% 
   add_model(svm_model)
+
+svm_workflow
+
 
 svm_parameters_set <- parameters(svm_workflow) %>% 
   update(
@@ -671,6 +717,7 @@ svm_parameters_set <- parameters(svm_workflow) %>%
 set.seed(123)
 svm_grid <- svm_parameters_set %>% 
   grid_max_entropy(size = 80)
+svm_grid
 
 ctrl_grid <- control_grid(save_pred = T, verbose = T)
 ```
@@ -697,12 +744,15 @@ stopCluster(cluster)
 
 svm_tune_result %>% saveRDS("models/svm_model_reg.rds")
 ```
+
 Podemos obtener las métricas de cada *fold* con el siguiente código:
 
 ```{r}
 svm_tune_result <- readRDS("models/svm_model_reg.rds")
 
-svm_tune_result %>% unnest(.metrics)
+unnest(svm_tune_result, .metrics)
+
+collect_metrics(svm_tune_result)
 ```
 
 En la siguiente gráfica observamos el error cuadrático medio de las distintas métricas:
@@ -711,12 +761,59 @@ En la siguiente gráfica observamos el error cuadrático medio de las distintas 
 svm_tune_result %>% autoplot()
 ```
 
+```{r}
+svm_tune_result %>% show_best(n = 10, metric = "mape")
+```
+
+```{r}
+# Selección del mejor modelo según la métrica MAPE
+
+svm_regression_best_model <- select_best(svm_tune_result, metric = "mape")
+svm_regression_best_model
+```
 
 
+```{r}
+# Selección del modelo más regularizado a menos de una desviación estandar, según la métrica MAPE
+svm_regression_best_1se_model <- select_by_one_std_err(svm_tune_result, metric = "mape", "mape")
+
+svm_regression_best_1se_model
+```
 
 
+```{r}
+# Modelo final 
+svm_regression_final_model <- svm_workflow %>%
+  finalize_workflow(svm_regression_best_1se_model) %>%
+  parsnip::fit(data = ames_train)
+  
+svm_regression_final_model
+```
 
+Como hemos hablado anteriormente, este último objeto es el modelo final entrenado, el cual contiene toda la información del pre-procesamiento de datos, por lo que en caso de ponerse en producción el modelo, sólo se necesita de este último elemento para poder realizar nuevas predicciones. Imaginemos por un momento que pasa un mes de tiempo desde que hicimos nuestro modelo, es hora de ponerlo a prueba prediciendo valores de nuevos elementos:
 
+```{r}
+# Predicciones
+results <- predict(svm_regression_final_model, ames_test) %>% 
+  dplyr::bind_cols(truth = ames_test$Sale_Price) %>% 
+  dplyr::rename(pred_svm_reg = .pred, Sale_Price = truth)
+
+head(results)
+```
+
+```{r}
+results %>% yardstick::metrics(Sale_Price, pred_svm_reg)
+```
+
+```{r}
+results %>% 
+  ggplot(aes(x = pred_svm_reg, y = Sale_Price)) +
+  geom_point() +
+  geom_abline(color = "red") +
+  xlab("Prediction") +
+  ylab("Observation") +
+  ggtitle("Comparisson")
+```
 
 
 
