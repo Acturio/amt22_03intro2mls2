@@ -438,7 +438,7 @@ imputed %>% DataExplorer::plot_missing()
 ```
 
 
-```{r, warning=FALSE, message=FALSE, echo = FALSE}
+```{r, warning=FALSE, message=FALSE}
 biomass %>%  
   filter(dataset == 'Testing') %>% 
   select(nitrogen) %>% 
