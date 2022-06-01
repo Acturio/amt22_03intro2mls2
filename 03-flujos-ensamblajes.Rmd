@@ -1,1 +1,221 @@
 <div class="watermark"><img src="img/header.png" width="400"></div>
+
+# Bagging & Boosting
+
+El *bagging o agregación bootstrap*, **es un método de aprendizaje por conjuntos que se usa comúnmente para reducir la varianza dentro de un conjunto de datos ruidoso**. En este método, se selecciona una muestra aleatoria de datos en un conjunto de entrenamiento con reemplazo, lo que significa que los puntos de datos individuales se pueden elegir más de una vez. Después de generar varias muestras de datos, estos modelos se entrenan de forma independiente y, según el tipo de tarea (regresión o clasificación), el promedio o la mayoría de esas predicciones producen una estimación más precisa.
+
+```{r echo=FALSE,fig.align='center', out.height='500pt', out.width='900pt'}
+knitr::include_graphics("img/05-bagging/bagging.jpeg")
+```
+
+**Nota:** El algoritmo de bosque aleatorio se considera una extensión del método de bagging, utilizando tanto bagging como la aleatoriedad de características para crear un bosque no correlacionado de árboles de decisión.
+
+
+## Aprendizaje conjunto
+
+El aprendizaje conjunto da crédito a la idea de la “sabiduría de las multitudes”, lo que sugiere que **la toma de decisiones de un grupo más grande de individuos (modelos) suele ser mejor que la de un individuo.**
+
+El aprendizaje en conjunto **es un grupo (o conjunto) de individuos o modelos, que trabajan colectivamente para lograr una mejor predicción final**. Un solo modelo, también conocido como aprendiz básico puede no funcionar bien individualmente debido a una gran variación o un alto sesgo, sin embargo, cuando se agregan individuos débiles, pueden formar un individuo fuerte, ya que su combinación reduce el sesgo o la varianza, lo que produce un mejor rendimiento del modelo.
+
+```{r echo=FALSE,fig.align='center', out.height='350pt', out.width='600pt'}
+knitr::include_graphics("img/05-bagging/ramitas.jpg")
+```
+
+Los métodos de conjunto se ilustran con frecuencia utilizando árboles de decisión, ya que este algoritmo puede ser propenso a sobreajustar (alta varianza y bajo sesgo) y también puede prestarse a desajuste (baja varianza y alto sesgo) cuando es muy pequeño, como un árbol de decisión con un nivel. 
+
+**Nota:** Cuando un algoritmo se adapta o no se adapta a su conjunto de entrenamiento, no se puede generalizar bien a nuevos conjuntos de datos, por lo que se utilizan métodos de conjunto para contrarrestar este comportamiento y permitir la generalización del modelo a nuevos conjuntos de datos.
+
+## Bagging vs. boosting
+
+*Bagging* y el *boosting (refuerzo o impulso)* son dos tipos principales de métodos de aprendizaje por conjuntos. La principal diferencia entre estos métodos de aprendizaje es la forma en que se capacitan. 
+
+En **_bagging_, los modelos se entrenan en paralelo, pero en el _boosting_, aprenden secuencialmente.** Esto significa que se construyen una serie de modelos y con cada nueva iteración del modelo, se incrementan los pesos de los datos clasificados erróneamente en el modelo anterior. Esta redistribución de pesos ayuda al algoritmo a identificar los parámetros en los que necesita enfocarse para mejorar su desempeño.
+
+```{r echo=FALSE,fig.align='center', out.height='350pt', out.width='600pt'}
+knitr::include_graphics("img/05-bagging/bagging-boosting.jpeg")
+```
+
+Un ejemplo de modelo secuencial es: **Adaboost** y significa "algoritmo de boosting adaptativo", es uno de los algoritmos de boosting más populares, ya que fue uno de los primeros de su tipo. Otros tipos de algoritmos de booting incluyen **XGBoost**, *GradientBoost* y *BrownBoost*.
+
+Otra diferencia en la que difieren *bagging* y *boosting* son los escenarios en los que se utilizan. Por ejemplo, los métodos de *bagging* se utilizan típicamente en modelos débiles que exhiben alta varianza y bajo sesgo, mientras que los métodos de *boosting* se aprovechan cuando se observa baja varianza y alto sesgo.
+
+
+## Algoritmo Bagging
+
+1. **Bootstrapping**: *Bagging* aprovecha una técnica de muestreo de *bootstrapping* para crear muestras diversas. Este método de remuestreo genera diferentes subconjuntos a partir del conjunto de datos de entrenamiento original seleccionando puntos de datos al azar y con reemplazo. Esto significa que cada vez que selecciona un punto del conjunto de entrenamiento, puede seleccionar la misma instancia varias veces. Como resultado, un valor se repite dos veces (o más) en una muestra y algunos no aparecen.
+
+2. **Entrenamiento paralelo**: estos ejemplos de *bootstrap* se entrenan de forma independiente y en paralelo entre sí utilizando modelos débiles o básicos.
+
+3. **Agregación**: Finalmente, dependiendo de la tarea (regresión o clasificación), se toma un promedio o la mayoría de las predicciones para calcular una estimación más precisa. En el caso de la regresión, se toma un promedio de todos los resultados predichos por los clasificadores individuales; esto se conoce como **votación suave**. 
+
+Para problemas de clasificación, se acepta la clase con mayor mayoría de votos; esto se conoce como **votación en firme o votación por mayoría**.
+
+### Ventajas y desventajas de bagging
+
+Hay una serie de ventajas y desventajas clave que presenta el método de bagging cuando se usa para problemas de clasificación o regresión. 
+
+**Ventajas**
+
+* **Facilidad de implementación**: las bibliotecas de *R* como *tidymodels* facilitan la combinación de las predicciones de los aprendices o estimadores base para mejorar el rendimiento del modelo. 
+
+* **Reducción de varianza**: bagging puede reducir la varianza dentro de un algoritmo de aprendizaje. Esto es particularmente útil con datos de alta dimensión, donde los valores faltantes pueden conducir a una mayor varianza, lo que los hace más propensos a sobreajustarse y evitar la generalización precisa a nuevos conjuntos de datos.
+
+
+**Desventajas**
+
+* **Pérdida de interpretabilidad**: es difícil obtener información empresarial muy precisa a través del bagging debido al promedio involucrado en las predicciones. Si bien el resultado es más preciso que cualquier punto de datos individual, un conjunto de datos más exacto o completo también podría producir más precisión dentro de un solo modelo de clasificación o regresión.
+
+* **Computacionalmente costoso**: *bagging* se ralentiza y se vuelve más intensivo a medida que aumenta el número de iteraciones. Por lo tanto, no es adecuado para aplicaciones en tiempo real. Los sistemas agrupados o una gran cantidad de núcleos de procesamiento son ideales para crear rápidamente conjuntos en bolsas en conjuntos de prueba grandes.
+
+* **Menos flexible**: como técnica, *bagging* funciona particularmente bien con algoritmos que son menos estables. Uno que sea más estable o esté sujeto a grandes cantidades de sesgo no proporciona tanto beneficio ya que hay menos variación dentro del conjunto de datos del modelo. 
+
+### Aplicaciónes de Bagging
+
+La técnica de *bagging* se utiliza en una gran cantidad de industrias, proporcionando información sobre el valor del mundo real y perspectivas interesantes. Los casos de uso clave incluyen:
+
+* **TI**: *bagging* también puede mejorar la precisión y exactitud en los sistemas de TI, como los sistemas de detección de intrusiones en la red. 
+
+* **Medio ambiente**: los métodos de conjunto, como bagging, se han aplicado en el campo de la teledetección (técnica de adquisición de datos de la superficie terrestre desde sensores instalados en plataformas espaciales).
+
+* **Finanzas**: *bagging* también se ha aprovechado con modelos de aprendizaje profundo en la industria financiera, automatizando tareas críticas, incluida la detección de fraudes, evaluaciones de riesgo crediticio y problemas de precios de opciones.
+
+
+
+### Implementación en *R*
+
+```{r, warning=FALSE, message=FALSE}
+library(tidymodels)
+library(rsample)
+data(ames)
+
+set.seed(20211212)
+ames_boot <- bootstraps(ames, times = 500, apparent = TRUE) 
+# Se crean muestras bootstrap
+```
+
+
+```{r}
+# Se entrena un modelo para cada muestra. 
+ames_models <- ames_boot %>%
+  mutate(
+    model = map(
+     splits, ~ lm(Sale_Price ~ 0 + log10(Gr_Liv_Area) + Full_Bath + Year_Built, 
+                  data = .)),
+    coef_info = map(model, tidy)
+  )
+
+ames_coefs <- ames_models %>% unnest(coef_info)
+ames_coefs
+```
+
+```{r, message=FALSE, warning=FALSE}
+# Evaluación de resultados 
+
+ames_coefs %>%
+  ggplot(aes(estimate)) +
+  geom_histogram(fill = "light blue")+
+  facet_wrap(~term, scales = "free_x")+
+  scale_x_continuous(labels = comma)+
+  theme_minimal()
+
+```
+
+
+## Algoritmo Boosting
+
+Tradicionalmente, la construcción de una aplicación de aprendizaje automático consistía en tomar un solo estimador, es decir:
+
+* Un regresor logístico
+* Un árbol de decisión
+* Una máquina de vectores de soporte 
+* Una red neuronal artificial
+
+Para posteriormente ser entrenado por un conjunto de datos. 
+
+Luego nacieron los **métodos de conjunto**, los cuales pueden describirse como **técnicas que utilizan un grupo de modelos "débiles" juntos, con el fin de crear uno más fuerte y agregado**.
+
+El *Boosting* consiste en la idea de filtrar o ponderar los datos que se utilizan para capacitar a nuestro conjunto de modelos "débiles", para que cada nuevo modelo dé más peso o solo se entrene con observaciones que han sido mal clasificadas por los anteriores modelos.
+
+Al hacer esto, nuestro conjunto de modelos aprende a hacer predicciones precisas sobre todo tipo de datos, no solo sobre las observaciones más comunes o fáciles. Además, si uno de los modelos individuales es muy malo para hacer predicciones sobre algún tipo de observación, no importa, ya que los otros $N - 1$ modelos  probablemente lo compensarán.
+
+
+```{r echo=FALSE,fig.align='center', out.height='250pt', out.width='600pt'}
+knitr::include_graphics("img/05-bagging/boosting.png")
+```
+
+Como se puede ver en la imagen anterior, en *boosting* el conjunto de datos se pondera (representado por los diferentes tamaños de los datos), de modo que las observaciones que fueron clasificadas incorrectamente por el clasificador $n$ reciben más importancia en el entrenamiento del modelo $n + 1$.
+
+En general, **los métodos de conjunto reducen el sesgo y la varianza de nuestros modelos de aprendizaje automático**.
+
+
+El proceso de entrenamiento depende del algoritmo *boosting* que estemos usando *(Adaboost, LigthGBM, XGBoost, $\dots$)*, pero generalmente sigue este patrón:
+
+1. Todas las muestras de datos comienzan con los mismos pesos. Estas muestras se utilizan para entrenar un modelo individual (digamos un árbol de decisión).
+
+2. Se calcula el error de predicción para cada muestra, aumentando los pesos de aquellas muestras que han tenido un error mayor, para hacerlas más importantes para el entrenamiento del siguiente modelo individual.
+
+3. Dependiendo de qué tan bien le fue a este modelo individual en sus predicciones, se le asigna una importancia/peso. Un modelo que genere muy buenas predicciones tendrá mucho que decir en la decisión final.
+
+4. Los datos ponderados se pasan al modelo posterior y se repiten lo pasos 2) y 3).
+
+5. El número 4) se repite hasta que se haya alcanzado un cierto número de modelos o hasta que el error esté por debajo de un cierto umbral.
+
+```{r echo=FALSE,fig.align='center', out.height='350pt', out.width='600pt'}
+knitr::include_graphics("img/05-bagging/boosting-training.png")
+```
+
+En algunos casos, los modelos de *boosting* se entrenan con un peso fijo específico para cada modelo (llamado tasa de aprendizaje) y en lugar de dar a cada muestra un peso individual, los modelos se entrenan tratando de predecir las diferencias entre las predicciones anteriores en las muestras y los valores reales de la variable objetivo. Esta diferencia es conocida como residuales.
+
+### Predicciones de *Boosting*
+
+La forma en que un modelo de *boosting* hace predicciones sobre nuevos datos es muy simple. Cuando obtenemos una nueva observación con sus características, se pasa a través de cada uno de los modelos individuales, haciendo que cada modelo haga su propia predicción.
+
+Luego, teniendo en cuenta el peso de cada uno de estos modelos, todas estas predicciones se escalan y combinan, y se da una predicción global final.
+
+```{r echo=FALSE,fig.align='center', out.height='350pt', out.width='610pt'}
+knitr::include_graphics("img/05-bagging/boosting-predicciones.png")
+```
+
+
+### Modelos *Boosting*
+
+**XGBoost**
+
+Abreviatura de *eXtreme gradient boosting*, como en *Gradient Boosting*, ajustamos los árboles a los residuos de las predicciones de árboles anteriores, sin embargo, en lugar de usar árboles de decisión de tamaño fijo convencionales, *XGBoost* usa un tipo diferente de árboles.
+
+Estos árboles se construyen calculando puntuaciones de similitud entre las observaciones que terminan en un nodo de salida. Además, *XGBoost* permite la regularización, reduciendo el posible sobreajuste de nuestros árboles individuales y, por lo tanto, del modelo de conjunto general.
+
+Por último, *XGBoost* está optimizado para superar el límite de los recursos computacionales de los algoritmos de árbol impulsados, lo que lo convierte en un algoritmo rápido y de muy alto rendimiento en términos de tiempo y cálculo.
+
+**Adaboost**
+
+Abreviatura de *Adaptive Boosting, AdaBoost* funciona mediante el proceso descrito anteriormente de entrenar secuencialmente, predecir y actualizar los pesos de las muestras mal clasificadas y de los modelos débiles correspondientes.
+
+Se usa principalmente con *Decision Tree Stumps*: árboles de decisión con solo un nodo raíz y dos nodos de salida, donde solo se evalúa una característica de los datos. Como podemos ver, al tener en cuenta solo una característica de nuestros datos para hacer predicciones, cada pivote es un modelo muy débil. Sin embargo, al combinar muchos de ellos, se puede construir un modelo de conjunto muy robusto y preciso.
+
+**Gradient Boosting Machines (GBM)**
+
+Muy similar a *AdaBoost*, *Gradient Boosting Machines* capacita a los modelos débiles secuencialmente, agregando más y más estimadores, pero en lugar de adaptar los pesos de los datos, intenta predecir los errores residuales cometidos por los estimadores anteriores.
+
+Debido a esto, ya no tenemos ponderaciones muestrales y todos los modelos débiles tienen la misma cantidad de importancia. Nuevamente, la mayoría de las veces, los árboles de decisión se utilizan como predictores base, sin embargo, no son 
+árboles chicos, sino árboles más grandes y de tamaño fijo. Los *GBM* utilizan una tasa de aprendizaje y dan pequeños pasos hacia mejores resultados.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
