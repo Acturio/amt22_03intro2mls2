@@ -34,3 +34,17 @@ ajuste-del-modelo-con-r
 implementación-de-svr-en-r
 implementación-de-svm-en-r
 ejercicios-1
+bagging-boosting
+aprendizaje-conjunto
+bagging-vs.-boosting
+error-out-of-bag
+algoritmo-bagging
+ventajas-y-desventajas-de-bagging
+aplicaciónes-de-bagging
+implementación-en-r-2
+algoritmo-boosting
+predicciones-de-boosting
+modelos-boosting
+implementación-en-r-3
+xgboost-para-regresión
+xgboost-para-clasificación

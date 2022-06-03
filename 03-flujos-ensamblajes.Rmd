@@ -244,13 +244,6 @@ Se usa principalmente con *Decision Tree Stumps*: árboles de decisión con solo
 knitr::include_graphics("img/05-bagging/adaboost.png")
 ```
 
-**Gradient Boosting Machines (GBM)**
-
-Muy similar a *AdaBoost*, *Gradient Boosting Machines* capacita a los modelos débiles secuencialmente, agregando más y más estimadores, pero en lugar de adaptar los pesos de los datos, intenta predecir los errores residuales cometidos por los estimadores anteriores.
-
-Debido a esto, ya no tenemos ponderaciones muestrales y todos los modelos débiles tienen la misma cantidad de importancia. Nuevamente, la mayoría de las veces, los árboles de decisión se utilizan como predictores base, sin embargo, no son 
-árboles chicos, sino árboles más grandes y de tamaño fijo. Los *GBM* utilizan una tasa de aprendizaje y dan pequeños pasos hacia mejores resultados.
-
 
 
 ### Implementación en R

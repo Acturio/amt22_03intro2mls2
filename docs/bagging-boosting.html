@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Capítulo 4 Bagging &amp; Boosting | AMAT- Ciencia de Datos y Machine Learning 2</title>
+  <meta name="description" content="AMAT Curso 2 : Ciencia de Datos y Machine Learning 2" />
+  <meta name="generator" content="bookdown 0.26 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Capítulo 4 Bagging &amp; Boosting | AMAT- Ciencia de Datos y Machine Learning 2" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="AMAT Curso 2 : Ciencia de Datos y Machine Learning 2" />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Capítulo 4 Bagging &amp; Boosting | AMAT- Ciencia de Datos y Machine Learning 2" />
+  
+  <meta name="twitter:description" content="AMAT Curso 2 : Ciencia de Datos y Machine Learning 2" />
+  
+
+<meta name="author" content="Karina Lizette Gamboa Puente" />
+<meta name="author" content="Oscar Arturo Bringas López" />
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="support-vector-machine-svm-svr.html"/>
+<link rel="next" href="references.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./"><img src="img/amat-logo.png" width="280"></a></li|
+|:-:|  
+<center>Ciencia de Datos y Machine Learning 2</center>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>BIENVENIDA</a>
+<ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#objetivo"><i class="fa fa-check"></i>Objetivo</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#instructores"><i class="fa fa-check"></i>Instructores</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#ciencia-de-datos-en-r"><i class="fa fa-check"></i>Ciencia de Datos en R</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#estructura-del-curso-actual"><i class="fa fa-check"></i>Estructura del curso actual</a>
+<ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#alcances-del-curso"><i class="fa fa-check"></i>Alcances del curso</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#duración-y-evaluación-del-curso"><i class="fa fa-check"></i>Duración y evaluación del curso</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#recursos-y-dinámica-de-clase"><i class="fa fa-check"></i>Recursos y dinámica de clase</a></li>
+</ul></li>
+<li class="chapter" data-level="1" data-path="repaso.html"><a href="repaso.html"><i class="fa fa-check"></i><b>1</b> Repaso</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="repaso.html"><a href="repaso.html#machine-learning"><i class="fa fa-check"></i><b>1.1</b> Machine Learning</a></li>
+<li class="chapter" data-level="1.2" data-path="repaso.html"><a href="repaso.html#tipos-de-aprendizaje"><i class="fa fa-check"></i><b>1.2</b> Tipos de aprendizaje</a>
+<ul>
+<li class="chapter" data-level="1.2.1" data-path="repaso.html"><a href="repaso.html#aprendizaje-supervisado"><i class="fa fa-check"></i><b>1.2.1</b> Aprendizaje supervisado</a></li>
+<li class="chapter" data-level="1.2.2" data-path="repaso.html"><a href="repaso.html#aprendizaje-no-supervisado"><i class="fa fa-check"></i><b>1.2.2</b> Aprendizaje no supervisado</a></li>
+</ul></li>
+<li class="chapter" data-level="1.3" data-path="repaso.html"><a href="repaso.html#errores-sesgo-vs-varianza"><i class="fa fa-check"></i><b>1.3</b> Errores: Sesgo vs varianza</a></li>
+<li class="chapter" data-level="1.4" data-path="repaso.html"><a href="repaso.html#partición-de-datos"><i class="fa fa-check"></i><b>1.4</b> Partición de datos</a>
+<ul>
+<li class="chapter" data-level="1.4.1" data-path="repaso.html"><a href="repaso.html#métodos-comunes-para-particionar-datos"><i class="fa fa-check"></i><b>1.4.1</b> Métodos comunes para particionar datos</a></li>
+<li class="chapter" data-level="1.4.2" data-path="repaso.html"><a href="repaso.html#conjunto-de-validación"><i class="fa fa-check"></i><b>1.4.2</b> Conjunto de validación</a></li>
+</ul></li>
+<li class="chapter" data-level="1.5" data-path="repaso.html"><a href="repaso.html#recetas-y-tratamiento-de-datos"><i class="fa fa-check"></i><b>1.5</b> Recetas y tratamiento de datos</a>
+<ul>
+<li class="chapter" data-level="1.5.1" data-path="repaso.html"><a href="repaso.html#pre-procesamiento-de-datos"><i class="fa fa-check"></i><b>1.5.1</b> Pre-procesamiento de datos</a></li>
+<li class="chapter" data-level="1.5.2" data-path="repaso.html"><a href="repaso.html#recetas"><i class="fa fa-check"></i><b>1.5.2</b> Recetas</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="feature-engineering.html"><a href="feature-engineering.html"><i class="fa fa-check"></i><b>2</b> Feature Engineering</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="feature-engineering.html"><a href="feature-engineering.html#regresión-polinomial"><i class="fa fa-check"></i><b>2.1</b> Regresión polinomial</a></li>
+<li class="chapter" data-level="2.2" data-path="feature-engineering.html"><a href="feature-engineering.html#análisis-de-componentes-principales"><i class="fa fa-check"></i><b>2.2</b> Análisis de Componentes Principales</a>
+<ul>
+<li class="chapter" data-level="2.2.1" data-path="feature-engineering.html"><a href="feature-engineering.html#eigenvalores-y-eigenvectores"><i class="fa fa-check"></i><b>2.2.1</b> Eigenvalores y eigenvectores</a></li>
+<li class="chapter" data-level="2.2.2" data-path="feature-engineering.html"><a href="feature-engineering.html#implementación-en-r"><i class="fa fa-check"></i><b>2.2.2</b> Implementación en R</a></li>
+<li class="chapter" data-level="2.2.3" data-path="feature-engineering.html"><a href="feature-engineering.html#representación-gráfica"><i class="fa fa-check"></i><b>2.2.3</b> Representación gráfica</a></li>
+<li class="chapter" data-level="2.2.4" data-path="feature-engineering.html"><a href="feature-engineering.html#cuántas-componentes-retener"><i class="fa fa-check"></i><b>2.2.4</b> ¿Cuántas componentes retener?</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="feature-engineering.html"><a href="feature-engineering.html#imputación-knn"><i class="fa fa-check"></i><b>2.3</b> Imputación KNN</a>
+<ul>
+<li class="chapter" data-level="2.3.1" data-path="feature-engineering.html"><a href="feature-engineering.html#ventajas-y-limitaciones-del-clasificador-knn"><i class="fa fa-check"></i><b>2.3.1</b> <strong>Ventajas y limitaciones del Clasificador KNN</strong></a></li>
+<li class="chapter" data-level="2.3.2" data-path="feature-engineering.html"><a href="feature-engineering.html#implementación-en-r-1"><i class="fa fa-check"></i><b>2.3.2</b> Implementación en R</a></li>
+</ul></li>
+<li class="chapter" data-level="2.4" data-path="feature-engineering.html"><a href="feature-engineering.html#ejercicios"><i class="fa fa-check"></i><b>2.4</b> Ejercicios</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="support-vector-machine-svm-svr.html"><a href="support-vector-machine-svm-svr.html"><i class="fa fa-check"></i><b>3</b> Support Vector Machine (SVM / SVR)</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="support-vector-machine-svm-svr.html"><a href="support-vector-machine-svm-svr.html#maximum-margin-classifier"><i class="fa fa-check"></i><b>3.1</b> Maximum Margin Classifier</a></li>
+<li class="chapter" data-level="3.2" data-path="support-vector-machine-svm-svr.html"><a href="support-vector-machine-svm-svr.html#support-vector-classifiers"><i class="fa fa-check"></i><b>3.2</b> Support Vector Classifiers</a></li>
+<li class="chapter" data-level="3.3" data-path="support-vector-machine-svm-svr.html"><a href="support-vector-machine-svm-svr.html#support-vector-machine"><i class="fa fa-check"></i><b>3.3</b> Support Vector Machine</a></li>
+<li class="chapter" data-level="3.4" data-path="support-vector-machine-svm-svr.html"><a href="support-vector-machine-svm-svr.html#el-truco-del-kernel"><i class="fa fa-check"></i><b>3.4</b> El truco del Kernel</a></li>
+<li class="chapter" data-level="3.5" data-path="support-vector-machine-svm-svr.html"><a href="support-vector-machine-svm-svr.html#support-vector-regression"><i class="fa fa-check"></i><b>3.5</b> Support Vector Regression</a></li>
+<li class="chapter" data-level="3.6" data-path="support-vector-machine-svm-svr.html"><a href="support-vector-machine-svm-svr.html#ventajas-y-desventajas"><i class="fa fa-check"></i><b>3.6</b> Ventajas y desventajas</a></li>
+<li class="chapter" data-level="3.7" data-path="support-vector-machine-svm-svr.html"><a href="support-vector-machine-svm-svr.html#ajuste-del-modelo-con-r"><i class="fa fa-check"></i><b>3.7</b> Ajuste del modelo con R</a>
+<ul>
+<li class="chapter" data-level="3.7.1" data-path="support-vector-machine-svm-svr.html"><a href="support-vector-machine-svm-svr.html#implementación-de-svr-en-r"><i class="fa fa-check"></i><b>3.7.1</b> Implementación de SVR en R</a></li>
+<li class="chapter" data-level="3.7.2" data-path="support-vector-machine-svm-svr.html"><a href="support-vector-machine-svm-svr.html#implementación-de-svm-en-r"><i class="fa fa-check"></i><b>3.7.2</b> Implementación de SVM en R</a></li>
+</ul></li>
+<li class="chapter" data-level="3.8" data-path="support-vector-machine-svm-svr.html"><a href="support-vector-machine-svm-svr.html#ejercicios-1"><i class="fa fa-check"></i><b>3.8</b> Ejercicios</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="bagging-boosting.html"><a href="bagging-boosting.html"><i class="fa fa-check"></i><b>4</b> Bagging &amp; Boosting</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="bagging-boosting.html"><a href="bagging-boosting.html#aprendizaje-conjunto"><i class="fa fa-check"></i><b>4.1</b> Aprendizaje conjunto</a></li>
+<li class="chapter" data-level="4.2" data-path="bagging-boosting.html"><a href="bagging-boosting.html#bagging-vs.-boosting"><i class="fa fa-check"></i><b>4.2</b> Bagging vs. boosting</a>
+<ul>
+<li class="chapter" data-level="4.2.1" data-path="bagging-boosting.html"><a href="bagging-boosting.html#error-out-of-bag"><i class="fa fa-check"></i><b>4.2.1</b> Error Out-Of-Bag</a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="bagging-boosting.html"><a href="bagging-boosting.html#algoritmo-bagging"><i class="fa fa-check"></i><b>4.3</b> Algoritmo Bagging</a>
+<ul>
+<li class="chapter" data-level="4.3.1" data-path="bagging-boosting.html"><a href="bagging-boosting.html#ventajas-y-desventajas-de-bagging"><i class="fa fa-check"></i><b>4.3.1</b> Ventajas y desventajas de bagging</a></li>
+<li class="chapter" data-level="4.3.2" data-path="bagging-boosting.html"><a href="bagging-boosting.html#aplicaciónes-de-bagging"><i class="fa fa-check"></i><b>4.3.2</b> Aplicaciónes de Bagging</a></li>
+<li class="chapter" data-level="4.3.3" data-path="bagging-boosting.html"><a href="bagging-boosting.html#implementación-en-r-2"><i class="fa fa-check"></i><b>4.3.3</b> Implementación en <em>R</em></a></li>
+</ul></li>
+<li class="chapter" data-level="4.4" data-path="bagging-boosting.html"><a href="bagging-boosting.html#algoritmo-boosting"><i class="fa fa-check"></i><b>4.4</b> Algoritmo Boosting</a>
+<ul>
+<li class="chapter" data-level="4.4.1" data-path="bagging-boosting.html"><a href="bagging-boosting.html#predicciones-de-boosting"><i class="fa fa-check"></i><b>4.4.1</b> Predicciones de <em>Boosting</em></a></li>
+<li class="chapter" data-level="4.4.2" data-path="bagging-boosting.html"><a href="bagging-boosting.html#modelos-boosting"><i class="fa fa-check"></i><b>4.4.2</b> Modelos <em>Boosting</em></a></li>
+<li class="chapter" data-level="4.4.3" data-path="bagging-boosting.html"><a href="bagging-boosting.html#implementación-en-r-3"><i class="fa fa-check"></i><b>4.4.3</b> Implementación en R</a></li>
+<li class="chapter" data-level="4.4.4" data-path="bagging-boosting.html"><a href="bagging-boosting.html#xgboost-para-regresión"><i class="fa fa-check"></i><b>4.4.4</b> XGBoost para regresión</a></li>
+<li class="chapter" data-level="4.4.5" data-path="bagging-boosting.html"><a href="bagging-boosting.html#xgboost-para-clasificación"><i class="fa fa-check"></i><b>4.4.5</b> XGBoost para clasificación</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
+<li class="divider"></li>
+<li><a href="./"><img src="img/amat-logo.png" width="280"></a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">AMAT- Ciencia de Datos y Machine Learning 2</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="bagging-boosting" class="section level1 hasAnchor" number="4">
+<h1><span class="header-section-number">Capítulo 4</span> Bagging &amp; Boosting<a href="bagging-boosting.html#bagging-boosting" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>El <em>bagging o agregación bootstrap</em>, <strong>es un método de aprendizaje por conjuntos que se usa comúnmente para reducir la varianza dentro de un conjunto de datos ruidoso</strong>. En este método, se selecciona una muestra aleatoria de datos en un conjunto de entrenamiento con reemplazo, lo que significa que los puntos de datos individuales se pueden elegir más de una vez. Después de generar varias muestras de datos, estos modelos se entrenan de forma independiente y, según el tipo de tarea (regresión o clasificación), el promedio o la mayoría de esas predicciones producen una estimación más precisa.</p>
+<p><img src="img/05-bagging/bagging.jpeg" width="900pt" height="500pt" style="display: block; margin: auto;" /></p>
+<p><strong>Nota:</strong> El algoritmo de bosque aleatorio se considera una extensión del método de bagging, utilizando tanto bagging como la aleatoriedad de características para crear un bosque no correlacionado de árboles de decisión.</p>
+<div id="aprendizaje-conjunto" class="section level2 hasAnchor" number="4.1">
+<h2><span class="header-section-number">4.1</span> Aprendizaje conjunto<a href="bagging-boosting.html#aprendizaje-conjunto" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>El aprendizaje conjunto da crédito a la idea de la “sabiduría de las multitudes,” lo que sugiere que <strong>la toma de decisiones de un grupo más grande de individuos (modelos) suele ser mejor que la de un individuo.</strong></p>
+<p>El aprendizaje en conjunto <strong>es un grupo (o conjunto) de individuos o modelos, que trabajan colectivamente para lograr una mejor predicción final</strong>. Un solo modelo, también conocido como aprendiz básico puede no funcionar bien individualmente debido a una gran variación o un alto sesgo, sin embargo, cuando se agregan individuos débiles, pueden formar un individuo fuerte, ya que su combinación reduce el sesgo o la varianza, lo que produce un mejor rendimiento del modelo.</p>
+<p><img src="img/05-bagging/ramitas.jpg" width="600pt" height="350pt" style="display: block; margin: auto;" /></p>
+<p>Los métodos de conjunto se ilustran con frecuencia utilizando árboles de decisión, ya que este algoritmo puede ser propenso a sobreajustar (alta varianza y bajo sesgo) y también puede prestarse a desajuste (baja varianza y alto sesgo) cuando es muy pequeño, como un árbol de decisión con un nivel.</p>
+<p><strong>Nota:</strong> Cuando un algoritmo se adapta o no se adapta a su conjunto de entrenamiento, no se puede generalizar bien a nuevos conjuntos de datos, por lo que se utilizan métodos de conjunto para contrarrestar este comportamiento y permitir la generalización del modelo a nuevos conjuntos de datos.</p>
+</div>
+<div id="bagging-vs.-boosting" class="section level2 hasAnchor" number="4.2">
+<h2><span class="header-section-number">4.2</span> Bagging vs. boosting<a href="bagging-boosting.html#bagging-vs.-boosting" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p><em>Bagging</em> y el <em>boosting (refuerzo o impulso)</em> son dos tipos principales de métodos de aprendizaje por conjuntos. La principal diferencia entre estos métodos de aprendizaje es la forma en que se capacitan.</p>
+<p>En <strong><em>bagging</em>, los modelos se entrenan en paralelo, pero en el <em>boosting</em>, aprenden secuencialmente.</strong> Esto significa que se construyen una serie de modelos y con cada nueva iteración del modelo, se incrementan los pesos de los datos clasificados erróneamente en el modelo anterior. Esta redistribución de pesos ayuda al algoritmo a identificar los parámetros en los que necesita enfocarse para mejorar su desempeño.</p>
+<p><img src="img/05-bagging/bagging-boosting.jpeg" width="600pt" height="350pt" style="display: block; margin: auto;" /></p>
+<p>Un ejemplo de modelo secuencial es: <strong>Adaboost</strong> y significa “algoritmo de boosting adaptativo,” es uno de los algoritmos de boosting más populares, ya que fue uno de los primeros de su tipo. Otros tipos de algoritmos de booting incluyen <strong>XGBoost</strong>, <em>GradientBoost</em> y <em>BrownBoost</em>.</p>
+<p>Otra diferencia en la que difieren <em>bagging</em> y <em>boosting</em> son los escenarios en los que se utilizan. Por ejemplo, los métodos de <em>bagging</em> se utilizan típicamente en modelos débiles que exhiben alta varianza y bajo sesgo, mientras que los métodos de <em>boosting</em> se aprovechan cuando se observa baja varianza y alto sesgo.</p>
+<div class="infobox note">
+<p><strong>¡¡ RECORDAR !!</strong></p>
+<p>Bagging realiza replicaciones bootstrap y ajusta un árbol a cada muestra de manera independiente, mientras que boosting ajusta un árbol a una versión modificada del conjunto original de datos, la cual se modifica en cada iteración de entrenamiento.</p>
+</div>
+<div id="error-out-of-bag" class="section level3 hasAnchor" number="4.2.1">
+<h3><span class="header-section-number">4.2.1</span> Error Out-Of-Bag<a href="bagging-boosting.html#error-out-of-bag" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Este error es conocido como “OOB.” Se trata de un enfoque distinto a KFCV en donde el error predictivo es calculado a través de los elementos que <strong>no fueron seleccionados</strong> en la muestra bootstrap. Recordemos que en las muestras bootstrap algunos elementos son seleccionados más de una vez, mientras que otros no aparecen en la muestra. Empíricamente, en cada replicación bootstrap se observan 2/3 partes de la muestra y el resto queda “fuera de la bolsa” (OOB) de entrenamiento.</p>
+<p>Si <strong>B</strong> es el número de replicaciones bootstrap, entonces cada observación <em>i</em> recibe cerca de B/3 predicciones, las cuales son usadas para estimar el error predictivo. Para obtener una única predicción en cada observación, las B/3 predicciones son promediadas.</p>
+</div>
+</div>
+<div id="algoritmo-bagging" class="section level2 hasAnchor" number="4.3">
+<h2><span class="header-section-number">4.3</span> Algoritmo Bagging<a href="bagging-boosting.html#algoritmo-bagging" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<ol style="list-style-type: decimal">
+<li><p><strong>Bootstrapping</strong>: <em>Bagging</em> aprovecha una técnica de muestreo de <em>bootstrapping</em> para crear muestras diversas. Este método de remuestreo genera diferentes subconjuntos a partir del conjunto de datos de entrenamiento original seleccionando puntos de datos al azar y con reemplazo. Esto significa que cada vez que selecciona un punto del conjunto de entrenamiento, puede seleccionar la misma instancia varias veces. Como resultado, un valor se repite dos veces (o más) en una muestra y algunos no aparecen.</p></li>
+<li><p><strong>Entrenamiento paralelo</strong>: estos ejemplos de <em>bootstrap</em> se entrenan de forma independiente y en paralelo entre sí utilizando modelos débiles o básicos.</p></li>
+<li><p><strong>Agregación</strong>: Finalmente, dependiendo de la tarea (regresión o clasificación), se toma un promedio o la mayoría de las predicciones para calcular una estimación más precisa. En el caso de la regresión, se toma un promedio de todos los resultados predichos por los clasificadores individuales; esto se conoce como <strong>votación suave</strong>.</p></li>
+</ol>
+<p>Para problemas de clasificación, se acepta la clase con mayor mayoría de votos; esto se conoce como <strong>votación en firme o votación por mayoría</strong>.</p>
+<div id="ventajas-y-desventajas-de-bagging" class="section level3 hasAnchor" number="4.3.1">
+<h3><span class="header-section-number">4.3.1</span> Ventajas y desventajas de bagging<a href="bagging-boosting.html#ventajas-y-desventajas-de-bagging" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Hay una serie de ventajas y desventajas clave que presenta el método de bagging cuando se usa para problemas de clasificación o regresión.</p>
+<p><strong>Ventajas</strong></p>
+<ul>
+<li><p><strong>Facilidad de implementación</strong>: las bibliotecas de <em>R</em> como <em>tidymodels</em> facilitan la combinación de las predicciones de los aprendices o estimadores base para mejorar el rendimiento del modelo.</p></li>
+<li><p><strong>Reducción de varianza</strong>: bagging puede reducir la varianza dentro de un algoritmo de aprendizaje. Esto es particularmente útil con datos de alta dimensión, donde los valores faltantes pueden conducir a una mayor varianza, lo que los hace más propensos a sobreajustarse y evitar la generalización precisa a nuevos conjuntos de datos.</p></li>
+</ul>
+<p><strong>Desventajas</strong></p>
+<ul>
+<li><p><strong>Pérdida de interpretabilidad</strong>: es difícil obtener información empresarial muy precisa a través del bagging debido al promedio involucrado en las predicciones. Si bien el resultado es más preciso que cualquier punto de datos individual, un conjunto de datos más exacto o completo también podría producir más precisión dentro de un solo modelo de clasificación o regresión.</p></li>
+<li><p><strong>Computacionalmente costoso</strong>: <em>bagging</em> se ralentiza y se vuelve más intensivo a medida que aumenta el número de iteraciones. Por lo tanto, no es adecuado para aplicaciones en tiempo real. Los sistemas agrupados o una gran cantidad de núcleos de procesamiento son ideales para crear rápidamente conjuntos en bolsas en conjuntos de prueba grandes.</p></li>
+<li><p><strong>Menos flexible</strong>: como técnica, <em>bagging</em> funciona particularmente bien con algoritmos que son menos estables. Uno que sea más estable o esté sujeto a grandes cantidades de sesgo no proporciona tanto beneficio ya que hay menos variación dentro del conjunto de datos del modelo.</p></li>
+</ul>
+</div>
+<div id="aplicaciónes-de-bagging" class="section level3 hasAnchor" number="4.3.2">
+<h3><span class="header-section-number">4.3.2</span> Aplicaciónes de Bagging<a href="bagging-boosting.html#aplicaciónes-de-bagging" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>La técnica de <em>bagging</em> se utiliza en una gran cantidad de industrias, proporcionando información sobre el valor del mundo real y perspectivas interesantes. Los casos de uso clave incluyen:</p>
+<ul>
+<li><p><strong>TI</strong>: <em>bagging</em> también puede mejorar la precisión y exactitud en los sistemas de TI, como los sistemas de detección de intrusiones en la red.</p></li>
+<li><p><strong>Medio ambiente</strong>: los métodos de conjunto, como bagging, se han aplicado en el campo de la teledetección (técnica de adquisición de datos de la superficie terrestre desde sensores instalados en plataformas espaciales).</p></li>
+<li><p><strong>Finanzas</strong>: <em>bagging</em> también se ha aprovechado con modelos de aprendizaje profundo en la industria financiera, automatizando tareas críticas, incluida la detección de fraudes, evaluaciones de riesgo crediticio y problemas de precios de opciones.</p></li>
+</ul>
+</div>
+<div id="implementación-en-r-2" class="section level3 hasAnchor" number="4.3.3">
+<h3><span class="header-section-number">4.3.3</span> Implementación en <em>R</em><a href="bagging-boosting.html#implementación-en-r-2" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div class="sourceCode" id="cb112"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb112-1"><a href="bagging-boosting.html#cb112-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidymodels)</span>
+<span id="cb112-2"><a href="bagging-boosting.html#cb112-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rsample)</span>
+<span id="cb112-3"><a href="bagging-boosting.html#cb112-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(ames)</span>
+<span id="cb112-4"><a href="bagging-boosting.html#cb112-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb112-5"><a href="bagging-boosting.html#cb112-5" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">20211212</span>)</span>
+<span id="cb112-6"><a href="bagging-boosting.html#cb112-6" aria-hidden="true" tabindex="-1"></a>ames_boot <span class="ot">&lt;-</span> <span class="fu">bootstraps</span>(ames, <span class="at">times =</span> <span class="dv">500</span>, <span class="at">apparent =</span> <span class="cn">TRUE</span>) </span>
+<span id="cb112-7"><a href="bagging-boosting.html#cb112-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Se crean muestras bootstrap</span></span></code></pre></div>
+<div class="sourceCode" id="cb113"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb113-1"><a href="bagging-boosting.html#cb113-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Se entrena un modelo para cada muestra. </span></span>
+<span id="cb113-2"><a href="bagging-boosting.html#cb113-2" aria-hidden="true" tabindex="-1"></a>ames_models <span class="ot">&lt;-</span> ames_boot <span class="sc">%&gt;%</span></span>
+<span id="cb113-3"><a href="bagging-boosting.html#cb113-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb113-4"><a href="bagging-boosting.html#cb113-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">model =</span> <span class="fu">map</span>(</span>
+<span id="cb113-5"><a href="bagging-boosting.html#cb113-5" aria-hidden="true" tabindex="-1"></a>     splits, <span class="sc">~</span> <span class="fu">lm</span>(Sale_Price <span class="sc">~</span> <span class="dv">0</span> <span class="sc">+</span> <span class="fu">log10</span>(Gr_Liv_Area) <span class="sc">+</span> Full_Bath <span class="sc">+</span> Year_Built, </span>
+<span id="cb113-6"><a href="bagging-boosting.html#cb113-6" aria-hidden="true" tabindex="-1"></a>                  <span class="at">data =</span> .)),</span>
+<span id="cb113-7"><a href="bagging-boosting.html#cb113-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">coef_info =</span> <span class="fu">map</span>(model, tidy)</span>
+<span id="cb113-8"><a href="bagging-boosting.html#cb113-8" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb113-9"><a href="bagging-boosting.html#cb113-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb113-10"><a href="bagging-boosting.html#cb113-10" aria-hidden="true" tabindex="-1"></a>ames_coefs <span class="ot">&lt;-</span> ames_models <span class="sc">%&gt;%</span> <span class="fu">unnest</span>(coef_info)</span>
+<span id="cb113-11"><a href="bagging-boosting.html#cb113-11" aria-hidden="true" tabindex="-1"></a>ames_coefs</span></code></pre></div>
+<pre><code>## # A tibble: 1,503 × 8
+##    splits              id      model term  estimate std.error statistic  p.value
+##    &lt;list&gt;              &lt;chr&gt;   &lt;lis&gt; &lt;chr&gt;    &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+##  1 &lt;split [2930/1106]&gt; Bootst… &lt;lm&gt;  log1…  206873.    9544.       21.7 9.71e-97
+##  2 &lt;split [2930/1106]&gt; Bootst… &lt;lm&gt;  Full…   49994.    2434.       20.5 1.14e-87
+##  3 &lt;split [2930/1106]&gt; Bootst… &lt;lm&gt;  Year…    -278.      14.4     -19.4 9.39e-79
+##  4 &lt;split [2930/1082]&gt; Bootst… &lt;lm&gt;  log1…  208068.    9997.       20.8 7.66e-90
+##  5 &lt;split [2930/1082]&gt; Bootst… &lt;lm&gt;  Full…   49639.    2541.       19.5 5.35e-80
+##  6 &lt;split [2930/1082]&gt; Bootst… &lt;lm&gt;  Year…    -281.      15.1     -18.6 2.40e-73
+##  7 &lt;split [2930/1055]&gt; Bootst… &lt;lm&gt;  log1…  212558.    9685.       21.9 5.78e-99
+##  8 &lt;split [2930/1055]&gt; Bootst… &lt;lm&gt;  Full…   48700.    2454.       19.8 2.32e-82
+##  9 &lt;split [2930/1055]&gt; Bootst… &lt;lm&gt;  Year…    -287.      14.6     -19.7 3.45e-81
+## 10 &lt;split [2930/1074]&gt; Bootst… &lt;lm&gt;  log1…  205522.    9420.       21.8 6.60e-98
+## # … with 1,493 more rows</code></pre>
+<div class="sourceCode" id="cb115"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb115-1"><a href="bagging-boosting.html#cb115-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Evaluación de resultados </span></span>
+<span id="cb115-2"><a href="bagging-boosting.html#cb115-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb115-3"><a href="bagging-boosting.html#cb115-3" aria-hidden="true" tabindex="-1"></a>ames_coefs <span class="sc">%&gt;%</span></span>
+<span id="cb115-4"><a href="bagging-boosting.html#cb115-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(estimate)) <span class="sc">+</span></span>
+<span id="cb115-5"><a href="bagging-boosting.html#cb115-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">fill =</span> <span class="st">&quot;light blue&quot;</span>)<span class="sc">+</span></span>
+<span id="cb115-6"><a href="bagging-boosting.html#cb115-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>term, <span class="at">scales =</span> <span class="st">&quot;free_x&quot;</span>)<span class="sc">+</span></span>
+<span id="cb115-7"><a href="bagging-boosting.html#cb115-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">labels =</span> comma)<span class="sc">+</span></span>
+<span id="cb115-8"><a href="bagging-boosting.html#cb115-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div>
+<p><img src="amt22_03intro2mls2_files/figure-html/unnamed-chunk-87-1.png" width="672" /></p>
+</div>
+</div>
+<div id="algoritmo-boosting" class="section level2 hasAnchor" number="4.4">
+<h2><span class="header-section-number">4.4</span> Algoritmo Boosting<a href="bagging-boosting.html#algoritmo-boosting" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Tradicionalmente, la construcción de una aplicación de aprendizaje automático consistía en tomar un solo estimador, es decir:</p>
+<ul>
+<li>Un regresor logístico</li>
+<li>Un árbol de decisión</li>
+<li>Una máquina de vectores de soporte</li>
+<li>Una red neuronal artificial</li>
+</ul>
+<p>Para posteriormente ser entrenado por un conjunto de datos.</p>
+<p>Luego nacieron los <strong>métodos de conjunto</strong>, los cuales pueden describirse como <strong>técnicas que utilizan un grupo de modelos “débiles” juntos, con el fin de crear uno más fuerte y agregado</strong>.</p>
+<p>El <em>Boosting</em> consiste en la idea de filtrar o <strong>ponderar los datos</strong> que se utilizan para capacitar a nuestro conjunto de modelos “débiles,” para que <strong>cada nuevo modelo pondere o “solo se entrene” con observaciones que han sido mal clasificadas por los anteriores modelos.</strong></p>
+<p><img src="img/05-bagging/boosting2.png" width="800pt" height="400pt" style="display: block; margin: auto;" /></p>
+<p>Al hacer esto, nuestro conjunto de modelos aprende a hacer predicciones precisas sobre todo tipo de datos, no solo sobre las observaciones más comunes o fáciles. Además, si uno de los modelos individuales es muy malo para hacer predicciones sobre algún tipo de observación, no importa, ya que los otros <span class="math inline">\(N - 1\)</span> modelos probablemente lo compensarán.</p>
+<p><img src="img/05-bagging/boosting.png" width="600pt" height="250pt" style="display: block; margin: auto;" /></p>
+<p>Como se puede ver en la imagen anterior, en <em>boosting</em> el conjunto de datos se pondera (representado por los diferentes tamaños de los datos), de modo que las observaciones que fueron clasificadas incorrectamente por el clasificador <span class="math inline">\(n\)</span> reciben más importancia en el entrenamiento del modelo <span class="math inline">\(n + 1\)</span>. En general, <strong>los métodos de conjunto reducen el sesgo y la varianza de nuestros modelos de aprendizaje automático</strong>.</p>
+<div class="infobox note">
+<p><strong>¡¡ RECORDAR !!</strong></p>
+<p>Los modelos bootstrap buscan aprender lentamente patrones relevantes a lo largo de muchas iteraciones, de forma que se vaya haciendo un ajuste lento pero preciso.</p>
+</div>
+<p>El proceso de entrenamiento depende del algoritmo <em>boosting</em> que estemos usando <em>(Adaboost, LigthGBM, XGBoost, <span class="math inline">\(\dots\)</span>)</em>, pero generalmente sigue este patrón:</p>
+<ol style="list-style-type: decimal">
+<li><p>Todas las muestras de datos comienzan con los mismos pesos. Estas muestras se utilizan para entrenar un modelo individual (digamos un árbol de decisión).</p></li>
+<li><p>Se calcula el error de predicción para cada muestra, <strong>aumentando los pesos de aquellas muestras que han tenido un error mayor</strong>, para hacerlas más importantes para el entrenamiento del siguiente modelo individual.</p></li>
+<li><p>Dependiendo de qué tan bien le fue a este modelo individual en sus predicciones, se le asigna una importancia/peso.</p></li>
+<li><p>Los datos ponderados se pasan al modelo posterior y se repiten lo pasos 2) y 3). Este paso se repite hasta que se haya alcanzado un cierto número de modelos o hasta que el error esté por debajo de un cierto umbral.</p></li>
+</ol>
+<p><img src="img/05-bagging/boosting-training.png" width="600pt" height="350pt" style="display: block; margin: auto;" /></p>
+<p>En algunos casos, los modelos de <em>boosting</em> se entrenan con un peso fijo específico para cada modelo (llamado tasa de aprendizaje) y en lugar de dar a cada muestra un peso individual, los modelos se entrenan tratando de predecir las diferencias entre las predicciones anteriores en las muestras y los valores reales de la variable objetivo. Esta diferencia es conocida como residuales.</p>
+<p>La forma de ajustar el modelo sigue los siguientes pasos:</p>
+<ol style="list-style-type: decimal">
+<li><p>Se fija <span class="math inline">\(\hat{f}(x)=0\)</span> y <span class="math inline">\(r_i=y_i\)</span> para todos los elementos del conjunto de entrenamiento</p></li>
+<li><p>Para <span class="math inline">\(b=1,2,...,B\)</span>, repetir:</p></li>
+</ol>
+<ol style="list-style-type: lower-alpha">
+<li><p>Ajustar un árbol <span class="math inline">\(\hat{f}^b\)</span> al conjunto de entrenamiento <span class="math inline">\((X, r)\)</span></p></li>
+<li><p>Actualizar el ajuste <span class="math inline">\(\hat{f}(x)\)</span> al añadir una nueva versión restringida de un nuevo árbol:</p></li>
+</ol>
+<p><span class="math display">\[\hat{F}_b(X) \leftarrow \hat{F}_{b-1}(X) + \lambda_b\hat{h}_b(X, r_{b-1})\]</span>
+c) Actualizar los residuos:</p>
+<p><span class="math display">\[r_b \leftarrow r_{b-1} - \lambda_b\hat{f}^b(x_i)\]</span></p>
+<ol start="3" style="list-style-type: decimal">
+<li>Resultado del modelo <em>Boosting</em>:</li>
+</ol>
+<p><span class="math display">\[\hat{F}=\sum_{b=1}^{B}\lambda_b\hat{F}_b(x)\]</span>
+Para calcular <span class="math inline">\(\lambda_b\)</span> en cada iteración, se usa la siguiente fórmula:</p>
+<p><span class="math display">\[\underset{\alpha}{\operatorname{argmin}}=\sum_{i=1}^{b}{L(Y_i, \hat{F}_{i-1}(X_i)+\lambda \hat{h}_i(X_i, r_{i-1}))}\]</span>
+Donde <span class="math inline">\(L(Y, F(X))\)</span> es una función de pérdida diferenciable.</p>
+<div id="predicciones-de-boosting" class="section level3 hasAnchor" number="4.4.1">
+<h3><span class="header-section-number">4.4.1</span> Predicciones de <em>Boosting</em><a href="bagging-boosting.html#predicciones-de-boosting" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>La forma en que un modelo de <em>boosting</em> hace predicciones sobre nuevos datos es muy simple. Cuando obtenemos una nueva observación con sus características, se pasa a través de cada uno de los modelos individuales, haciendo que cada modelo haga su propia predicción.</p>
+<p>Luego, teniendo en cuenta el peso de cada uno de estos modelos, todas estas predicciones se escalan y combinan, y se da una predicción global final.</p>
+<p><img src="img/05-bagging/boosting-predicciones.png" width="610pt" height="350pt" style="display: block; margin: auto;" /></p>
+</div>
+<div id="modelos-boosting" class="section level3 hasAnchor" number="4.4.2">
+<h3><span class="header-section-number">4.4.2</span> Modelos <em>Boosting</em><a href="bagging-boosting.html#modelos-boosting" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><strong>XGBoost</strong></p>
+<p>Abreviatura de <em>eXtreme Gradient Boosting</em>, como en <em>Gradient Boosting</em>, ajustamos los árboles a los residuos de las predicciones de árboles anteriores, sin embargo, en lugar de usar árboles de decisión de tamaño fijo convencionales, <strong><em>XGBoost</em> usa un tipo diferente de árboles</strong>.</p>
+<p>Estos árboles se construyen calculando puntuaciones de similitud entre las observaciones que terminan en un nodo de salida. Además, <em>XGBoost</em> permite la regularización, reduciendo el posible sobreajuste de nuestros árboles individuales y, por lo tanto, del modelo de conjunto general.</p>
+<p>Por último, <em>XGBoost</em> está optimizado para superar el límite de los recursos computacionales de los algoritmos de árbol impulsados, lo que lo convierte en un algoritmo rápido y de muy alto rendimiento en términos de tiempo y cálculo.</p>
+<p><img src="img/05-bagging/sequential_trees.png" width="800pt" height="400pt" style="display: block; margin: auto;" /></p>
+<p><strong>Adaboost</strong></p>
+<p>Abreviatura de <em>Adaptive Boosting, AdaBoost</em> funciona mediante el proceso descrito anteriormente de entrenar secuencialmente, predecir y actualizar los pesos de las muestras mal clasificadas y de los modelos débiles correspondientes.</p>
+<p>Se usa principalmente con <em>Decision Tree Stumps</em>: árboles de decisión con solo un nodo raíz y dos nodos de salida, donde solo se evalúa una característica de los datos. Como podemos ver, al tener en cuenta solo una característica de nuestros datos para hacer predicciones, cada pivote es un modelo muy débil. Sin embargo, al combinar muchos de ellos, se puede construir un modelo de conjunto muy robusto y preciso.</p>
+<p><img src="img/05-bagging/adaboost.png" width="700pt" height="350pt" style="display: block; margin: auto;" /></p>
+</div>
+<div id="implementación-en-r-3" class="section level3 hasAnchor" number="4.4.3">
+<h3><span class="header-section-number">4.4.3</span> Implementación en R<a href="bagging-boosting.html#implementación-en-r-3" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+</div>
+<div id="xgboost-para-regresión" class="section level3 hasAnchor" number="4.4.4">
+<h3><span class="header-section-number">4.4.4</span> XGBoost para regresión<a href="bagging-boosting.html#xgboost-para-regresión" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><strong>Paso 1: Separación inicial de datos (test, train)</strong></p>
+<div class="sourceCode" id="cb116"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb116-1"><a href="bagging-boosting.html#cb116-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidymodels)</span>
+<span id="cb116-2"><a href="bagging-boosting.html#cb116-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb116-3"><a href="bagging-boosting.html#cb116-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(ames)</span>
+<span id="cb116-4"><a href="bagging-boosting.html#cb116-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb116-5"><a href="bagging-boosting.html#cb116-5" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">4595</span>)</span>
+<span id="cb116-6"><a href="bagging-boosting.html#cb116-6" aria-hidden="true" tabindex="-1"></a>ames_split <span class="ot">&lt;-</span> <span class="fu">initial_split</span>(ames, <span class="at">prop =</span> <span class="fl">0.75</span>)</span>
+<span id="cb116-7"><a href="bagging-boosting.html#cb116-7" aria-hidden="true" tabindex="-1"></a>ames_train <span class="ot">&lt;-</span> <span class="fu">training</span>(ames_split)</span>
+<span id="cb116-8"><a href="bagging-boosting.html#cb116-8" aria-hidden="true" tabindex="-1"></a>ames_test  <span class="ot">&lt;-</span> <span class="fu">testing</span>(ames_split)</span>
+<span id="cb116-9"><a href="bagging-boosting.html#cb116-9" aria-hidden="true" tabindex="-1"></a>ames_folds <span class="ot">&lt;-</span> <span class="fu">vfold_cv</span>(ames_train)</span></code></pre></div>
+<p>Contando con datos de entrenamiento, procedemos a realizar el feature engineering para extraer las mejores características que permitirán realizar las estimaciones en el modelo.</p>
+<p><strong>Paso 2: Pre-procesamiento e ingeniería de variables</strong></p>
+<div class="sourceCode" id="cb117"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb117-1"><a href="bagging-boosting.html#cb117-1" aria-hidden="true" tabindex="-1"></a>receta_casas <span class="ot">&lt;-</span> <span class="fu">recipe</span>(Sale_Price <span class="sc">~</span> . , <span class="at">data =</span> ames_train) <span class="sc">%&gt;%</span></span>
+<span id="cb117-2"><a href="bagging-boosting.html#cb117-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_unknown</span>(Alley) <span class="sc">%&gt;%</span></span>
+<span id="cb117-3"><a href="bagging-boosting.html#cb117-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_rename</span>(<span class="at">Year_Remod =</span> Year_Remod_Add) <span class="sc">%&gt;%</span> </span>
+<span id="cb117-4"><a href="bagging-boosting.html#cb117-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_rename</span>(<span class="at">ThirdSsn_Porch =</span> Three_season_porch) <span class="sc">%&gt;%</span> </span>
+<span id="cb117-5"><a href="bagging-boosting.html#cb117-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_ratio</span>(Bedroom_AbvGr, <span class="at">denom =</span> <span class="fu">denom_vars</span>(Gr_Liv_Area)) <span class="sc">%&gt;%</span> </span>
+<span id="cb117-6"><a href="bagging-boosting.html#cb117-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_mutate</span>(</span>
+<span id="cb117-7"><a href="bagging-boosting.html#cb117-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">Age_House =</span> Year_Sold <span class="sc">-</span> Year_Remod,</span>
+<span id="cb117-8"><a href="bagging-boosting.html#cb117-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">TotalSF   =</span> Gr_Liv_Area <span class="sc">+</span> Total_Bsmt_SF,</span>
+<span id="cb117-9"><a href="bagging-boosting.html#cb117-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">AvgRoomSF   =</span> Gr_Liv_Area <span class="sc">/</span> TotRms_AbvGrd,</span>
+<span id="cb117-10"><a href="bagging-boosting.html#cb117-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">Pool =</span> <span class="fu">if_else</span>(Pool_Area <span class="sc">&gt;</span> <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>),</span>
+<span id="cb117-11"><a href="bagging-boosting.html#cb117-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">Exter_Cond =</span> forcats<span class="sc">::</span><span class="fu">fct_collapse</span>(Exter_Cond, <span class="at">Good =</span> <span class="fu">c</span>(<span class="st">&quot;Typical&quot;</span>, <span class="st">&quot;Good&quot;</span>, <span class="st">&quot;Excellent&quot;</span>))) <span class="sc">%&gt;%</span> </span>
+<span id="cb117-12"><a href="bagging-boosting.html#cb117-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_relevel</span>(Exter_Cond, <span class="at">ref_level =</span> <span class="st">&quot;Good&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb117-13"><a href="bagging-boosting.html#cb117-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_normalize</span>(<span class="fu">all_predictors</span>(), <span class="sc">-</span><span class="fu">all_nominal</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb117-14"><a href="bagging-boosting.html#cb117-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_dummy</span>(<span class="fu">all_nominal</span>()) <span class="sc">%&gt;%</span> </span>
+<span id="cb117-15"><a href="bagging-boosting.html#cb117-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_interact</span>(<span class="sc">~</span> Second_Flr_SF<span class="sc">:</span>First_Flr_SF) <span class="sc">%&gt;%</span> </span>
+<span id="cb117-16"><a href="bagging-boosting.html#cb117-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_interact</span>(<span class="sc">~</span> <span class="fu">matches</span>(<span class="st">&quot;Bsmt_Cond&quot;</span>)<span class="sc">:</span>TotRms_AbvGrd) <span class="sc">%&gt;%</span> </span>
+<span id="cb117-17"><a href="bagging-boosting.html#cb117-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_rm</span>(</span>
+<span id="cb117-18"><a href="bagging-boosting.html#cb117-18" aria-hidden="true" tabindex="-1"></a>    First_Flr_SF, Second_Flr_SF, Year_Remod,</span>
+<span id="cb117-19"><a href="bagging-boosting.html#cb117-19" aria-hidden="true" tabindex="-1"></a>    Bsmt_Full_Bath, Bsmt_Half_Bath, </span>
+<span id="cb117-20"><a href="bagging-boosting.html#cb117-20" aria-hidden="true" tabindex="-1"></a>    Kitchen_AbvGr, BsmtFin_Type_1_Unf, </span>
+<span id="cb117-21"><a href="bagging-boosting.html#cb117-21" aria-hidden="true" tabindex="-1"></a>    Total_Bsmt_SF, Kitchen_AbvGr, Pool_Area, </span>
+<span id="cb117-22"><a href="bagging-boosting.html#cb117-22" aria-hidden="true" tabindex="-1"></a>    Gr_Liv_Area, Sale_Type_Oth, Sale_Type_VWD</span>
+<span id="cb117-23"><a href="bagging-boosting.html#cb117-23" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> </span>
+<span id="cb117-24"><a href="bagging-boosting.html#cb117-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">prep</span>()</span>
+<span id="cb117-25"><a href="bagging-boosting.html#cb117-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb117-26"><a href="bagging-boosting.html#cb117-26" aria-hidden="true" tabindex="-1"></a>receta_casas</span></code></pre></div>
+<pre><code>## Recipe
+## 
+## Inputs:
+## 
+##       role #variables
+##    outcome          1
+##  predictor         73
+## 
+## Training data contained 2197 data points and no missing data.
+## 
+## Operations:
+## 
+## Unknown factor level assignment for Alley [trained]
+## Variable renaming for Year_Remod [trained]
+## Variable renaming for ThirdSsn_Porch [trained]
+## Ratios from Bedroom_AbvGr, Gr_Liv_Area [trained]
+## Variable mutation for ~Year_Sold - Year_Remod, ~Gr_Liv_Area + To... [trained]
+## Re-order factor level to ref_level for Exter_Cond [trained]
+## Centering and scaling for Lot_Frontage, Lot_Area, Year_Built, Year_Remod,... [trained]
+## Dummy variables from MS_SubClass, MS_Zoning, Street, Alley, Lot_Shape, Land_Co... [trained]
+## Interactions with Second_Flr_SF:First_Flr_SF [trained]
+## Interactions with (Bsmt_Cond_Fair + Bsmt_Cond_Good + Bsmt_Cond_No_Ba... [trained]
+## Variables removed First_Flr_SF, Second_Flr_SF, Year_Remod, Bsmt_Full_Bath... [trained]</code></pre>
+<p>Recordemos que la función recipe() solo son los pasos a seguir, necesitamos usar la función prep() que nos devuelve una receta actualizada con las estimaciones y la función juice() que nos devuelve la matriz de diseño.</p>
+<p><strong>Paso 3: Selección de tipo de modelo con hiperparámetros iniciales</strong></p>
+<div class="sourceCode" id="cb119"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb119-1"><a href="bagging-boosting.html#cb119-1" aria-hidden="true" tabindex="-1"></a>xgboost_reg_model <span class="ot">&lt;-</span> <span class="fu">boost_tree</span>(</span>
+<span id="cb119-2"><a href="bagging-boosting.html#cb119-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">mode =</span> <span class="st">&quot;regression&quot;</span>,</span>
+<span id="cb119-3"><a href="bagging-boosting.html#cb119-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">trees =</span> <span class="dv">1000</span>,</span>
+<span id="cb119-4"><a href="bagging-boosting.html#cb119-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">tree_depth =</span> <span class="fu">tune</span>(),</span>
+<span id="cb119-5"><a href="bagging-boosting.html#cb119-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">min_n =</span> <span class="fu">tune</span>(),</span>
+<span id="cb119-6"><a href="bagging-boosting.html#cb119-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">loss_reduction =</span> <span class="fu">tune</span>(),</span>
+<span id="cb119-7"><a href="bagging-boosting.html#cb119-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">sample_size =</span> <span class="fu">tune</span>(),</span>
+<span id="cb119-8"><a href="bagging-boosting.html#cb119-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">mtry =</span> <span class="fu">tune</span>(),</span>
+<span id="cb119-9"><a href="bagging-boosting.html#cb119-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">learn_rate =</span> <span class="fu">tune</span>()</span>
+<span id="cb119-10"><a href="bagging-boosting.html#cb119-10" aria-hidden="true" tabindex="-1"></a> ) <span class="sc">%&gt;%</span> </span>
+<span id="cb119-11"><a href="bagging-boosting.html#cb119-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_engine</span>(</span>
+<span id="cb119-12"><a href="bagging-boosting.html#cb119-12" aria-hidden="true" tabindex="-1"></a>   <span class="st">&quot;xgboost&quot;</span>, </span>
+<span id="cb119-13"><a href="bagging-boosting.html#cb119-13" aria-hidden="true" tabindex="-1"></a>   <span class="at">importance =</span> <span class="st">&quot;impurity&quot;</span></span>
+<span id="cb119-14"><a href="bagging-boosting.html#cb119-14" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb119-15"><a href="bagging-boosting.html#cb119-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb119-16"><a href="bagging-boosting.html#cb119-16" aria-hidden="true" tabindex="-1"></a>xgboost_reg_model</span></code></pre></div>
+<pre><code>## Boosted Tree Model Specification (regression)
+## 
+## Main Arguments:
+##   mtry = tune()
+##   trees = 1000
+##   min_n = tune()
+##   tree_depth = tune()
+##   learn_rate = tune()
+##   loss_reduction = tune()
+##   sample_size = tune()
+## 
+## Engine-Specific Arguments:
+##   importance = impurity
+## 
+## Computational engine: xgboost</code></pre>
+<p><strong>Paso 4: Inicialización de workflow o pipeline</strong></p>
+<div class="sourceCode" id="cb121"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb121-1"><a href="bagging-boosting.html#cb121-1" aria-hidden="true" tabindex="-1"></a>xgboost_reg_workflow <span class="ot">&lt;-</span> <span class="fu">workflow</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb121-2"><a href="bagging-boosting.html#cb121-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_model</span>(xgboost_reg_model) <span class="sc">%&gt;%</span> </span>
+<span id="cb121-3"><a href="bagging-boosting.html#cb121-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_recipe</span>(receta_casas)</span>
+<span id="cb121-4"><a href="bagging-boosting.html#cb121-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb121-5"><a href="bagging-boosting.html#cb121-5" aria-hidden="true" tabindex="-1"></a>xgboost_reg_workflow</span></code></pre></div>
+<pre><code>## ══ Workflow ════════════════════════════════════════════════════════════════════
+## Preprocessor: Recipe
+## Model: boost_tree()
+## 
+## ── Preprocessor ────────────────────────────────────────────────────────────────
+## 11 Recipe Steps
+## 
+## • step_unknown()
+## • step_rename()
+## • step_rename()
+## • step_ratio()
+## • step_mutate()
+## • step_relevel()
+## • step_normalize()
+## • step_dummy()
+## • step_interact()
+## • step_interact()
+## • ...
+## • and 1 more step.
+## 
+## ── Model ───────────────────────────────────────────────────────────────────────
+## Boosted Tree Model Specification (regression)
+## 
+## Main Arguments:
+##   mtry = tune()
+##   trees = 1000
+##   min_n = tune()
+##   tree_depth = tune()
+##   learn_rate = tune()
+##   loss_reduction = tune()
+##   sample_size = tune()
+## 
+## Engine-Specific Arguments:
+##   importance = impurity
+## 
+## Computational engine: xgboost</code></pre>
+<p><strong>Paso 5: Creación de grid search</strong></p>
+<div class="sourceCode" id="cb123"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb123-1"><a href="bagging-boosting.html#cb123-1" aria-hidden="true" tabindex="-1"></a>xgboost_param_grid <span class="ot">&lt;-</span> <span class="fu">grid_latin_hypercube</span>(</span>
+<span id="cb123-2"><a href="bagging-boosting.html#cb123-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tree_depth</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">50</span>)),</span>
+<span id="cb123-3"><a href="bagging-boosting.html#cb123-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">min_n</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">50</span>)),</span>
+<span id="cb123-4"><a href="bagging-boosting.html#cb123-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">loss_reduction</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">10</span>, <span class="fl">1.5</span>), <span class="at">trans =</span> <span class="fu">log10_trans</span>()),</span>
+<span id="cb123-5"><a href="bagging-boosting.html#cb123-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">learn_rate</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">6</span>, <span class="sc">-</span><span class="fl">0.25</span>), <span class="at">trans =</span> <span class="fu">log10_trans</span>()),</span>
+<span id="cb123-6"><a href="bagging-boosting.html#cb123-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mtry</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">70</span>)),</span>
+<span id="cb123-7"><a href="bagging-boosting.html#cb123-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">sample_size =</span> <span class="fu">sample_prop</span>(),</span>
+<span id="cb123-8"><a href="bagging-boosting.html#cb123-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">size =</span> <span class="dv">1000</span></span>
+<span id="cb123-9"><a href="bagging-boosting.html#cb123-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb123-10"><a href="bagging-boosting.html#cb123-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb123-11"><a href="bagging-boosting.html#cb123-11" aria-hidden="true" tabindex="-1"></a>xgboost_param_grid</span></code></pre></div>
+<pre><code>## # A tibble: 1,000 × 6
+##    tree_depth min_n loss_reduction learn_rate  mtry sample_size
+##         &lt;int&gt; &lt;int&gt;          &lt;dbl&gt;      &lt;dbl&gt; &lt;int&gt;       &lt;dbl&gt;
+##  1          8    50  7.99          0.0000189     13       0.910
+##  2          7    47  0.000000222   0.144         46       0.986
+##  3         32     6  0.00000000222 0.00000352    24       0.750
+##  4         29    35  0.00199       0.0000131     16       0.621
+##  5         35    16  0.00000646    0.00000246    59       0.560
+##  6         15    48  1.46          0.000118      51       0.112
+##  7          4     4  0.000000330   0.00000630    26       0.154
+##  8         27    10  0.000426      0.269         17       0.278
+##  9         50     7  0.807         0.000384      17       0.262
+## 10         38    28  0.00970       0.00419       68       0.576
+## # … with 990 more rows</code></pre>
+<p><strong>Paso 6: Entrenamiento de modelos con hiperparámetros definidos</strong></p>
+<div class="sourceCode" id="cb125"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb125-1"><a href="bagging-boosting.html#cb125-1" aria-hidden="true" tabindex="-1"></a>UseCores <span class="ot">&lt;-</span> <span class="fu">detectCores</span>() <span class="sc">-</span> <span class="dv">1</span></span>
+<span id="cb125-2"><a href="bagging-boosting.html#cb125-2" aria-hidden="true" tabindex="-1"></a>cluster <span class="ot">&lt;-</span> <span class="fu">makeCluster</span>(UseCores)</span>
+<span id="cb125-3"><a href="bagging-boosting.html#cb125-3" aria-hidden="true" tabindex="-1"></a><span class="fu">registerDoParallel</span>(cluster)</span>
+<span id="cb125-4"><a href="bagging-boosting.html#cb125-4" aria-hidden="true" tabindex="-1"></a>ctrl_grid <span class="ot">&lt;-</span> <span class="fu">control_grid</span>(<span class="at">save_pred =</span> T, <span class="at">verbose =</span> T)</span>
+<span id="cb125-5"><a href="bagging-boosting.html#cb125-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-6"><a href="bagging-boosting.html#cb125-6" aria-hidden="true" tabindex="-1"></a>xgb1 <span class="ot">&lt;-</span> <span class="fu">Sys.time</span>()</span>
+<span id="cb125-7"><a href="bagging-boosting.html#cb125-7" aria-hidden="true" tabindex="-1"></a>xgboost_reg_tune_result <span class="ot">&lt;-</span> <span class="fu">tune_grid</span>(</span>
+<span id="cb125-8"><a href="bagging-boosting.html#cb125-8" aria-hidden="true" tabindex="-1"></a>  xgboost_reg_workflow,</span>
+<span id="cb125-9"><a href="bagging-boosting.html#cb125-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">resamples =</span> ames_folds,</span>
+<span id="cb125-10"><a href="bagging-boosting.html#cb125-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">grid =</span> xgboost_param_grid,</span>
+<span id="cb125-11"><a href="bagging-boosting.html#cb125-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">metrics =</span> <span class="fu">metric_set</span>(rmse, mae, mape, rsq),</span>
+<span id="cb125-12"><a href="bagging-boosting.html#cb125-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">control =</span> ctrl_grid</span>
+<span id="cb125-13"><a href="bagging-boosting.html#cb125-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb125-14"><a href="bagging-boosting.html#cb125-14" aria-hidden="true" tabindex="-1"></a>xgb2 <span class="ot">&lt;-</span> <span class="fu">Sys.time</span>(); xgb2 <span class="sc">-</span> xgb1</span>
+<span id="cb125-15"><a href="bagging-boosting.html#cb125-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-16"><a href="bagging-boosting.html#cb125-16" aria-hidden="true" tabindex="-1"></a><span class="fu">stopCluster</span>(cluster)</span>
+<span id="cb125-17"><a href="bagging-boosting.html#cb125-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-18"><a href="bagging-boosting.html#cb125-18" aria-hidden="true" tabindex="-1"></a>xgboost_reg_tune_result <span class="sc">%&gt;%</span> <span class="fu">saveRDS</span>(<span class="st">&quot;models/xgboost_model_reg.rds&quot;</span>)</span></code></pre></div>
+<p><strong>Paso 7: Análisis de métricas de error e hiperparámetros (Vuelve al paso 3, si es necesario)</strong></p>
+<div class="sourceCode" id="cb126"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb126-1"><a href="bagging-boosting.html#cb126-1" aria-hidden="true" tabindex="-1"></a>xgboost_reg_tune_result <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;models/xgboost_model_reg.rds&quot;</span>)</span>
+<span id="cb126-2"><a href="bagging-boosting.html#cb126-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb126-3"><a href="bagging-boosting.html#cb126-3" aria-hidden="true" tabindex="-1"></a><span class="fu">collect_metrics</span>(xgboost_reg_tune_result)</span></code></pre></div>
+<pre><code>## # A tibble: 4,000 × 12
+##     mtry min_n tree_depth learn_rate loss_reduction sample_size .metric
+##    &lt;int&gt; &lt;int&gt;      &lt;int&gt;      &lt;dbl&gt;          &lt;dbl&gt;       &lt;dbl&gt; &lt;chr&gt;  
+##  1    58    36         36  0.0000895    0.000000405       0.965 mae    
+##  2    58    36         36  0.0000895    0.000000405       0.965 mape   
+##  3    58    36         36  0.0000895    0.000000405       0.965 rmse   
+##  4    58    36         36  0.0000895    0.000000405       0.965 rsq    
+##  5    45    18         27  0.0000425    0.572             0.314 mae    
+##  6    45    18         27  0.0000425    0.572             0.314 mape   
+##  7    45    18         27  0.0000425    0.572             0.314 rmse   
+##  8    45    18         27  0.0000425    0.572             0.314 rsq    
+##  9    22    12         25  0.0000154    0.000925          0.287 mae    
+## 10    22    12         25  0.0000154    0.000925          0.287 mape   
+## # … with 3,990 more rows, and 5 more variables: .estimator &lt;chr&gt;, mean &lt;dbl&gt;,
+## #   n &lt;int&gt;, std_err &lt;dbl&gt;, .config &lt;chr&gt;</code></pre>
+<p>En la siguiente gráfica observamos las distintas métricas de error asociados a los hiperparámetros elegidos:</p>
+<div class="sourceCode" id="cb128"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb128-1"><a href="bagging-boosting.html#cb128-1" aria-hidden="true" tabindex="-1"></a>xgboost_reg_tune_result <span class="sc">%&gt;%</span> </span>
+<span id="cb128-2"><a href="bagging-boosting.html#cb128-2" aria-hidden="true" tabindex="-1"></a> <span class="fu">autoplot</span>() </span></code></pre></div>
+<p><img src="amt22_03intro2mls2_files/figure-html/unnamed-chunk-101-1.png" width="672" /></p>
+<div class="sourceCode" id="cb129"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb129-1"><a href="bagging-boosting.html#cb129-1" aria-hidden="true" tabindex="-1"></a><span class="fu">show_best</span>(xgboost_reg_tune_result, <span class="at">n =</span> <span class="dv">10</span>, <span class="at">metric =</span> <span class="st">&quot;rsq&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb129-2"><a href="bagging-boosting.html#cb129-2" aria-hidden="true" tabindex="-1"></a> <span class="fu">select</span>(mtry<span class="sc">:</span>sample_size, mean<span class="sc">:</span>std_err, <span class="sc">-</span>n)</span></code></pre></div>
+<pre><code>## # A tibble: 10 × 8
+##     mtry min_n tree_depth learn_rate loss_reduction sample_size  mean std_err
+##    &lt;int&gt; &lt;int&gt;      &lt;int&gt;      &lt;dbl&gt;          &lt;dbl&gt;       &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;
+##  1    27     9          4    0.0272   0.000106            0.625 0.853 0.00553
+##  2     5    24          4    0.0855   8.75                0.960 0.853 0.00678
+##  3     6    12         17    0.0186   0.00000260          0.520 0.851 0.00489
+##  4     4     8         15    0.0232   0.00000000536       0.371 0.851 0.00443
+##  5     7    24          6    0.0800   0.0311              0.953 0.850 0.00654
+##  6     4     5         14    0.00780  0.0457              0.839 0.850 0.00570
+##  7     5    27         47    0.0188   0.00298             0.913 0.848 0.00559
+##  8     5     8         40    0.0190   0.00000862          0.342 0.848 0.00627
+##  9    10     7         11    0.0195   1.01                0.289 0.848 0.00708
+## 10     5    19         44    0.0491   0.0000656           0.561 0.847 0.00658</code></pre>
+<p><strong>Paso 8: Selección de modelo a usar</strong></p>
+<div class="sourceCode" id="cb131"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb131-1"><a href="bagging-boosting.html#cb131-1" aria-hidden="true" tabindex="-1"></a>best_xgboost_reg_model <span class="ot">&lt;-</span> <span class="fu">select_best</span>(xgboost_reg_tune_result, <span class="at">metric =</span> <span class="st">&quot;rsq&quot;</span>)</span>
+<span id="cb131-2"><a href="bagging-boosting.html#cb131-2" aria-hidden="true" tabindex="-1"></a>best_xgboost_reg_model</span></code></pre></div>
+<pre><code>## # A tibble: 1 × 7
+##    mtry min_n tree_depth learn_rate loss_reduction sample_size .config          
+##   &lt;int&gt; &lt;int&gt;      &lt;int&gt;      &lt;dbl&gt;          &lt;dbl&gt;       &lt;dbl&gt; &lt;chr&gt;            
+## 1    27     9          4     0.0272       0.000106       0.625 Preprocessor1_Mo…</code></pre>
+<div class="sourceCode" id="cb133"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb133-1"><a href="bagging-boosting.html#cb133-1" aria-hidden="true" tabindex="-1"></a>best_xgboost_reg_1se_model <span class="ot">&lt;-</span> xgboost_reg_tune_result <span class="sc">%&gt;%</span> </span>
+<span id="cb133-2"><a href="bagging-boosting.html#cb133-2" aria-hidden="true" tabindex="-1"></a> <span class="fu">select_by_one_std_err</span>(<span class="at">metric =</span> <span class="st">&quot;rsq&quot;</span>, <span class="st">&quot;rsq&quot;</span>)</span>
+<span id="cb133-3"><a href="bagging-boosting.html#cb133-3" aria-hidden="true" tabindex="-1"></a>best_xgboost_reg_1se_model</span></code></pre></div>
+<pre><code>## # A tibble: 1 × 14
+##    mtry min_n tree_depth learn_rate loss_reduction sample_size .metric
+##   &lt;int&gt; &lt;int&gt;      &lt;int&gt;      &lt;dbl&gt;          &lt;dbl&gt;       &lt;dbl&gt; &lt;chr&gt;  
+## 1     4     5         14    0.00780         0.0457       0.839 rsq    
+## # … with 7 more variables: .estimator &lt;chr&gt;, mean &lt;dbl&gt;, n &lt;int&gt;,
+## #   std_err &lt;dbl&gt;, .config &lt;chr&gt;, .best &lt;dbl&gt;, .bound &lt;dbl&gt;</code></pre>
+<p><strong>Paso 9: Ajuste de modelo final con todos los datos (Vuelve al paso 2, si es necesario)</strong></p>
+<div class="sourceCode" id="cb135"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb135-1"><a href="bagging-boosting.html#cb135-1" aria-hidden="true" tabindex="-1"></a>final_xgboost_reg_model <span class="ot">&lt;-</span> xgboost_reg_workflow <span class="sc">%&gt;%</span> </span>
+<span id="cb135-2"><a href="bagging-boosting.html#cb135-2" aria-hidden="true" tabindex="-1"></a>  <span class="co">#finalize_workflow(best_xgboost_model) %&gt;% </span></span>
+<span id="cb135-3"><a href="bagging-boosting.html#cb135-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">finalize_workflow</span>(best_xgboost_reg_1se_model) <span class="sc">%&gt;%</span> </span>
+<span id="cb135-4"><a href="bagging-boosting.html#cb135-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(<span class="at">data =</span> ames_train)</span></code></pre></div>
+<pre><code>## [20:17:33] WARNING: amalgamation/../src/learner.cc:627: 
+## Parameters: { &quot;importance&quot; } might not be used.
+## 
+##   This could be a false alarm, with some parameters getting used by language bindings but
+##   then being mistakenly passed down to XGBoost core, or some parameter actually being used
+##   but getting flagged wrongly here. Please open an issue if you find any such cases.</code></pre>
+<div class="sourceCode" id="cb137"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb137-1"><a href="bagging-boosting.html#cb137-1" aria-hidden="true" tabindex="-1"></a>final_xgboost_reg_model</span></code></pre></div>
+<pre><code>## ══ Workflow [trained] ══════════════════════════════════════════════════════════
+## Preprocessor: Recipe
+## Model: boost_tree()
+## 
+## ── Preprocessor ────────────────────────────────────────────────────────────────
+## 11 Recipe Steps
+## 
+## • step_unknown()
+## • step_rename()
+## • step_rename()
+## • step_ratio()
+## • step_mutate()
+## • step_relevel()
+## • step_normalize()
+## • step_dummy()
+## • step_interact()
+## • step_interact()
+## • ...
+## • and 1 more step.
+## 
+## ── Model ───────────────────────────────────────────────────────────────────────
+## ##### xgb.Booster
+## raw: 9.1 Mb 
+## call:
+##   xgboost::xgb.train(params = list(eta = 0.0078034925239406, max_depth = 14L, 
+##     gamma = 0.0457345133884295, colsample_bytree = 1, colsample_bynode = 0.173913043478261, 
+##     min_child_weight = 5L, subsample = 0.83899691531139, objective = &quot;reg:squarederror&quot;), 
+##     data = x$data, nrounds = 1000, watchlist = x$watchlist, verbose = 0, 
+##     importance = &quot;impurity&quot;, nthread = 1)
+## params (as set within xgb.train):
+##   eta = &quot;0.0078034925239406&quot;, max_depth = &quot;14&quot;, gamma = &quot;0.0457345133884295&quot;, colsample_bytree = &quot;1&quot;, colsample_bynode = &quot;0.173913043478261&quot;, min_child_weight = &quot;5&quot;, subsample = &quot;0.83899691531139&quot;, objective = &quot;reg:squarederror&quot;, importance = &quot;impurity&quot;, nthread = &quot;1&quot;, validate_parameters = &quot;TRUE&quot;
+## xgb.attributes:
+##   niter
+## callbacks:
+##   cb.evaluation.log()
+## # of features: 23 
+## niter: 1000
+## nfeatures : 23 
+## evaluation_log:
+##     iter training_rmse
+##        1    195903.219
+##        2    194485.609
+## ---                   
+##      999      7337.960
+##     1000      7331.632</code></pre>
+<p>Como hemos hablado anteriormente, este último objeto es el modelo final entrenado, el cual contiene toda la información del pre-procesamiento de datos, por lo que en caso de ponerse en producción el modelo, sólo se necesita de este último elemento para poder realizar nuevas predicciones.</p>
+<p>Antes de pasar al siguiente paso, es importante validar que hayamos hecho un uso correcto de las variables predictivas. En este momento es posible detectar variables que no estén aportando valor o variables que no debiéramos estar usando debido a que cometeríamos data leakage. Para enfrentar esto, ayuda estimar y ordenar el valor de importancia del modelo</p>
+<div class="sourceCode" id="cb139"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb139-1"><a href="bagging-boosting.html#cb139-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(vip)</span>
+<span id="cb139-2"><a href="bagging-boosting.html#cb139-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb139-3"><a href="bagging-boosting.html#cb139-3" aria-hidden="true" tabindex="-1"></a>final_xgboost_reg_model <span class="sc">%&gt;%</span></span>
+<span id="cb139-4"><a href="bagging-boosting.html#cb139-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">extract_fit_parsnip</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb139-5"><a href="bagging-boosting.html#cb139-5" aria-hidden="true" tabindex="-1"></a>  vip<span class="sc">::</span><span class="fu">vip</span>(<span class="at">num_features =</span> <span class="dv">25</span>) <span class="sc">+</span> </span>
+<span id="cb139-6"><a href="bagging-boosting.html#cb139-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Importancia de las variables&quot;</span>)</span></code></pre></div>
+<p><img src="amt22_03intro2mls2_files/figure-html/unnamed-chunk-105-1.png" width="672" /></p>
+<p><strong>Paso 10: Validar poder predictivo con datos de prueba</strong></p>
+<p>Imaginemos por un momento que pasa un mes de tiempo desde que hicimos nuestro modelo, es hora de ponerlo a prueba prediciendo valores de nuevos elementos:</p>
+<div class="sourceCode" id="cb140"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb140-1"><a href="bagging-boosting.html#cb140-1" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">predict</span>(final_xgboost_reg_model, ames_test) <span class="sc">%&gt;%</span> </span>
+<span id="cb140-2"><a href="bagging-boosting.html#cb140-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">bind_cols</span>(<span class="at">truth =</span> ames_test<span class="sc">$</span>Sale_Price) <span class="sc">%&gt;%</span> </span>
+<span id="cb140-3"><a href="bagging-boosting.html#cb140-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">pred_xgb_reg =</span> .pred, <span class="at">Sale_Price =</span> truth)</span>
+<span id="cb140-4"><a href="bagging-boosting.html#cb140-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb140-5"><a href="bagging-boosting.html#cb140-5" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(results)</span></code></pre></div>
+<pre><code>## # A tibble: 6 × 2
+##   pred_xgb_reg Sale_Price
+##          &lt;dbl&gt;      &lt;int&gt;
+## 1      131668.     105000
+## 2      176134.     185000
+## 3      176002.     180400
+## 4      119015.     141000
+## 5      210505.     210000
+## 6      218120.     216000</code></pre>
+<div class="sourceCode" id="cb142"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb142-1"><a href="bagging-boosting.html#cb142-1" aria-hidden="true" tabindex="-1"></a>multi_metric <span class="ot">&lt;-</span> <span class="fu">metric_set</span>(rmse, rsq, mae, mape, ccc)</span>
+<span id="cb142-2"><a href="bagging-boosting.html#cb142-2" aria-hidden="true" tabindex="-1"></a><span class="fu">multi_metric</span>(results, <span class="at">truth =</span> Sale_Price, <span class="at">estimate =</span> pred_xgb_reg) <span class="sc">%&gt;%</span> </span>
+<span id="cb142-3"><a href="bagging-boosting.html#cb142-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">.estimate =</span> <span class="fu">round</span>(.estimate, <span class="dv">2</span>))</span></code></pre></div>
+<pre><code>## # A tibble: 5 × 3
+##   .metric .estimator .estimate
+##   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
+## 1 rmse    standard    30205.  
+## 2 rsq     standard        0.86
+## 3 mae     standard    19721.  
+## 4 mape    standard       12.0 
+## 5 ccc     standard        0.92</code></pre>
+<div class="sourceCode" id="cb144"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb144-1"><a href="bagging-boosting.html#cb144-1" aria-hidden="true" tabindex="-1"></a>results <span class="sc">%&gt;%</span> </span>
+<span id="cb144-2"><a href="bagging-boosting.html#cb144-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> pred_xgb_reg, <span class="at">y =</span> Sale_Price)) <span class="sc">+</span></span>
+<span id="cb144-3"><a href="bagging-boosting.html#cb144-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb144-4"><a href="bagging-boosting.html#cb144-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">color =</span> <span class="st">&quot;red&quot;</span>) <span class="sc">+</span></span>
+<span id="cb144-5"><a href="bagging-boosting.html#cb144-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Prediction&quot;</span>) <span class="sc">+</span></span>
+<span id="cb144-6"><a href="bagging-boosting.html#cb144-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Observation&quot;</span>) <span class="sc">+</span></span>
+<span id="cb144-7"><a href="bagging-boosting.html#cb144-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Comparisson&quot;</span>)</span></code></pre></div>
+<p><img src="amt22_03intro2mls2_files/figure-html/unnamed-chunk-108-1.png" width="672" /></p>
+</div>
+<div id="xgboost-para-clasificación" class="section level3 hasAnchor" number="4.4.5">
+<h3><span class="header-section-number">4.4.5</span> XGBoost para clasificación<a href="bagging-boosting.html#xgboost-para-clasificación" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><strong>Paso 1: Separación inicial de datos (test, train)</strong></p>
+<div class="sourceCode" id="cb145"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb145-1"><a href="bagging-boosting.html#cb145-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1234</span>)</span>
+<span id="cb145-2"><a href="bagging-boosting.html#cb145-2" aria-hidden="true" tabindex="-1"></a>telco_split <span class="ot">&lt;-</span> <span class="fu">initial_split</span>(telco, <span class="at">prop =</span> .<span class="dv">70</span>)</span>
+<span id="cb145-3"><a href="bagging-boosting.html#cb145-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb145-4"><a href="bagging-boosting.html#cb145-4" aria-hidden="true" tabindex="-1"></a>telco_train <span class="ot">&lt;-</span> <span class="fu">training</span>(telco_split)</span>
+<span id="cb145-5"><a href="bagging-boosting.html#cb145-5" aria-hidden="true" tabindex="-1"></a>telco_test  <span class="ot">&lt;-</span> <span class="fu">testing</span>(telco_split)</span>
+<span id="cb145-6"><a href="bagging-boosting.html#cb145-6" aria-hidden="true" tabindex="-1"></a>telco_folds <span class="ot">&lt;-</span> <span class="fu">vfold_cv</span>(telco_train)</span>
+<span id="cb145-7"><a href="bagging-boosting.html#cb145-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb145-8"><a href="bagging-boosting.html#cb145-8" aria-hidden="true" tabindex="-1"></a>telco_folds</span></code></pre></div>
+<pre><code>## #  10-fold cross-validation 
+## # A tibble: 10 × 2
+##    splits             id    
+##    &lt;list&gt;             &lt;chr&gt; 
+##  1 &lt;split [4437/493]&gt; Fold01
+##  2 &lt;split [4437/493]&gt; Fold02
+##  3 &lt;split [4437/493]&gt; Fold03
+##  4 &lt;split [4437/493]&gt; Fold04
+##  5 &lt;split [4437/493]&gt; Fold05
+##  6 &lt;split [4437/493]&gt; Fold06
+##  7 &lt;split [4437/493]&gt; Fold07
+##  8 &lt;split [4437/493]&gt; Fold08
+##  9 &lt;split [4437/493]&gt; Fold09
+## 10 &lt;split [4437/493]&gt; Fold10</code></pre>
+<p><strong>Paso 2: Pre-procesamiento e ingeniería de variables</strong></p>
+<div class="sourceCode" id="cb147"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb147-1"><a href="bagging-boosting.html#cb147-1" aria-hidden="true" tabindex="-1"></a>binner <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
+<span id="cb147-2"><a href="bagging-boosting.html#cb147-2" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> <span class="fu">cut</span>(x, <span class="at">breaks =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">12</span>, <span class="dv">24</span>, <span class="dv">36</span>,<span class="dv">48</span>,<span class="dv">60</span>,<span class="dv">72</span>), <span class="at">include.lowest =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb147-3"><a href="bagging-boosting.html#cb147-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.numeric</span>(x)</span>
+<span id="cb147-4"><a href="bagging-boosting.html#cb147-4" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb147-5"><a href="bagging-boosting.html#cb147-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb147-6"><a href="bagging-boosting.html#cb147-6" aria-hidden="true" tabindex="-1"></a>telco_rec <span class="ot">&lt;-</span> <span class="fu">recipe</span>(Churn <span class="sc">~</span> ., <span class="at">data =</span> telco_train) <span class="sc">%&gt;%</span> </span>
+<span id="cb147-7"><a href="bagging-boosting.html#cb147-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">update_role</span>(customerID, <span class="at">new_role =</span> <span class="st">&quot;id variable&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb147-8"><a href="bagging-boosting.html#cb147-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_num2factor</span>(</span>
+<span id="cb147-9"><a href="bagging-boosting.html#cb147-9" aria-hidden="true" tabindex="-1"></a>    tenure, <span class="at">transform =</span> binner, </span>
+<span id="cb147-10"><a href="bagging-boosting.html#cb147-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">&quot;0-1 year&quot;</span>, <span class="st">&quot;1-2 years&quot;</span>, <span class="st">&quot;2-3 years&quot;</span>, <span class="st">&quot;3-4 years&quot;</span>, <span class="st">&quot;4-5 years&quot;</span>, <span class="st">&quot;5-6 years&quot;</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb147-11"><a href="bagging-boosting.html#cb147-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_normalize</span>(<span class="fu">all_numeric_predictors</span>()) <span class="sc">%&gt;%</span> </span>
+<span id="cb147-12"><a href="bagging-boosting.html#cb147-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_dummy</span>(<span class="fu">all_nominal_predictors</span>()) <span class="sc">%&gt;%</span> </span>
+<span id="cb147-13"><a href="bagging-boosting.html#cb147-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_impute_median</span>(<span class="fu">all_numeric_predictors</span>()) <span class="sc">%&gt;%</span> </span>
+<span id="cb147-14"><a href="bagging-boosting.html#cb147-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_rm</span>(customerID, <span class="at">skip=</span>T) <span class="sc">%&gt;%</span> </span>
+<span id="cb147-15"><a href="bagging-boosting.html#cb147-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">prep</span>()</span>
+<span id="cb147-16"><a href="bagging-boosting.html#cb147-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb147-17"><a href="bagging-boosting.html#cb147-17" aria-hidden="true" tabindex="-1"></a>telco_rec</span></code></pre></div>
+<pre><code>## Recipe
+## 
+## Inputs:
+## 
+##         role #variables
+##  id variable          1
+##      outcome          1
+##    predictor         19
+## 
+## Training data contained 4930 data points and 10 incomplete rows. 
+## 
+## Operations:
+## 
+## Factor variables from tenure [trained]
+## Centering and scaling for SeniorCitizen, MonthlyCharges, TotalCharges [trained]
+## Dummy variables from gender, Partner, Dependents, tenure, PhoneService, Multip... [trained]
+## Median imputation for SeniorCitizen, MonthlyCharges, TotalCharges, ge... [trained]
+## Variables removed customerID [trained]</code></pre>
+<p><strong>Paso 3: Selección de tipo de modelo con hiperparámetros iniciales</strong></p>
+<div class="sourceCode" id="cb149"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb149-1"><a href="bagging-boosting.html#cb149-1" aria-hidden="true" tabindex="-1"></a>xgboost_model <span class="ot">&lt;-</span> <span class="fu">boost_tree</span>(</span>
+<span id="cb149-2"><a href="bagging-boosting.html#cb149-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">mode =</span> <span class="st">&quot;classification&quot;</span>,</span>
+<span id="cb149-3"><a href="bagging-boosting.html#cb149-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">trees =</span> <span class="dv">1000</span>,</span>
+<span id="cb149-4"><a href="bagging-boosting.html#cb149-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">tree_depth =</span> <span class="fu">tune</span>(),</span>
+<span id="cb149-5"><a href="bagging-boosting.html#cb149-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">min_n =</span> <span class="fu">tune</span>(),</span>
+<span id="cb149-6"><a href="bagging-boosting.html#cb149-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">loss_reduction =</span> <span class="fu">tune</span>(),</span>
+<span id="cb149-7"><a href="bagging-boosting.html#cb149-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">sample_size =</span> <span class="fu">tune</span>(),</span>
+<span id="cb149-8"><a href="bagging-boosting.html#cb149-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">mtry =</span> <span class="fu">tune</span>(),</span>
+<span id="cb149-9"><a href="bagging-boosting.html#cb149-9" aria-hidden="true" tabindex="-1"></a> <span class="at">learn_rate =</span> <span class="fu">tune</span>()</span>
+<span id="cb149-10"><a href="bagging-boosting.html#cb149-10" aria-hidden="true" tabindex="-1"></a> ) <span class="sc">%&gt;%</span> </span>
+<span id="cb149-11"><a href="bagging-boosting.html#cb149-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_engine</span>(</span>
+<span id="cb149-12"><a href="bagging-boosting.html#cb149-12" aria-hidden="true" tabindex="-1"></a>   <span class="st">&quot;xgboost&quot;</span>, </span>
+<span id="cb149-13"><a href="bagging-boosting.html#cb149-13" aria-hidden="true" tabindex="-1"></a>   <span class="at">importance =</span> <span class="st">&quot;impurity&quot;</span></span>
+<span id="cb149-14"><a href="bagging-boosting.html#cb149-14" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb149-15"><a href="bagging-boosting.html#cb149-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb149-16"><a href="bagging-boosting.html#cb149-16" aria-hidden="true" tabindex="-1"></a>xgboost_model</span></code></pre></div>
+<pre><code>## Boosted Tree Model Specification (classification)
+## 
+## Main Arguments:
+##   mtry = tune()
+##   trees = 1000
+##   min_n = tune()
+##   tree_depth = tune()
+##   learn_rate = tune()
+##   loss_reduction = tune()
+##   sample_size = tune()
+## 
+## Engine-Specific Arguments:
+##   importance = impurity
+## 
+## Computational engine: xgboost</code></pre>
+<p><strong>Paso 4: Inicialización de workflow o pipeline</strong></p>
+<div class="sourceCode" id="cb151"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb151-1"><a href="bagging-boosting.html#cb151-1" aria-hidden="true" tabindex="-1"></a>xgboost_workflow <span class="ot">&lt;-</span> <span class="fu">workflow</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb151-2"><a href="bagging-boosting.html#cb151-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_model</span>(xgboost_model) <span class="sc">%&gt;%</span> </span>
+<span id="cb151-3"><a href="bagging-boosting.html#cb151-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_recipe</span>(telco_rec)</span>
+<span id="cb151-4"><a href="bagging-boosting.html#cb151-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb151-5"><a href="bagging-boosting.html#cb151-5" aria-hidden="true" tabindex="-1"></a>xgboost_workflow</span></code></pre></div>
+<pre><code>## ══ Workflow ════════════════════════════════════════════════════════════════════
+## Preprocessor: Recipe
+## Model: boost_tree()
+## 
+## ── Preprocessor ────────────────────────────────────────────────────────────────
+## 5 Recipe Steps
+## 
+## • step_num2factor()
+## • step_normalize()
+## • step_dummy()
+## • step_impute_median()
+## • step_rm()
+## 
+## ── Model ───────────────────────────────────────────────────────────────────────
+## Boosted Tree Model Specification (classification)
+## 
+## Main Arguments:
+##   mtry = tune()
+##   trees = 1000
+##   min_n = tune()
+##   tree_depth = tune()
+##   learn_rate = tune()
+##   loss_reduction = tune()
+##   sample_size = tune()
+## 
+## Engine-Specific Arguments:
+##   importance = impurity
+## 
+## Computational engine: xgboost</code></pre>
+<p><strong>Paso 5: Creación de grid search</strong></p>
+<div class="sourceCode" id="cb153"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb153-1"><a href="bagging-boosting.html#cb153-1" aria-hidden="true" tabindex="-1"></a>xgboost_param_grid <span class="ot">&lt;-</span> <span class="fu">grid_latin_hypercube</span>(</span>
+<span id="cb153-2"><a href="bagging-boosting.html#cb153-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tree_depth</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">30</span>)),</span>
+<span id="cb153-3"><a href="bagging-boosting.html#cb153-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">min_n</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">50</span>)),</span>
+<span id="cb153-4"><a href="bagging-boosting.html#cb153-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">loss_reduction</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">10</span>, <span class="fl">1.5</span>), <span class="at">trans =</span> <span class="fu">log10_trans</span>()),</span>
+<span id="cb153-5"><a href="bagging-boosting.html#cb153-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">learn_rate</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">6</span>, <span class="sc">-</span><span class="fl">0.25</span>), <span class="at">trans =</span> <span class="fu">log10_trans</span>()),</span>
+<span id="cb153-6"><a href="bagging-boosting.html#cb153-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mtry</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">20</span>)),</span>
+<span id="cb153-7"><a href="bagging-boosting.html#cb153-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">sample_size =</span> <span class="fu">sample_prop</span>(),</span>
+<span id="cb153-8"><a href="bagging-boosting.html#cb153-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">size =</span> <span class="dv">500</span></span>
+<span id="cb153-9"><a href="bagging-boosting.html#cb153-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb153-10"><a href="bagging-boosting.html#cb153-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb153-11"><a href="bagging-boosting.html#cb153-11" aria-hidden="true" tabindex="-1"></a>xgboost_param_grid</span></code></pre></div>
+<pre><code>## # A tibble: 500 × 6
+##    tree_depth min_n loss_reduction learn_rate  mtry sample_size
+##         &lt;int&gt; &lt;int&gt;          &lt;dbl&gt;      &lt;dbl&gt; &lt;int&gt;       &lt;dbl&gt;
+##  1          4     6  0.00237       0.0000277     19       0.637
+##  2         28    17  0.0189        0.0612        15       0.557
+##  3         13    18  0.000467      0.0436         5       0.977
+##  4          5    22  0.272         0.388         14       0.192
+##  5         10    45  0.000143      0.0383        18       0.480
+##  6         24    37  0.00000000778 0.00000364     1       0.233
+##  7         11    23  0.0000000629  0.00000795    15       0.531
+##  8          9    30  2.07          0.000773      17       0.896
+##  9         11    11  0.000000160   0.227         16       0.160
+## 10          5    35  0.00000000477 0.0000427     13       0.209
+## # … with 490 more rows</code></pre>
+<p><strong>Paso 6: Entrenamiento de modelos con hiperparámetros definidos</strong></p>
+<div class="sourceCode" id="cb155"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb155-1"><a href="bagging-boosting.html#cb155-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(doParallel)</span>
+<span id="cb155-2"><a href="bagging-boosting.html#cb155-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb155-3"><a href="bagging-boosting.html#cb155-3" aria-hidden="true" tabindex="-1"></a>UseCores <span class="ot">&lt;-</span> <span class="fu">detectCores</span>() <span class="sc">-</span> <span class="dv">1</span></span>
+<span id="cb155-4"><a href="bagging-boosting.html#cb155-4" aria-hidden="true" tabindex="-1"></a>cluster <span class="ot">&lt;-</span> <span class="fu">makeCluster</span>(UseCores)</span>
+<span id="cb155-5"><a href="bagging-boosting.html#cb155-5" aria-hidden="true" tabindex="-1"></a><span class="fu">registerDoParallel</span>(cluster)</span>
+<span id="cb155-6"><a href="bagging-boosting.html#cb155-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb155-7"><a href="bagging-boosting.html#cb155-7" aria-hidden="true" tabindex="-1"></a>ctrl_grid <span class="ot">&lt;-</span> <span class="fu">control_grid</span>(<span class="at">save_pred =</span> T, <span class="at">verbose =</span> T)</span>
+<span id="cb155-8"><a href="bagging-boosting.html#cb155-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb155-9"><a href="bagging-boosting.html#cb155-9" aria-hidden="true" tabindex="-1"></a>xgbt1 <span class="ot">&lt;-</span> <span class="fu">Sys.time</span>()</span>
+<span id="cb155-10"><a href="bagging-boosting.html#cb155-10" aria-hidden="true" tabindex="-1"></a>xgboost_tune_result <span class="ot">&lt;-</span> <span class="fu">tune_grid</span>(</span>
+<span id="cb155-11"><a href="bagging-boosting.html#cb155-11" aria-hidden="true" tabindex="-1"></a>  xgboost_workflow,</span>
+<span id="cb155-12"><a href="bagging-boosting.html#cb155-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">resamples =</span> telco_folds,</span>
+<span id="cb155-13"><a href="bagging-boosting.html#cb155-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">grid =</span> xgboost_param_grid,</span>
+<span id="cb155-14"><a href="bagging-boosting.html#cb155-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">metrics =</span> <span class="fu">metric_set</span>(roc_auc, pr_auc)</span>
+<span id="cb155-15"><a href="bagging-boosting.html#cb155-15" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb155-16"><a href="bagging-boosting.html#cb155-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb155-17"><a href="bagging-boosting.html#cb155-17" aria-hidden="true" tabindex="-1"></a>xgb2 <span class="ot">&lt;-</span> <span class="fu">Sys.time</span>(); xgb2 <span class="sc">-</span> xgbt1</span>
+<span id="cb155-18"><a href="bagging-boosting.html#cb155-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb155-19"><a href="bagging-boosting.html#cb155-19" aria-hidden="true" tabindex="-1"></a><span class="fu">stopCluster</span>(cluster)</span>
+<span id="cb155-20"><a href="bagging-boosting.html#cb155-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb155-21"><a href="bagging-boosting.html#cb155-21" aria-hidden="true" tabindex="-1"></a>xgboost_tune_result <span class="sc">%&gt;%</span> <span class="fu">saveRDS</span>(<span class="st">&quot;models/xgboost_model_classification.rds&quot;</span>)</span></code></pre></div>
+<p><strong>Paso 7: Análisis de métricas de error e hiperparámetros (Vuelve al paso 3, si es necesario)</strong></p>
+<div class="sourceCode" id="cb156"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb156-1"><a href="bagging-boosting.html#cb156-1" aria-hidden="true" tabindex="-1"></a>xgboost_tune_result <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;models/xgboost_model_classification.rds&quot;</span>)</span>
+<span id="cb156-2"><a href="bagging-boosting.html#cb156-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb156-3"><a href="bagging-boosting.html#cb156-3" aria-hidden="true" tabindex="-1"></a><span class="fu">collect_metrics</span>(xgboost_tune_result)</span></code></pre></div>
+<pre><code>## # A tibble: 1,000 × 12
+##     mtry min_n tree_depth learn_rate loss_reduction sample_size .metric
+##    &lt;int&gt; &lt;int&gt;      &lt;int&gt;      &lt;dbl&gt;          &lt;dbl&gt;       &lt;dbl&gt; &lt;chr&gt;  
+##  1    17    25         15 0.00000885       5.95e-10       0.461 pr_auc 
+##  2    17    25         15 0.00000885       5.95e-10       0.461 roc_auc
+##  3     9    16          4 0.0757           4.82e- 4       0.349 pr_auc 
+##  4     9    16          4 0.0757           4.82e- 4       0.349 roc_auc
+##  5     2     8         18 0.0000319        9.32e- 8       0.293 pr_auc 
+##  6     2     8         18 0.0000319        9.32e- 8       0.293 roc_auc
+##  7     4    24         25 0.00592          3.02e- 7       0.926 pr_auc 
+##  8     4    24         25 0.00592          3.02e- 7       0.926 roc_auc
+##  9     4    48         28 0.352            6.40e- 5       0.366 pr_auc 
+## 10     4    48         28 0.352            6.40e- 5       0.366 roc_auc
+## # … with 990 more rows, and 5 more variables: .estimator &lt;chr&gt;, mean &lt;dbl&gt;,
+## #   n &lt;int&gt;, std_err &lt;dbl&gt;, .config &lt;chr&gt;</code></pre>
+<p>En la siguiente gráfica observamos las distintas métricas de error asociados a los hiperparámetros elegidos:</p>
+<div class="sourceCode" id="cb158"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb158-1"><a href="bagging-boosting.html#cb158-1" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(xgboost_tune_result)</span></code></pre></div>
+<p><img src="amt22_03intro2mls2_files/figure-html/unnamed-chunk-116-1.png" width="672" /></p>
+<div class="sourceCode" id="cb159"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb159-1"><a href="bagging-boosting.html#cb159-1" aria-hidden="true" tabindex="-1"></a><span class="fu">show_best</span>(xgboost_tune_result, <span class="at">n =</span> <span class="dv">10</span>, <span class="at">metric =</span> <span class="st">&quot;roc_auc&quot;</span>) </span></code></pre></div>
+<pre><code>## # A tibble: 10 × 12
+##     mtry min_n tree_depth learn_rate loss_reduction sample_size .metric
+##    &lt;int&gt; &lt;int&gt;      &lt;int&gt;      &lt;dbl&gt;          &lt;dbl&gt;       &lt;dbl&gt; &lt;chr&gt;  
+##  1     4    18          5    0.00252  0.0000419           0.764 roc_auc
+##  2    13     8         16    0.00318  1.92                0.214 roc_auc
+##  3    18    15         24    0.00281  0.101               0.459 roc_auc
+##  4    17    11          5    0.00508  0.0000000452        0.377 roc_auc
+##  5    20    18          7    0.00190  0.00984             0.700 roc_auc
+##  6     3    11         21    0.00106  0.0000103           0.423 roc_auc
+##  7     7    10         12    0.00291  0.00000000108       0.217 roc_auc
+##  8     5    18          6    0.00198  0.000466            0.881 roc_auc
+##  9     9    37         14    0.00456  0.000131            0.605 roc_auc
+## 10     2     3          7    0.00131  0.00000000122       0.326 roc_auc
+## # … with 5 more variables: .estimator &lt;chr&gt;, mean &lt;dbl&gt;, n &lt;int&gt;,
+## #   std_err &lt;dbl&gt;, .config &lt;chr&gt;</code></pre>
+<div class="sourceCode" id="cb161"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb161-1"><a href="bagging-boosting.html#cb161-1" aria-hidden="true" tabindex="-1"></a><span class="fu">show_best</span>(xgboost_tune_result, <span class="at">n =</span> <span class="dv">10</span>, <span class="at">metric =</span> <span class="st">&quot;pr_auc&quot;</span>) </span></code></pre></div>
+<pre><code>## # A tibble: 10 × 12
+##     mtry min_n tree_depth learn_rate loss_reduction sample_size .metric
+##    &lt;int&gt; &lt;int&gt;      &lt;int&gt;      &lt;dbl&gt;          &lt;dbl&gt;       &lt;dbl&gt; &lt;chr&gt;  
+##  1     4    18          5    0.00252       4.19e- 5       0.764 pr_auc 
+##  2     3    11         21    0.00106       1.03e- 5       0.423 pr_auc 
+##  3     5    18          6    0.00198       4.66e- 4       0.881 pr_auc 
+##  4    17    11          5    0.00508       4.52e- 8       0.377 pr_auc 
+##  5    18    15         24    0.00281       1.01e- 1       0.459 pr_auc 
+##  6    16     4         28    0.00215       9.72e- 1       0.208 pr_auc 
+##  7     2     3          7    0.00131       1.22e- 9       0.326 pr_auc 
+##  8     7    10         12    0.00291       1.08e- 9       0.217 pr_auc 
+##  9     6    31         25    0.00384       3.61e-10       0.807 pr_auc 
+## 10    18    23         27    0.00334       4.55e- 2       0.801 pr_auc 
+## # … with 5 more variables: .estimator &lt;chr&gt;, mean &lt;dbl&gt;, n &lt;int&gt;,
+## #   std_err &lt;dbl&gt;, .config &lt;chr&gt;</code></pre>
+<p><strong>Paso 8: Selección de modelo a usar</strong></p>
+<div class="sourceCode" id="cb163"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb163-1"><a href="bagging-boosting.html#cb163-1" aria-hidden="true" tabindex="-1"></a>best_xgboost_model <span class="ot">&lt;-</span> <span class="fu">select_best</span>(xgboost_tune_result, <span class="at">metric =</span> <span class="st">&quot;pr_auc&quot;</span>)</span>
+<span id="cb163-2"><a href="bagging-boosting.html#cb163-2" aria-hidden="true" tabindex="-1"></a>best_xgboost_model</span></code></pre></div>
+<pre><code>## # A tibble: 1 × 7
+##    mtry min_n tree_depth learn_rate loss_reduction sample_size .config          
+##   &lt;int&gt; &lt;int&gt;      &lt;int&gt;      &lt;dbl&gt;          &lt;dbl&gt;       &lt;dbl&gt; &lt;chr&gt;            
+## 1     4    18          5    0.00252      0.0000419       0.764 Preprocessor1_Mo…</code></pre>
+<div class="sourceCode" id="cb165"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb165-1"><a href="bagging-boosting.html#cb165-1" aria-hidden="true" tabindex="-1"></a>best_xgboost_model_1se <span class="ot">&lt;-</span> xgboost_tune_result <span class="sc">%&gt;%</span> </span>
+<span id="cb165-2"><a href="bagging-boosting.html#cb165-2" aria-hidden="true" tabindex="-1"></a> <span class="fu">select_by_one_std_err</span>(<span class="at">metric =</span> <span class="st">&quot;pr_auc&quot;</span>, <span class="st">&quot;pr_auc&quot;</span>)</span>
+<span id="cb165-3"><a href="bagging-boosting.html#cb165-3" aria-hidden="true" tabindex="-1"></a>best_xgboost_model_1se</span></code></pre></div>
+<pre><code>## # A tibble: 1 × 14
+##    mtry min_n tree_depth learn_rate loss_reduction sample_size .metric
+##   &lt;int&gt; &lt;int&gt;      &lt;int&gt;      &lt;dbl&gt;          &lt;dbl&gt;       &lt;dbl&gt; &lt;chr&gt;  
+## 1     2     8         18  0.0000319   0.0000000932       0.293 pr_auc 
+## # … with 7 more variables: .estimator &lt;chr&gt;, mean &lt;dbl&gt;, n &lt;int&gt;,
+## #   std_err &lt;dbl&gt;, .config &lt;chr&gt;, .best &lt;dbl&gt;, .bound &lt;dbl&gt;</code></pre>
+<p><strong>Paso 9: Ajuste de modelo final con todos los datos (Vuelve al paso 2, si es necesario)</strong></p>
+<div class="sourceCode" id="cb167"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb167-1"><a href="bagging-boosting.html#cb167-1" aria-hidden="true" tabindex="-1"></a>final_xgboost_model <span class="ot">&lt;-</span> xgboost_workflow <span class="sc">%&gt;%</span> </span>
+<span id="cb167-2"><a href="bagging-boosting.html#cb167-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">finalize_workflow</span>(best_xgboost_model) <span class="sc">%&gt;%</span> </span>
+<span id="cb167-3"><a href="bagging-boosting.html#cb167-3" aria-hidden="true" tabindex="-1"></a>  <span class="co">#finalize_workflow(best_xgboost_model_1se) %&gt;% </span></span>
+<span id="cb167-4"><a href="bagging-boosting.html#cb167-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(<span class="at">data =</span> telco_test)</span></code></pre></div>
+<pre><code>## [20:17:41] WARNING: amalgamation/../src/learner.cc:627: 
+## Parameters: { &quot;importance&quot; } might not be used.
+## 
+##   This could be a false alarm, with some parameters getting used by language bindings but
+##   then being mistakenly passed down to XGBoost core, or some parameter actually being used
+##   but getting flagged wrongly here. Please open an issue if you find any such cases.</code></pre>
+<div class="sourceCode" id="cb169"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb169-1"><a href="bagging-boosting.html#cb169-1" aria-hidden="true" tabindex="-1"></a>final_xgboost_model</span></code></pre></div>
+<pre><code>## ══ Workflow [trained] ══════════════════════════════════════════════════════════
+## Preprocessor: Recipe
+## Model: boost_tree()
+## 
+## ── Preprocessor ────────────────────────────────────────────────────────────────
+## 5 Recipe Steps
+## 
+## • step_num2factor()
+## • step_normalize()
+## • step_dummy()
+## • step_impute_median()
+## • step_rm()
+## 
+## ── Model ───────────────────────────────────────────────────────────────────────
+## ##### xgb.Booster
+## raw: 1.4 Mb 
+## call:
+##   xgboost::xgb.train(params = list(eta = 0.00252103438835676, max_depth = 5L, 
+##     gamma = 4.18551300211136e-05, colsample_bytree = 1, colsample_bynode = 1, 
+##     min_child_weight = 18L, subsample = 0.764372093626251, objective = &quot;binary:logistic&quot;), 
+##     data = x$data, nrounds = 1000, watchlist = x$watchlist, verbose = 0, 
+##     importance = &quot;impurity&quot;, nthread = 1)
+## params (as set within xgb.train):
+##   eta = &quot;0.00252103438835676&quot;, max_depth = &quot;5&quot;, gamma = &quot;4.18551300211136e-05&quot;, colsample_bytree = &quot;1&quot;, colsample_bynode = &quot;1&quot;, min_child_weight = &quot;18&quot;, subsample = &quot;0.764372093626251&quot;, objective = &quot;binary:logistic&quot;, importance = &quot;impurity&quot;, nthread = &quot;1&quot;, validate_parameters = &quot;TRUE&quot;
+## xgb.attributes:
+##   niter
+## callbacks:
+##   cb.evaluation.log()
+## # of features: 3 
+## niter: 1000
+## nfeatures : 3 
+## evaluation_log:
+##     iter training_logloss
+##        1        0.6920750
+##        2        0.6910146
+## ---                      
+##      999        0.4275578
+##     1000        0.4275244</code></pre>
+<p>Como hemos hablado anteriormente, este último objeto es el modelo final entrenado, el cual contiene toda la información del pre-procesamiento de datos, por lo que en caso de ponerse en producción el modelo, sólo se necesita de este último elemento para poder realizar nuevas predicciones.</p>
+<p>Antes de pasar al siguiente paso, es importante validar que hayamos hecho un uso correcto de las variables predictivas. En este momento es posible detectar variables que no estén aportando valor o variables que no debiéramos estar usando debido a que cometeríamos data leakage. Para enfrentar esto, ayuda estimar y ordenar el valor de importancia del modelo.</p>
+<div class="sourceCode" id="cb171"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb171-1"><a href="bagging-boosting.html#cb171-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(vip)</span>
+<span id="cb171-2"><a href="bagging-boosting.html#cb171-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb171-3"><a href="bagging-boosting.html#cb171-3" aria-hidden="true" tabindex="-1"></a>final_xgboost_model <span class="sc">%&gt;%</span></span>
+<span id="cb171-4"><a href="bagging-boosting.html#cb171-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull_workflow_fit</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb171-5"><a href="bagging-boosting.html#cb171-5" aria-hidden="true" tabindex="-1"></a>  vip<span class="sc">::</span><span class="fu">vip</span>() <span class="sc">+</span> </span>
+<span id="cb171-6"><a href="bagging-boosting.html#cb171-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Importancia de las variables&quot;</span>)</span></code></pre></div>
+<pre><code>## Warning: `pull_workflow_fit()` was deprecated in workflows 0.2.3.
+## Please use `extract_fit_parsnip()` instead.</code></pre>
+<p><img src="amt22_03intro2mls2_files/figure-html/unnamed-chunk-121-1.png" width="672" /></p>
+<p><strong>Paso 10: Validar poder predictivo con datos de prueba</strong></p>
+<p>Imaginemos por un momento que pasa un mes de tiempo desde que hicimos nuestro modelo, es hora de ponerlo a prueba prediciendo valores de nuevos elementos:</p>
+<div class="sourceCode" id="cb173"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb173-1"><a href="bagging-boosting.html#cb173-1" aria-hidden="true" tabindex="-1"></a>class_results <span class="ot">&lt;-</span> <span class="fu">predict</span>(final_xgboost_model, telco_test, <span class="at">type =</span> <span class="st">&quot;prob&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb173-2"><a href="bagging-boosting.html#cb173-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_cols</span>(<span class="at">Churn =</span> telco_test<span class="sc">$</span>Churn) <span class="sc">%&gt;%</span> </span>
+<span id="cb173-3"><a href="bagging-boosting.html#cb173-3" aria-hidden="true" tabindex="-1"></a>   <span class="fu">mutate</span>(<span class="at">Churn =</span> <span class="fu">factor</span>(Churn, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">&#39;No&#39;</span>, <span class="st">&#39;Yes&#39;</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">&#39;No&#39;</span>, <span class="st">&#39;Yes&#39;</span>))) </span>
+<span id="cb173-4"><a href="bagging-boosting.html#cb173-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb173-5"><a href="bagging-boosting.html#cb173-5" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(class_results)</span></code></pre></div>
+<pre><code>## # A tibble: 6 × 3
+##   .pred_No .pred_Yes Churn
+##      &lt;dbl&gt;     &lt;dbl&gt; &lt;fct&gt;
+## 1    0.885     0.115 No   
+## 2    0.233     0.767 Yes  
+## 3    0.664     0.336 No   
+## 4    0.900     0.100 No   
+## 5    0.836     0.164 No   
+## 6    0.624     0.376 No</code></pre>
+<div class="sourceCode" id="cb175"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb175-1"><a href="bagging-boosting.html#cb175-1" aria-hidden="true" tabindex="-1"></a><span class="fu">roc_auc</span>(class_results, <span class="at">truth =</span> Churn, <span class="at">estimate =</span> .pred_Yes, <span class="at">event_level =</span> <span class="st">&quot;second&quot;</span>)</span></code></pre></div>
+<pre><code>## # A tibble: 1 × 3
+##   .metric .estimator .estimate
+##   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
+## 1 roc_auc binary         0.846</code></pre>
+<div class="sourceCode" id="cb177"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb177-1"><a href="bagging-boosting.html#cb177-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pr_auc</span>(class_results, <span class="at">truth =</span> Churn, <span class="at">estimate =</span> .pred_Yes, <span class="at">event_level =</span> <span class="st">&quot;second&quot;</span>)</span></code></pre></div>
+<pre><code>## # A tibble: 1 × 3
+##   .metric .estimator .estimate
+##   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
+## 1 pr_auc  binary         0.679</code></pre>
+<p>A continuación, conoceremos el nivel de sensitividad y especificidad para cada punto de corte:</p>
+<div class="sourceCode" id="cb179"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb179-1"><a href="bagging-boosting.html#cb179-1" aria-hidden="true" tabindex="-1"></a>roc_curve_data <span class="ot">&lt;-</span> <span class="fu">roc_curve</span>(</span>
+<span id="cb179-2"><a href="bagging-boosting.html#cb179-2" aria-hidden="true" tabindex="-1"></a>  class_results, </span>
+<span id="cb179-3"><a href="bagging-boosting.html#cb179-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">truth =</span> Churn, </span>
+<span id="cb179-4"><a href="bagging-boosting.html#cb179-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">estimate =</span> .pred_Yes, </span>
+<span id="cb179-5"><a href="bagging-boosting.html#cb179-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">event_level =</span> <span class="st">&#39;second&#39;</span></span>
+<span id="cb179-6"><a href="bagging-boosting.html#cb179-6" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb179-7"><a href="bagging-boosting.html#cb179-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb179-8"><a href="bagging-boosting.html#cb179-8" aria-hidden="true" tabindex="-1"></a>roc_curve_data</span></code></pre></div>
+<pre><code>## # A tibble: 1,757 × 3
+##    .threshold specificity sensitivity
+##         &lt;dbl&gt;       &lt;dbl&gt;       &lt;dbl&gt;
+##  1  -Inf         0                  1
+##  2     0.0715    0                  1
+##  3     0.0715    0.000646           1
+##  4     0.0715    0.00129            1
+##  5     0.0715    0.00323            1
+##  6     0.0715    0.00388            1
+##  7     0.0716    0.00452            1
+##  8     0.0716    0.00517            1
+##  9     0.0717    0.00840            1
+## 10     0.0717    0.00905            1
+## # … with 1,747 more rows</code></pre>
+<p>A través de estas métricas es posible crear la curva ROC:</p>
+<div class="sourceCode" id="cb181"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb181-1"><a href="bagging-boosting.html#cb181-1" aria-hidden="true" tabindex="-1"></a>roc_curve_plot <span class="ot">&lt;-</span> roc_curve_data <span class="sc">%&gt;%</span> </span>
+<span id="cb181-2"><a href="bagging-boosting.html#cb181-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> <span class="dv">1</span> <span class="sc">-</span> specificity, <span class="at">y =</span> sensitivity)) <span class="sc">+</span></span>
+<span id="cb181-3"><a href="bagging-boosting.html#cb181-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_path</span>(<span class="at">size =</span> <span class="dv">1</span>, <span class="at">colour =</span> <span class="st">&#39;lightblue&#39;</span>) <span class="sc">+</span></span>
+<span id="cb181-4"><a href="bagging-boosting.html#cb181-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>() <span class="sc">+</span></span>
+<span id="cb181-5"><a href="bagging-boosting.html#cb181-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_equal</span>() <span class="sc">+</span></span>
+<span id="cb181-6"><a href="bagging-boosting.html#cb181-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;ROC Curve&quot;</span>)<span class="sc">+</span></span>
+<span id="cb181-7"><a href="bagging-boosting.html#cb181-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span>
+<span id="cb181-8"><a href="bagging-boosting.html#cb181-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb181-9"><a href="bagging-boosting.html#cb181-9" aria-hidden="true" tabindex="-1"></a>roc_curve_plot</span></code></pre></div>
+<p><img src="amt22_03intro2mls2_files/figure-html/unnamed-chunk-125-1.png" width="672" /></p>
+<p>De igual manera, podemos calcular la precisión y cobertura para cada punte de corte:</p>
+<div class="sourceCode" id="cb182"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb182-1"><a href="bagging-boosting.html#cb182-1" aria-hidden="true" tabindex="-1"></a>pr_curve_data <span class="ot">&lt;-</span> <span class="fu">pr_curve</span>(</span>
+<span id="cb182-2"><a href="bagging-boosting.html#cb182-2" aria-hidden="true" tabindex="-1"></a>  class_results, </span>
+<span id="cb182-3"><a href="bagging-boosting.html#cb182-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">truth =</span> Churn, </span>
+<span id="cb182-4"><a href="bagging-boosting.html#cb182-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">estimate =</span> .pred_Yes, </span>
+<span id="cb182-5"><a href="bagging-boosting.html#cb182-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">event_level =</span> <span class="st">&#39;second&#39;</span></span>
+<span id="cb182-6"><a href="bagging-boosting.html#cb182-6" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb182-7"><a href="bagging-boosting.html#cb182-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb182-8"><a href="bagging-boosting.html#cb182-8" aria-hidden="true" tabindex="-1"></a>pr_curve_data</span></code></pre></div>
+<pre><code>## # A tibble: 1,756 × 3
+##    .threshold  recall precision
+##         &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;
+##  1    Inf     0               1
+##  2      0.796 0.00353         1
+##  3      0.796 0.00530         1
+##  4      0.795 0.00883         1
+##  5      0.794 0.0106          1
+##  6      0.794 0.0124          1
+##  7      0.793 0.0141          1
+##  8      0.792 0.0159          1
+##  9      0.790 0.0177          1
+## 10      0.789 0.0212          1
+## # … with 1,746 more rows</code></pre>
+<p>Y graficar su respectiva curva:</p>
+<div class="sourceCode" id="cb184"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb184-1"><a href="bagging-boosting.html#cb184-1" aria-hidden="true" tabindex="-1"></a>pr_curve_plot <span class="ot">&lt;-</span> pr_curve_data <span class="sc">%&gt;%</span> </span>
+<span id="cb184-2"><a href="bagging-boosting.html#cb184-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> recall, <span class="at">y =</span> precision)) <span class="sc">+</span></span>
+<span id="cb184-3"><a href="bagging-boosting.html#cb184-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_path</span>(<span class="at">size =</span> <span class="dv">1</span>, <span class="at">colour =</span> <span class="st">&#39;lightblue&#39;</span>) <span class="sc">+</span></span>
+<span id="cb184-4"><a href="bagging-boosting.html#cb184-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_equal</span>() <span class="sc">+</span></span>
+<span id="cb184-5"><a href="bagging-boosting.html#cb184-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Precision vs Recall&quot;</span>)<span class="sc">+</span></span>
+<span id="cb184-6"><a href="bagging-boosting.html#cb184-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span>
+<span id="cb184-7"><a href="bagging-boosting.html#cb184-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb184-8"><a href="bagging-boosting.html#cb184-8" aria-hidden="true" tabindex="-1"></a>pr_curve_plot</span></code></pre></div>
+<p><img src="amt22_03intro2mls2_files/figure-html/unnamed-chunk-127-1.png" width="672" /></p>
+
+<div class="watermark">
+<img src="img/header.png" width="400">
+</div>
+
+<div class="watermark">
+<img src="img/header.png" width="400">
+</div>
+
+</div>
+</div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+
+$('.pipehover_incremental tr').hover(function() {
+  $(this).removeClass()
+  $(this).prevAll().removeClass()
+  $(this).nextAll().removeClass()
+  $(this).addClass('hover');
+  $(this).prevAll().addClass('hover');
+  $(this).closest('div').next().find('img').attr("src", $(this).attr("link"));
+});
+
+
+$('.pipehover_select_one_row tr').hover(function() {
+  $(this).removeClass()
+  $(this).prevAll().removeClass()
+  $(this).nextAll().removeClass()
+  $(this).addClass('hover');
+  $(this).closest('div').next().find('img').attr("src", $(this).attr("link"));
+});
+
+</script>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="support-vector-machine-svm-svr.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="references.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["amt22_03intro2mls2.pdf"],
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>
