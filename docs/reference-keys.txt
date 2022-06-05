@@ -48,3 +48,11 @@ modelos-boosting
 implementación-en-r-3
 xgboost-para-regresión
 xgboost-para-clasificación
+ejercicios-2
+workflowsets
+múltiples-recetas
+múltiples-modelos
+creación-de-workflowset
+ajuste-y-evaluación-de-modelos
+extracción-de-modelos
+selección-de-modelo

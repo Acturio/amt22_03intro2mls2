@@ -260,16 +260,7 @@ workflow_set_models <- workflow_set(
     )
   )
 
-workflow_set_models
 ```
-
-Dado que el preprocesador contiene más de una entrada, la función crea todas las combinaciones de preprocesadores y modelos.
-
-* **info:** Contiene un *tibble* con algunos identificadores y el objeto de flujo de trabajo. 
-
-* **option:** Es un marcador de posición para cualquier argumento que se utilice cuando evaluamos el flujo de trabajo. 
-
-* **result:** Es un marcador de posición para la salida de las funciones de ajuste o remuestreo.
 
 
 ## Ajuste y evaluación de modelos
@@ -336,6 +327,14 @@ workflow_tunning_set_models <- workflow_set_models %>%
 workflow_tunning_set_models
 ```
 
+Dado que el preprocesador contiene más de una entrada, la función crea todas las combinaciones de preprocesadores y modelos.
+
+* **info:** Contiene un *tibble* con algunos identificadores y el objeto de flujo de trabajo. 
+
+* **option:** Es un marcador de posición para cualquier argumento que se utilice cuando evaluamos el flujo de trabajo. 
+
+* **result:** Es un marcador de posición para la salida de las funciones de ajuste o remuestreo.
+
 Para este ejemplo, la búsqueda del *grid* se aplica al flujo de trabajo.
 
 ```{r, message=TRUE, eval=FALSE}
@@ -365,33 +364,23 @@ tunning_models_result <- workflow_tunning_set_models %>%
 
 stopCluster(cluster)
 
-tunning_models_result %>% saveRDS("models/ensemble_model_test.rds")
+tunning_models_result %>% saveRDS("models/ensemble_model.rds")
 
 ```
 
 ```{r}
 tunning_models_result <- readRDS("models/ensemble_model.rds")
 
-tunning_models_result$result 
-```
-
-```{r}
-
-```
-
-
-
-```{r}
-tunning_models_result %>% 
-  extract_workflow_set_result("receta_knn_elasticnet") %>% 
-  collect_notes() %>% 
-  pull(note) %>% .[1]
+tunning_models_result %>%
+  rank_results(select_best = T) %>%
+  select(-c(.config, n, preprocessor, std_err)) %>%
+  pivot_wider(names_from = .metric, values_from = mean) 
 ```
 
 
 ```{r}
 autoplot(
-  tunning_models_result %>% filter(wflow_id != "receta_knn_elasticnet"),
+  tunning_models_result,
   rank_metric = "rsq",
   metric = "rsq",   
   select_best = F) +   
@@ -401,7 +390,7 @@ autoplot(
 
 ```{r}
 autoplot(
-  tunning_models_result %>% filter(wflow_id != "receta_knn_elasticnet"),
+  tunning_models_result,
   rank_metric = "rsq",
   metric = "rsq",   
   select_best = T) +
@@ -411,24 +400,278 @@ autoplot(
 ```
 
 
+## Extracción de modelos
+
+Una vez que hemos realizado una exploración sobre el desempeño de todas las combinaciones de preprocesamientos con modelos, es posible tomar varios caminos hacia adelante. Algunas de las opciones más comunes son:
+
+* Realizar múltiples iteraciones de modificaciones a las recetas para extraer lo mejor de cada una.
+
+* Realizar mejoras a los hiperparámetros.
+
+* Eliminar modelos y/o recetas que no tuvieron buen desempeño.
+
+* Crear un modelo a partir de la combinación de los modelos más competentes.
+
+Para empezar, se realiza una exploración del resultado del desempeño de los mejores modelos y los hiperparámetros usado en cada caso.
+
+**Resultados de XGBoost**
+```{r}
+tunning_models_result %>% 
+  extract_workflow_set_result("receta_knn_boost") %>%
+  autoplot(metric = "rsq")
+
+tunning_models_result %>% 
+  extract_workflow_set_result("receta_knn_boost") %>%
+  show_best(n = 10, metric = "rsq") %>% 
+  select(-c(.estimator, .metric, .config, n))
+```
+
+**Resultados de Ranfom Forest**
+```{r}
+tunning_models_result %>% 
+  extract_workflow_set_result("receta_knn_rf") %>%
+  autoplot(metric = "rmse")
+
+tunning_models_result %>% 
+  extract_workflow_set_result("receta_knn_rf") %>%
+  show_best(n = 10, metric = "rmse") %>% 
+  select(-c(.estimator, .metric, .config, n))
+
+```
+
+### Selección de modelo
+
+Habiendo determinado los hiperparámetros adecuados para la configuración del modelo, procedemos a seleccionar la configuración adecuada para nosotros. Estos pasos son los mismos que corresponden a la selección del modelo con un único workflow.
+
+**Mejore modelo XGBoost**
+```{r}
+best_xgb_model <- tunning_models_result %>%
+ extract_workflow_set_result("receta_knn_boost") %>%
+ select_best(metric = "rsq", "rsq")
+
+best_xgb_model %>% 
+  mutate_all(as.character) %>% 
+  pivot_longer(everything(), names_to = "metric", values_to = "value")
+```
+
+**Mejore modelo XGBoost a menos de una desviación estandar**
+```{r}
+best_regularized_xgb_model_1se <- tunning_models_result %>%
+  extract_workflow_set_result("receta_knn_boost") %>%
+  select_by_one_std_err(metric = "rsq", "rsq")
+
+best_regularized_xgb_model_1se %>% 
+  mutate_all(as.character) %>% 
+  pivot_longer(everything(), names_to = "metric", values_to = "value")
+```
+
+**Mejore modelo XGBoost a menos de un porcentaje fijo**
+```{r}
+best_regularized_xgb_model_pct <- tunning_models_result %>%
+  extract_workflow_set_result("receta_knn_boost") %>%
+  select_by_pct_loss(metric = "rsq", "rsq", limit = 10)
+
+best_regularized_xgb_model_pct %>% 
+  mutate_all(as.character) %>% 
+  pivot_longer(everything(), names_to = "metric", values_to = "value")
+```
+
+**Ajuste del modelo seleccionado**
+```{r}
+final_regularized_xgb_model <- tunning_models_result %>%
+  extract_workflow("receta_knn_boost") %>%
+  finalize_workflow(best_regularized_xgb_model_1se) %>%
+  parsnip::fit(data = ames_train)
+
+final_regularized_xgb_model
+```
 
 
+### Método de carrera
+
+Un problema con la búsqueda del *grid* es que **todos los modelos deben ajustarse** en todos los remuestreos antes de que se puedan evaluar los parámetros de ajuste.
+
+En *machine learning*, el conjunto de técnicas que son llamadas **métodos de carreras**
+evalúa todos los modelos en un subconjunto inicial de remuestreo. En función de sus métricas de rendimiento actuales, algunos conjuntos de parámetros no se consideran en remuestreos posteriores.
+
+Dado un **workflow**, podemos usar la función `workflow_map()` para un enfoque de carreras. El paquete *finetune* contiene funciones para el método de carreras. Calcula un conjunto de métricas de rendimiento (por ejemplo, precisión o RMSE) para un conjunto predefinido de parámetros de ajuste que corresponden a un modelo o receta a través de una o más muestras de los datos. 
+
+#### Optimización ANOVA 
+
+Realiza un modelo de análisis de varianza (ANOVA) para probar la significación estadística de las diferentes configuraciones del modelo. Después de evaluar un número inicial de remuestreos, el proceso elimina las combinaciones de parámetros de ajuste que probablemente no sean los mejores resultados usando medidas repetidas de un modelo ANOVA. La función implementada es `tune_race_anova`
+
+```{r, eval=FALSE}
+library(finetune)
+
+UseCores <- detectCores() - 1
+cluster <- makeCluster(UseCores)
+registerDoParallel(cluster)
+
+race_ctrl <- control_race(
+  save_pred = TRUE,
+  parallel_over = "everything",
+  save_workflow = TRUE
+  )
+
+tunning_race_anova_results <- workflow_tunning_set_models %>%
+  workflow_map(
+    "tune_race_anova",
+    seed = 1503,
+    resamples = ames_folds,
+    grid = 100,
+    metrics =  metric_set(rmse, mae, mape, rsq),
+    control = race_ctrl,
+    verbose = TRUE
+  )
+
+stopCluster(cluster)
+
+tunning_race_anova_results %>% saveRDS("models/race_anova_results.rds")
+```
+
+```{r, echo=FALSE}
+tunning_race_anova_results <- readRDS("models/race_anova_results.rds")
+```
+
+Las mismas funciones útiles están disponibles para que este objeto interrogue los resultados y, de hecho, el método básico `autoplot()` produce tendencias similares:
+
+```{r}
+tunning_race_anova_results %>%
+  rank_results(select_best = T) %>%
+  select(-c(.config, n, preprocessor, std_err)) %>%
+  pivot_wider(names_from = .metric, values_from = mean)
+```
 
 
+```{r}
+autoplot(
+  tunning_race_anova_results,
+  rank_metric = "rsq",
+  metric = "rsq",
+  select_best = TRUE) +
+  geom_text(aes(y = mean - 0.10 , label = wflow_id), angle = 90, hjust = 1) +
+  lims(y = c(0, 1))
+```
+
+#### Optimización logística
+
+Después de evaluar un número inicial de remuestreos, el proceso elimina las combinaciones de parámetros de ajuste que probablemente no sean los mejores resultados usando un modelo estadístico. Para cada combinación por pares de parámetros de ajuste, se calculan las estadísticas de ganancia/pérdida y se usa un modelo de regresión logística para medir la probabilidad de que cada combinación gane en general. Esto se logra mediante la función `tune_race_win_loss`
+
+```{r, eval=FALSE}
+
+UseCores <- detectCores() - 1
+cluster <- makeCluster(UseCores)
+registerDoParallel(cluster)
+
+race_ctrl <- control_race(
+  save_pred = TRUE,
+  parallel_over = "everything",
+  save_workflow = TRUE
+  )
+
+tunning_race_win_loss_results <- workflow_tunning_set_models %>%
+  workflow_map(
+    "tune_race_win_loss",
+    seed = 1503,
+    resamples = ames_folds,
+    grid = 20,
+    metrics =  metric_set(rmse, mae, mape, rsq),
+    control = race_ctrl,
+    verbose = TRUE
+  )
+
+stopCluster(cluster)
+
+tunning_race_win_loss_results %>% saveRDS("models/race_win_loss_results.rds")
+```
+
+```{r, echo=FALSE}
+tunning_race_win_loss_results <- readRDS("models/race_win_loss_results.rds")
+```
+
+Las mismas funciones útiles están disponibles para que este objeto interrogue los resultados y, de hecho, el método básico `autoplot()` produce tendencias similares:
+
+```{r}
+tunning_race_win_loss_results %>%
+  rank_results(select_best = T) %>%
+  select(-c(.config, n, preprocessor, std_err)) %>%
+  pivot_wider(names_from = .metric, values_from = mean)
+```
+
+```{r}
+autoplot(
+  tunning_race_win_loss_results,
+  rank_metric = "rsq",
+  metric = "rsq",
+  select_best = TRUE) +
+  geom_text(aes(y = mean - 0.10 , label = wflow_id), angle = 90, hjust = 1) +
+  lims(y = c(0, 1))
+```
+
+#### Optimización bayesiana
+
+La función `tune_bayes` usa modelos para crear nuevas combinaciones de hiperparámetros que sean candidatos de tunning basado en resultados previos.
+
+```{r, eval=FALSE}
+
+UseCores <- detectCores() - 1
+cluster <- makeCluster(UseCores)
+registerDoParallel(cluster)
+
+race_ctrl <- control_bayes(
+  verbose = TRUE,
+  save_pred = TRUE,
+  parallel_over = "everything",
+  save_workflow = TRUE
+  )
+
+set.seed(20220603)
+tunning_race_bayes_results <- workflow_tunning_set_models %>%
+  workflow_map(
+    "tune_bayes",
+    seed = 1503,
+    resamples = ames_folds,
+    iter = 100,
+    metrics =  metric_set(rmse, mae, mape, rsq),
+    control = race_ctrl,
+    verbose = TRUE
+  )
+
+stopCluster(cluster)
+
+tunning_race_bayes_results %>% saveRDS("models/race_bayes_results.rds")
+```
 
 
+```{r, eval=FALSE}
 
+UseCores <- detectCores() - 1
+cluster <- makeCluster(UseCores)
+registerDoParallel(cluster)
 
+race_ctrl <- control_sim_anneal(
+  verbose = TRUE,
+  no_improve = 10L,
+  restart = 10L,
+  radius = c(0.01, 0.20)
+  )
 
+set.seed(20220603)
+tunning_race_sim_anneal_results <- workflow_tunning_set_models %>%
+  workflow_map(
+    "tune_sim_anneal",
+    seed = 1503,
+    resamples = ames_folds,
+    iter = 100,
+    metrics =  metric_set(rmse, mae, mape, rsq),
+    control = race_ctrl,
+    verbose = TRUE
+  )
 
+stopCluster(cluster)
 
-
-
-
-
-
-
-
+tunning_race_sim_anneal_results %>% saveRDS("models/race_sim_anneal_results.rds")
+```
 
 
 
