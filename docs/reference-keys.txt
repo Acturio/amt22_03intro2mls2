@@ -56,3 +56,7 @@ creación-de-workflowset
 ajuste-y-evaluación-de-modelos
 extracción-de-modelos
 selección-de-modelo
+método-de-carrera
+optimización-anova
+optimización-logística
+optimización-bayesiana

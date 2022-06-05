@@ -642,6 +642,32 @@ stopCluster(cluster)
 tunning_race_bayes_results %>% saveRDS("models/race_bayes_results.rds")
 ```
 
+```{r, echo=FALSE, eval=FALSE}
+tunning_race_bayes_results <- readRDS("models/race_bayes_results.rds")
+```
+
+Las mismas funciones útiles están disponibles para que este objeto interrogue los resultados y, de hecho, el método básico `autoplot()` produce tendencias similares:
+
+```{r, eval=FALSE}
+tunning_race_bayes_results %>%
+  rank_results(select_best = T) %>%
+  select(-c(.config, n, preprocessor, std_err)) %>%
+  pivot_wider(names_from = .metric, values_from = mean)
+```
+
+```{r, eval=FALSE}
+autoplot(
+  tunning_race_bayes_results,
+  rank_metric = "rsq",
+  metric = "rsq",
+  select_best = TRUE) +
+  geom_text(aes(y = mean - 0.10 , label = wflow_id), angle = 90, hjust = 1) +
+  lims(y = c(0, 1))
+```
+
+
+
+
 
 ```{r, eval=FALSE}
 
