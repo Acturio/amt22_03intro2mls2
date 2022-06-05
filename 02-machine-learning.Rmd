@@ -876,12 +876,12 @@ ames_importance %>% saveRDS("models/vip_ames_svm.rds")
 ```
 
 ```{r}
-ames_importance <- readRDS("models/vip_telco_svm.rds")
+ames_importance <- readRDS("models/vip_ames_svm.rds")
 
 ames_importance
 
 ames_importance %>%
-  mutate(Variable = fct_reorder(Variable, Importance)) %>%
+  mutate(Variable = forcats::fct_reorder(Variable, Importance)) %>%
   slice_max(Importance, n = 20) %>%
   ggplot(aes(Importance, Variable, color = Variable)) +
   geom_errorbar(aes(xmin = Importance - StDev, xmax = Importance + StDev),
@@ -929,7 +929,7 @@ results %>%
 
 ### Implementación de SVM en R
 
-Es turno de revisar la implementación de SVM con nuestro bien conocido problema de predicción de cancelación de servicios de telecomunicaciones. Los datos se encuentran disponibles en el siguiente [enlace]():
+Es turno de revisar la implementación de SVM con nuestro bien conocido problema de predicción de cancelación de servicios de telecomunicaciones. Los datos se encuentran disponibles en el siguiente [enlace](https://drive.google.com/drive/folders/1mlDGHvUy-81qfvQi_iB7tqMb9yhy3vyh?usp=sharing):
 
 Los pasos para implementar en *R* este modelo predictivo son los mismos, cambiando únicamente las especificaciones del tipo de modelo, pre-procesamiento e hiper-parámetros.
 

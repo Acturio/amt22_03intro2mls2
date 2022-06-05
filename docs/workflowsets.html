@@ -781,7 +781,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb211-2"><a href="workflowsets.html#cb211-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">extract_workflow</span>(<span class="st">&quot;receta_knn_boost&quot;</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb211-3"><a href="workflowsets.html#cb211-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">finalize_workflow</span>(best_regularized_xgb_model_1se) <span class="sc">%&gt;%</span></span>
 <span id="cb211-4"><a href="workflowsets.html#cb211-4" aria-hidden="true" tabindex="-1"></a>  parsnip<span class="sc">::</span><span class="fu">fit</span>(<span class="at">data =</span> ames_train)</span></code></pre></div>
-<pre><code>## [20:47:49] WARNING: amalgamation/../src/learner.cc:627: 
+<pre><code>## [10:34:20] WARNING: amalgamation/../src/learner.cc:627: 
 ## Parameters: { &quot;importance&quot; } might not be used.
 ## 
 ##   This could be a false alarm, with some parameters getting used by language bindings but
@@ -990,43 +990,50 @@ evalúa todos los modelos en un subconjunto inicial de remuestreo. En función d
 <span id="cb223-25"><a href="workflowsets.html#cb223-25" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb223-26"><a href="workflowsets.html#cb223-26" aria-hidden="true" tabindex="-1"></a>tunning_race_bayes_results <span class="sc">%&gt;%</span> <span class="fu">saveRDS</span>(<span class="st">&quot;models/race_bayes_results.rds&quot;</span>)</span></code></pre></div>
 <p>Las mismas funciones útiles están disponibles para que este objeto interrogue los resultados y, de hecho, el método básico <code>autoplot()</code> produce tendencias similares:</p>
-<div class="sourceCode" id="cb224"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb224-1"><a href="workflowsets.html#cb224-1" aria-hidden="true" tabindex="-1"></a>tunning_race_bayes_results <span class="sc">%&gt;%</span></span>
-<span id="cb224-2"><a href="workflowsets.html#cb224-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rank_results</span>(<span class="at">select_best =</span> T) <span class="sc">%&gt;%</span></span>
-<span id="cb224-3"><a href="workflowsets.html#cb224-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span><span class="fu">c</span>(.config, n, preprocessor, std_err)) <span class="sc">%&gt;%</span></span>
-<span id="cb224-4"><a href="workflowsets.html#cb224-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> .metric, <span class="at">values_from =</span> mean)</span></code></pre></div>
-<div class="sourceCode" id="cb225"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb225-1"><a href="workflowsets.html#cb225-1" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(</span>
-<span id="cb225-2"><a href="workflowsets.html#cb225-2" aria-hidden="true" tabindex="-1"></a>  tunning_race_bayes_results,</span>
-<span id="cb225-3"><a href="workflowsets.html#cb225-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">rank_metric =</span> <span class="st">&quot;rsq&quot;</span>,</span>
-<span id="cb225-4"><a href="workflowsets.html#cb225-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">metric =</span> <span class="st">&quot;rsq&quot;</span>,</span>
-<span id="cb225-5"><a href="workflowsets.html#cb225-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">select_best =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
-<span id="cb225-6"><a href="workflowsets.html#cb225-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">y =</span> mean <span class="sc">-</span> <span class="fl">0.10</span> , <span class="at">label =</span> wflow_id), <span class="at">angle =</span> <span class="dv">90</span>, <span class="at">hjust =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb225-7"><a href="workflowsets.html#cb225-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lims</span>(<span class="at">y =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>))</span></code></pre></div>
-<div class="sourceCode" id="cb226"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb226-1"><a href="workflowsets.html#cb226-1" aria-hidden="true" tabindex="-1"></a>UseCores <span class="ot">&lt;-</span> <span class="fu">detectCores</span>() <span class="sc">-</span> <span class="dv">1</span></span>
-<span id="cb226-2"><a href="workflowsets.html#cb226-2" aria-hidden="true" tabindex="-1"></a>cluster <span class="ot">&lt;-</span> <span class="fu">makeCluster</span>(UseCores)</span>
-<span id="cb226-3"><a href="workflowsets.html#cb226-3" aria-hidden="true" tabindex="-1"></a><span class="fu">registerDoParallel</span>(cluster)</span>
-<span id="cb226-4"><a href="workflowsets.html#cb226-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb226-5"><a href="workflowsets.html#cb226-5" aria-hidden="true" tabindex="-1"></a>race_ctrl <span class="ot">&lt;-</span> <span class="fu">control_sim_anneal</span>(</span>
-<span id="cb226-6"><a href="workflowsets.html#cb226-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">verbose =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb226-7"><a href="workflowsets.html#cb226-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">no_improve =</span> 10L,</span>
-<span id="cb226-8"><a href="workflowsets.html#cb226-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">restart =</span> 10L,</span>
-<span id="cb226-9"><a href="workflowsets.html#cb226-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">radius =</span> <span class="fu">c</span>(<span class="fl">0.01</span>, <span class="fl">0.20</span>)</span>
-<span id="cb226-10"><a href="workflowsets.html#cb226-10" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb226-11"><a href="workflowsets.html#cb226-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb226-12"><a href="workflowsets.html#cb226-12" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">20220603</span>)</span>
-<span id="cb226-13"><a href="workflowsets.html#cb226-13" aria-hidden="true" tabindex="-1"></a>tunning_race_sim_anneal_results <span class="ot">&lt;-</span> workflow_tunning_set_models <span class="sc">%&gt;%</span></span>
-<span id="cb226-14"><a href="workflowsets.html#cb226-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">workflow_map</span>(</span>
-<span id="cb226-15"><a href="workflowsets.html#cb226-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;tune_sim_anneal&quot;</span>,</span>
-<span id="cb226-16"><a href="workflowsets.html#cb226-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">seed =</span> <span class="dv">1503</span>,</span>
-<span id="cb226-17"><a href="workflowsets.html#cb226-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">resamples =</span> ames_folds,</span>
-<span id="cb226-18"><a href="workflowsets.html#cb226-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">iter =</span> <span class="dv">100</span>,</span>
-<span id="cb226-19"><a href="workflowsets.html#cb226-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">metrics =</span>  <span class="fu">metric_set</span>(rmse, mae, mape, rsq),</span>
-<span id="cb226-20"><a href="workflowsets.html#cb226-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">control =</span> race_ctrl,</span>
-<span id="cb226-21"><a href="workflowsets.html#cb226-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">verbose =</span> <span class="cn">TRUE</span></span>
-<span id="cb226-22"><a href="workflowsets.html#cb226-22" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb226-23"><a href="workflowsets.html#cb226-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb226-24"><a href="workflowsets.html#cb226-24" aria-hidden="true" tabindex="-1"></a><span class="fu">stopCluster</span>(cluster)</span>
-<span id="cb226-25"><a href="workflowsets.html#cb226-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb226-26"><a href="workflowsets.html#cb226-26" aria-hidden="true" tabindex="-1"></a>tunning_race_sim_anneal_results <span class="sc">%&gt;%</span> <span class="fu">saveRDS</span>(<span class="st">&quot;models/race_sim_anneal_results.rds&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb224"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb224-1"><a href="workflowsets.html#cb224-1" aria-hidden="true" tabindex="-1"></a>tunning_race_bayes_results</span></code></pre></div>
+<div class="sourceCode" id="cb225"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb225-1"><a href="workflowsets.html#cb225-1" aria-hidden="true" tabindex="-1"></a>tunning_race_bayes_results<span class="sc">$</span>result</span></code></pre></div>
+<div class="sourceCode" id="cb226"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb226-1"><a href="workflowsets.html#cb226-1" aria-hidden="true" tabindex="-1"></a>tunning_race_bayes_results <span class="sc">%&gt;%</span></span>
+<span id="cb226-2"><a href="workflowsets.html#cb226-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rank_results</span>(<span class="at">select_best =</span> T) <span class="sc">%&gt;%</span></span>
+<span id="cb226-3"><a href="workflowsets.html#cb226-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span><span class="fu">c</span>(.config, n, preprocessor, std_err)) <span class="sc">%&gt;%</span></span>
+<span id="cb226-4"><a href="workflowsets.html#cb226-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> .metric, <span class="at">values_from =</span> mean)</span></code></pre></div>
+<div class="sourceCode" id="cb227"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb227-1"><a href="workflowsets.html#cb227-1" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(</span>
+<span id="cb227-2"><a href="workflowsets.html#cb227-2" aria-hidden="true" tabindex="-1"></a>  tunning_race_bayes_results,</span>
+<span id="cb227-3"><a href="workflowsets.html#cb227-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">rank_metric =</span> <span class="st">&quot;rsq&quot;</span>,</span>
+<span id="cb227-4"><a href="workflowsets.html#cb227-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">metric =</span> <span class="st">&quot;rsq&quot;</span>,</span>
+<span id="cb227-5"><a href="workflowsets.html#cb227-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">select_best =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb227-6"><a href="workflowsets.html#cb227-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">y =</span> mean <span class="sc">-</span> <span class="fl">0.10</span> , <span class="at">label =</span> wflow_id), <span class="at">angle =</span> <span class="dv">90</span>, <span class="at">hjust =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb227-7"><a href="workflowsets.html#cb227-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lims</span>(<span class="at">y =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb228"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb228-1"><a href="workflowsets.html#cb228-1" aria-hidden="true" tabindex="-1"></a>UseCores <span class="ot">&lt;-</span> <span class="fu">detectCores</span>() <span class="sc">-</span> <span class="dv">1</span></span>
+<span id="cb228-2"><a href="workflowsets.html#cb228-2" aria-hidden="true" tabindex="-1"></a>cluster <span class="ot">&lt;-</span> <span class="fu">makeCluster</span>(UseCores)</span>
+<span id="cb228-3"><a href="workflowsets.html#cb228-3" aria-hidden="true" tabindex="-1"></a><span class="fu">registerDoParallel</span>(cluster)</span>
+<span id="cb228-4"><a href="workflowsets.html#cb228-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb228-5"><a href="workflowsets.html#cb228-5" aria-hidden="true" tabindex="-1"></a>race_ctrl <span class="ot">&lt;-</span> <span class="fu">control_sim_anneal</span>(</span>
+<span id="cb228-6"><a href="workflowsets.html#cb228-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">verbose =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb228-7"><a href="workflowsets.html#cb228-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">no_improve =</span> 10L,</span>
+<span id="cb228-8"><a href="workflowsets.html#cb228-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">restart =</span> 10L,</span>
+<span id="cb228-9"><a href="workflowsets.html#cb228-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">radius =</span> <span class="fu">c</span>(<span class="fl">0.01</span>, <span class="fl">0.20</span>)</span>
+<span id="cb228-10"><a href="workflowsets.html#cb228-10" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb228-11"><a href="workflowsets.html#cb228-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb228-12"><a href="workflowsets.html#cb228-12" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">20220603</span>)</span>
+<span id="cb228-13"><a href="workflowsets.html#cb228-13" aria-hidden="true" tabindex="-1"></a>tunning_race_sim_anneal_results <span class="ot">&lt;-</span> workflow_tunning_set_models <span class="sc">%&gt;%</span></span>
+<span id="cb228-14"><a href="workflowsets.html#cb228-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">workflow_map</span>(</span>
+<span id="cb228-15"><a href="workflowsets.html#cb228-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;tune_sim_anneal&quot;</span>,</span>
+<span id="cb228-16"><a href="workflowsets.html#cb228-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">seed =</span> <span class="dv">1503</span>,</span>
+<span id="cb228-17"><a href="workflowsets.html#cb228-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">resamples =</span> ames_folds,</span>
+<span id="cb228-18"><a href="workflowsets.html#cb228-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">iter =</span> <span class="dv">100</span>,</span>
+<span id="cb228-19"><a href="workflowsets.html#cb228-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">metrics =</span>  <span class="fu">metric_set</span>(rmse, mae, mape, rsq),</span>
+<span id="cb228-20"><a href="workflowsets.html#cb228-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">control =</span> race_ctrl,</span>
+<span id="cb228-21"><a href="workflowsets.html#cb228-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">verbose =</span> <span class="cn">TRUE</span></span>
+<span id="cb228-22"><a href="workflowsets.html#cb228-22" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb228-23"><a href="workflowsets.html#cb228-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb228-24"><a href="workflowsets.html#cb228-24" aria-hidden="true" tabindex="-1"></a><span class="fu">stopCluster</span>(cluster)</span>
+<span id="cb228-25"><a href="workflowsets.html#cb228-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb228-26"><a href="workflowsets.html#cb228-26" aria-hidden="true" tabindex="-1"></a>tunning_race_sim_anneal_results <span class="sc">%&gt;%</span> <span class="fu">saveRDS</span>(<span class="st">&quot;models/race_sim_anneal_results.rds&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb229"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb229-1"><a href="workflowsets.html#cb229-1" aria-hidden="true" tabindex="-1"></a>tunning_race_sim_anneal_results<span class="sc">$</span>result</span></code></pre></div>
+<div class="sourceCode" id="cb230"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb230-1"><a href="workflowsets.html#cb230-1" aria-hidden="true" tabindex="-1"></a>tunning_race_sim_anneal_results <span class="sc">%&gt;%</span></span>
+<span id="cb230-2"><a href="workflowsets.html#cb230-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rank_results</span>(<span class="at">select_best =</span> T) <span class="sc">%&gt;%</span></span>
+<span id="cb230-3"><a href="workflowsets.html#cb230-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span><span class="fu">c</span>(.config, n, preprocessor, std_err)) <span class="sc">%&gt;%</span></span>
+<span id="cb230-4"><a href="workflowsets.html#cb230-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> .metric, <span class="at">values_from =</span> mean)</span></code></pre></div>
 
 <div class="watermark">
 <img src="img/header.png" width="400">
