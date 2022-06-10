@@ -52,7 +52,7 @@ receta_original <- recipe(Sale_Price ~ . , data = ames_train) %>%
 receta_original_prep <- receta_original %>% prep()
 ```
 
-* **Receta PCA:**
+* **Receta KNN:**
 
 ```{r}
 receta_knn <- recipe(Sale_Price ~ . , data = ames_train) %>%
@@ -120,6 +120,7 @@ receta_grande <- recipe(Sale_Price ~ . , data = ames_train) %>%
     TotalBaths = Full_Bath + Bsmt_Full_Bath + 0.5 * (Half_Bath + Bsmt_Half_Bath),
     Age_House = Year_Sold - Year_Remod,
     TotalSF = Gr_Liv_Area + Total_Bsmt_SF,
+    Porc_H_over_TotalSF = (TotalSF / Lot_Area) * 100,
     AvgRoomSF = Gr_Liv_Area / TotRms_AbvGrd,
     Porch_SF = Enclosed_Porch + ThirdSsn_Porch + Open_Porch_SF,
     Porch = factor(Porch_SF > 0),
