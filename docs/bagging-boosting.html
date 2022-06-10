@@ -234,7 +234,18 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="5.5" data-path="workflowsets.html"><a href="workflowsets.html#extracción-de-modelos"><i class="fa fa-check"></i><b>5.5</b> Extracción de modelos</a>
 <ul>
 <li class="chapter" data-level="5.5.1" data-path="workflowsets.html"><a href="workflowsets.html#selección-de-modelo"><i class="fa fa-check"></i><b>5.5.1</b> Selección de modelo</a></li>
-<li class="chapter" data-level="5.5.2" data-path="workflowsets.html"><a href="workflowsets.html#método-de-carrera"><i class="fa fa-check"></i><b>5.5.2</b> Método de carrera</a></li>
+</ul></li>
+<li class="chapter" data-level="5.6" data-path="workflowsets.html"><a href="workflowsets.html#métodos-de-carrera"><i class="fa fa-check"></i><b>5.6</b> Métodos de carrera</a>
+<ul>
+<li class="chapter" data-level="5.6.1" data-path="workflowsets.html"><a href="workflowsets.html#optimización-anova"><i class="fa fa-check"></i><b>5.6.1</b> Optimización ANOVA</a></li>
+<li class="chapter" data-level="5.6.2" data-path="workflowsets.html"><a href="workflowsets.html#optimización-logística"><i class="fa fa-check"></i><b>5.6.2</b> Optimización Logística</a></li>
+<li class="chapter" data-level="5.6.3" data-path="workflowsets.html"><a href="workflowsets.html#optimización-bayesiana"><i class="fa fa-check"></i><b>5.6.3</b> Optimización Bayesiana</a></li>
+</ul></li>
+<li class="chapter" data-level="5.7" data-path="workflowsets.html"><a href="workflowsets.html#ejercicios-parte-1"><i class="fa fa-check"></i><b>5.7</b> Ejercicios (Parte 1)</a></li>
+<li class="chapter" data-level="5.8" data-path="workflowsets.html"><a href="workflowsets.html#stacking"><i class="fa fa-check"></i><b>5.8</b> Stacking</a>
+<ul>
+<li class="chapter" data-level="5.8.1" data-path="workflowsets.html"><a href="workflowsets.html#elección-de-modelos"><i class="fa fa-check"></i><b>5.8.1</b> Elección de modelos</a></li>
+<li class="chapter" data-level="5.8.2" data-path="workflowsets.html"><a href="workflowsets.html#ajuste-final"><i class="fa fa-check"></i><b>5.8.2</b> Ajuste final</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
@@ -676,7 +687,7 @@ Donde <span class="math inline">\(L(Y, F(X))\)</span> es una función de pérdid
 <span id="cb135-2"><a href="bagging-boosting.html#cb135-2" aria-hidden="true" tabindex="-1"></a>  <span class="co">#finalize_workflow(best_xgboost_model) %&gt;% </span></span>
 <span id="cb135-3"><a href="bagging-boosting.html#cb135-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">finalize_workflow</span>(best_xgboost_reg_1se_model) <span class="sc">%&gt;%</span> </span>
 <span id="cb135-4"><a href="bagging-boosting.html#cb135-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(<span class="at">data =</span> ames_train)</span></code></pre></div>
-<pre><code>## [10:33:47] WARNING: amalgamation/../src/learner.cc:627: 
+<pre><code>## [16:38:48] WARNING: amalgamation/../src/learner.cc:627: 
 ## Parameters: { &quot;importance&quot; } might not be used.
 ## 
 ##   This could be a false alarm, with some parameters getting used by language bindings but
@@ -1024,7 +1035,7 @@ Donde <span class="math inline">\(L(Y, F(X))\)</span> es una función de pérdid
 <span id="cb167-2"><a href="bagging-boosting.html#cb167-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">finalize_workflow</span>(best_xgboost_model) <span class="sc">%&gt;%</span> </span>
 <span id="cb167-3"><a href="bagging-boosting.html#cb167-3" aria-hidden="true" tabindex="-1"></a>  <span class="co">#finalize_workflow(best_xgboost_model_1se) %&gt;% </span></span>
 <span id="cb167-4"><a href="bagging-boosting.html#cb167-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(<span class="at">data =</span> telco_test)</span></code></pre></div>
-<pre><code>## [10:33:55] WARNING: amalgamation/../src/learner.cc:627: 
+<pre><code>## [16:38:57] WARNING: amalgamation/../src/learner.cc:627: 
 ## Parameters: { &quot;importance&quot; } might not be used.
 ## 
 ##   This could be a false alarm, with some parameters getting used by language bindings but

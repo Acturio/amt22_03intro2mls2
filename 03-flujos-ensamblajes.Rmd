@@ -108,6 +108,10 @@ receta_grande <- recipe(Sale_Price ~ . , data = ames_train) %>%
   step_unknown(Electrical) %>%
   step_unknown(Heating_QC) %>%
   step_unknown(Pool_QC) %>% 
+  step_impute_knn(
+    Mas_Vnr_Area, Lot_Frontage, 
+    impute_with= all_predictors(),
+    neighbors = 5) %>%
   step_rename(Year_Remod = Year_Remod_Add) %>% 
   step_rename(ThirdSsn_Porch = Three_season_porch) %>% 
   step_ratio(Bedroom_AbvGr, denom = denom_vars(Gr_Liv_Area)) %>% 
@@ -293,7 +297,7 @@ knn_params <- knn_model %>%
 rforest_params <- rforest_model %>%
   parameters() %>%
   update(
-    mtry = mtry(range = c(15, 150)),
+    mtry = finalize(mtry(range = c(15, 80))),
     min_n = min_n(range = c(3,15))
   )
 
@@ -309,7 +313,7 @@ xgboost_params <- xgboost_model %>%
   parameters() %>%
   update(
     min_n = min_n(range = c(5,15)),
-    mtry = mtry(range = c(15, 150)),
+    mtry = finalize(mtry(range = c(5, 80))),
     tree_depth = tree_depth(range = c(3, 50)),
     loss_reduction = loss_reduction(range = c(-10, 1.5), trans = log10_trans()),
     learn_rate = learn_rate(range = c(-6, -0.25), trans = log10_trans()),
@@ -443,7 +447,7 @@ tunning_models_result %>%
 
 Habiendo determinado los hiperparámetros adecuados para la configuración del modelo, procedemos a seleccionar la configuración adecuada para nosotros. Estos pasos son los mismos que corresponden a la selección del modelo con un único workflow.
 
-**Mejore modelo XGBoost**
+**Mejor modelo XGBoost**
 ```{r}
 best_xgb_model <- tunning_models_result %>%
  extract_workflow_set_result("receta_knn_boost") %>%
@@ -454,7 +458,7 @@ best_xgb_model %>%
   pivot_longer(everything(), names_to = "metric", values_to = "value")
 ```
 
-**Mejore modelo XGBoost a menos de una desviación estandar**
+**Mejor modelo XGBoost a menos de una desviación estandar**
 ```{r}
 best_regularized_xgb_model_1se <- tunning_models_result %>%
   extract_workflow_set_result("receta_knn_boost") %>%
@@ -465,7 +469,7 @@ best_regularized_xgb_model_1se %>%
   pivot_longer(everything(), names_to = "metric", values_to = "value")
 ```
 
-**Mejore modelo XGBoost a menos de un porcentaje fijo**
+**Mejor modelo XGBoost a menos de un porcentaje fijo**
 ```{r}
 best_regularized_xgb_model_pct <- tunning_models_result %>%
   extract_workflow_set_result("receta_knn_boost") %>%
@@ -486,8 +490,47 @@ final_regularized_xgb_model <- tunning_models_result %>%
 final_regularized_xgb_model
 ```
 
+Como hemos hablado anteriormente, este último objeto es el modelo final entrenado, el cual contiene toda la información del pre-procesamiento de datos, por lo que en caso de ponerse en producción el modelo, sólo se necesita de este último elemento para poder realizar nuevas predicciones.
 
-### Método de carrera
+Es importante validar que hayamos hecho un uso correcto de las variables predictivas. En este momento es posible detectar variables que no estén aportando valor o variables que no debiéramos estar usando debido a que cometeríamos data leakage. Para enfrentar esto, ayuda estimar y ordenar el valor de importancia del modelo
+
+```{r}
+library(vip)
+
+final_regularized_xgb_model %>%
+  extract_fit_parsnip() %>%
+  vip::vip(num_features = 25) + 
+  ggtitle("Importancia de las variables")
+```
+
+Por último... Imaginemos por un momento que pasa un mes de tiempo desde que hicimos nuestro modelo, es hora de ponerlo a prueba prediciendo valores de nuevos elementos:
+
+```{r}
+results <- predict(final_regularized_xgb_model, ames_test) %>% 
+  dplyr::bind_cols(truth = ames_test$Sale_Price) %>% 
+  dplyr::rename(pred_xgb_reg = .pred, Sale_Price = truth)
+
+head(results)
+```
+
+```{r}
+multi_metric <- metric_set(rmse, rsq, mae, mape, ccc)
+multi_metric(results, truth = Sale_Price, estimate = pred_xgb_reg) %>% 
+  mutate(.estimate = round(.estimate, 2))
+```
+
+```{r}
+results %>% 
+  ggplot(aes(x = pred_xgb_reg, y = Sale_Price)) +
+  geom_point() +
+  geom_abline(color = "red") +
+  xlab("Prediction") +
+  ylab("Observation") +
+  ggtitle("Comparisson")
+```
+
+
+## Métodos de carrera
 
 Un problema con la búsqueda del *grid* es que **todos los modelos deben ajustarse** en todos los remuestreos antes de que se puedan evaluar los parámetros de ajuste.
 
@@ -496,7 +539,7 @@ evalúa todos los modelos en un subconjunto inicial de remuestreo. En función d
 
 Dado un **workflow**, podemos usar la función `workflow_map()` para un enfoque de carreras. El paquete *finetune* contiene funciones para el método de carreras. Calcula un conjunto de métricas de rendimiento (por ejemplo, precisión o RMSE) para un conjunto predefinido de parámetros de ajuste que corresponden a un modelo o receta a través de una o más muestras de los datos. 
 
-#### Optimización ANOVA 
+### Optimización ANOVA 
 
 Realiza un modelo de análisis de varianza (ANOVA) para probar la significación estadística de las diferentes configuraciones del modelo. Después de evaluar un número inicial de remuestreos, el proceso elimina las combinaciones de parámetros de ajuste que probablemente no sean los mejores resultados usando medidas repetidas de un modelo ANOVA. La función implementada es `tune_race_anova`
 
@@ -553,7 +596,7 @@ autoplot(
   lims(y = c(0, 1))
 ```
 
-#### Optimización logística
+### Optimización Logística
 
 Después de evaluar un número inicial de remuestreos, el proceso elimina las combinaciones de parámetros de ajuste que probablemente no sean los mejores resultados usando un modelo estadístico. Para cada combinación por pares de parámetros de ajuste, se calculan las estadísticas de ganancia/pérdida y se usa un modelo de regresión logística para medir la probabilidad de que cada combinación gane en general. Esto se logra mediante la función `tune_race_win_loss`
 
@@ -574,7 +617,7 @@ tunning_race_win_loss_results <- workflow_tunning_set_models %>%
     "tune_race_win_loss",
     seed = 1503,
     resamples = ames_folds,
-    grid = 20,
+    grid = 100,
     metrics =  metric_set(rmse, mae, mape, rsq),
     control = race_ctrl,
     verbose = TRUE
@@ -608,9 +651,17 @@ autoplot(
   lims(y = c(0, 1))
 ```
 
-#### Optimización bayesiana
+### Optimización Bayesiana
 
-La función `tune_bayes` usa modelos para crear nuevas combinaciones de hiperparámetros que sean candidatos de tunning basado en resultados previos.
+La función `tune_bayes` usa modelos para crear nuevas combinaciones de hiperparámetros que sean candidatos de tunning basado en resultados previos. 
+
+El método utiliza métodos MCMC de simulación bayesiana para determinar los hiperparámetros óptimos. A partir de un buen candidato se realiza una exploración aleatoria que permita encontrar nuevos óptimos o sub-óptimos a encontrar. Es posible configurar el número de iteraciones antes regresar al último óptimo o sub-óptimo para continuar la exploración por otro lado.
+
+<video width="720" height="720" controls>
+<source src="img/bayes_search.mp4" type="video/mp4">
+</video>
+
+La forma de implementarlo es muy similar a las técnicas anteriores. Esta vez se utiliza la función `tune_bayes` y `control_bayes`.
 
 ```{r, eval=FALSE}
 
@@ -642,62 +693,255 @@ stopCluster(cluster)
 tunning_race_bayes_results %>% saveRDS("models/race_bayes_results.rds")
 ```
 
-```{r, echo=FALSE, eval=FALSE}
+```{r}
 tunning_race_bayes_results <- readRDS("models/race_bayes_results.rds")
 ```
 
 Las mismas funciones útiles están disponibles para que este objeto interrogue los resultados y, de hecho, el método básico `autoplot()` produce tendencias similares:
 
-```{r, eval=FALSE}
+```{r}
 tunning_race_bayes_results %>%
+  filter(stringr::str_detect(wflow_id, pattern = "(rf)|(boost)", negate = T) ) %>% 
   rank_results(select_best = T) %>%
   select(-c(.config, n, preprocessor, std_err)) %>%
   pivot_wider(names_from = .metric, values_from = mean)
 ```
 
-```{r, eval=FALSE}
-autoplot(
-  tunning_race_bayes_results,
-  rank_metric = "rsq",
-  metric = "rsq",
-  select_best = TRUE) +
-  geom_text(aes(y = mean - 0.10 , label = wflow_id), angle = 90, hjust = 1) +
-  lims(y = c(0, 1))
+```{r}
+tunning_race_bayes_results %>% 
+  filter(stringr::str_detect(wflow_id, pattern = "(rf)|(boost)", negate = T) ) %>% 
+  autoplot(
+    rank_metric = "rsq",
+    metric = "rsq",
+    select_best = TRUE) +
+    geom_text(aes(y = mean - 0.10 , label = wflow_id), angle = 90, hjust = 1) +
+    lims(y = c(0, 1))
 ```
 
 
+## Stacking 
+
+**El ensamblaje de modelos es un proceso en el que se utilizan varios modelos base para predecir un resultado.**
+
+* La motivación para usar modelos de conjunto es reducir el error de generalización de la predicción. 
+
+* Siempre que los modelos base sean diversos e independientes, el error de predicción disminuye cuando se utiliza el enfoque de conjunto.
+
+* Aunque el modelo de conjunto tiene varios modelos base dentro del modelo, actúa y funciona como un solo modelo. 
 
 
+```{r echo=FALSE,fig.align='center', out.height='250pt', out.width='600pt'}
+knitr::include_graphics("img/06-stacking/model_ensamble.png")
+```
+
+Un conjunto de modelos, donde las predicciones de varios modelos individuales se agregan para hacer una predicción, puede producir un modelo final de alto rendimiento. 
+
+Los métodos más populares para crear modelos de conjuntos son:
+
+* *Bagging*
+* *Bosques aleatorios* 
+* *Boosting*
+
+Cada uno de estos métodos combina las predicciones de múltiples versiones del mismo tipo de modelo. Uno de los primeros métodos para crear conjuntos es el apilamiento de modelos (*stacking*).
+
+***Stacking* combina las predicciones de múltiples modelos de cualquier tipo.**
+
+Por ejemplo, una regresión logística, un árbol de clasificación y una máquina de vectores de soporte se pueden incluir en un conjunto de apilamiento, así como diferentes configuraciones de un mismo modelo.
+
+El proceso de construcción de un conjunto apilado es:
+
+1. Reunir el conjunto de entrenamiento de predicciones (producidas mediante remuestreo).
+
+2. Crear un modelo para combinar estas predicciones.
+
+3. Para cada modelo del conjunto, ajustar el modelo en el conjunto de entrenamiento original.
+
+
+### Elección de modelos
+
+Para cada observación en el conjunto de entrenamiento, el apilamiento (*stacking*) requiere una predicción fuera de la muestra de algún tipo. 
+
+Para comenzar a ensamblar con el paquete *stacks*, se crea una pila de datos vacía usando la función `stacks()` y luego se agrega el flujo de trabajo para ajustar una amplia variedad de modelos a estos datos. 
+
+```{r, warning=FALSE, message=FALSE}
+library(tidymodels)
+library(stacks)
+tidymodels_prefer()
+
+concrete_stack <- stacks() %>% 
+  add_candidates(tunning_models_result)
+
+concrete_stack
+```
+
+La regularización mediante la penalización de lazo tiene varias ventajas:
+
+* El uso de la penalización de lazo puede eliminar modelos (y, a veces, tipos de modelos completos) del conjunto.
+
+* La correlación entre los candidatos del conjunto tiende a ser muy alta y la regularización ayuda a mitigar este problema.
+
+Dado que nuestro resultado es numérico, se utiliza la regresión lineal para el metamodelo. 
 
 ```{r, eval=FALSE}
+set.seed(20220612)
 
-UseCores <- detectCores() - 1
-cluster <- makeCluster(UseCores)
-registerDoParallel(cluster)
+assembly <- concrete_stack %>% 
+  blend_predictions(metric = metric_set(rmse, mae, mape, rsq))
 
-race_ctrl <- control_sim_anneal(
-  verbose = TRUE,
-  no_improve = 10L,
-  restart = 10L,
-  radius = c(0.01, 0.20)
-  )
-
-set.seed(20220603)
-tunning_race_sim_anneal_results <- workflow_tunning_set_models %>%
-  workflow_map(
-    "tune_sim_anneal",
-    seed = 1503,
-    resamples = ames_folds,
-    iter = 100,
-    metrics =  metric_set(rmse, mae, mape, rsq),
-    control = race_ctrl,
-    verbose = TRUE
-  )
-
-stopCluster(cluster)
-
-tunning_race_sim_anneal_results %>% saveRDS("models/race_sim_anneal_results.rds")
+assembly %>% saveRDS("models/stack_predictions.rds")
 ```
+
+```{r}
+assembly <- readRDS("models/stack_predictions.rds")
+```
+
+```{r}
+assembly
+```
+
+```{r}
+autoplot(assembly, "weights") + 
+  theme_minimal()
+```
+
+Esto evalúa el modelo de meta aprendizaje sobre un grid predefinido de valores de penalización de lazo y utiliza un método de remuestreo interno para determinar el mejor valor. 
+
+El método `autoplot()` nos ayuda a comprender si el método de penalización predeterminado fue suficiente:
+
+```{r}
+autoplot(assembly)
+```
+
+El panel de en medio muestra el número promedio de modelos del conjunto retenidos por el modelo de meta aprendizaje. 
+
+Es posible que el rango predeterminado no nos haya servido bien aquí. Para evaluar el modelo de meta aprendizaje con penalizaciones mayores.
+
+```{r, eval=FALSE, warning=FALSE, message=FALSE}
+set.seed(20220612)
+
+assembly_v2 <- concrete_stack %>% 
+  blend_predictions(
+    metric = metric_set(rmse, mae, mape, rsq),
+    penalty = 10^seq(-5, 5, length = 50)
+  )
+
+assembly_v2 %>% saveRDS("models/stack_predictions_v2.rds")
+```
+
+```{r}
+assembly_v2 <- readRDS("models/stack_predictions_v2.rds")
+
+autoplot(assembly_v2)
+```
+
+El valor de penalización asociado a las curvas fue de 1456.34. La impresión del objeto muestra los detalles del modelo de meta aprendizaje:
+
+```{r}
+assembly_v2
+```
+
+El modelo de meta aprendizaje contenía cuatro coeficientes de combinación. El método `autoplot()` se puede usar nuevamente para mostrar las contribuciones de cada tipo de modelo:
+
+```{r}
+autoplot(assembly_v2, "weights") + 
+  theme_minimal()
+```
+
+El modelo de bosques aleatorios tiene la mayor contribución al conjunto. Para este conjunto, el resultado se predice con la ecuación:
+
+```{r, echo=FALSE, eval=FALSE}
+assembly_v2$equations$numeric$.pred
+```
+
+
+\begin{aligned}
+\text{Predicción ensamblada} = -3130.71 &+ 0.0516 * \text{receta_original_knn_1_003} \\
+&+ 0.0427 * \text{receta_original_boost_1_002} \\
+&+ 0.0015 * \text{receta_original_boost_1_075} \\
+&+ 0.0274 * \text{receta_knn_knn_1_003} \\
+&+ 0.0020 * \text{receta_knn_knn_1_053} \\
+&+ 0.0387 * \text{receta_knn_knn_1_004} \\
+&+ 0.3380 * \text{receta_knn_boost_1_058} \\
+&+ 0.0192 * \text{receta_knn_boost_1_028} \\
+&+ 0.0980 * \text{receta_knn_boost_1_040} \\
+&+ 0.0264 * \text{receta_knn_boost_1_013} \\
+&+ 0.0938 * \text{receta_knn_boost_1_035} \\
+&+ 0.0319 * \text{receta_knn_boost_1_047} \\
+&+ 0.0664 * \text{receta_knn_boost_1_025} \\
+&+ 0.1015 * \text{receta_knn_boost_1_086} \\
+&+ 0.0006 * \text{receta_knn_boost_1_045} \\
+&+ 0.0829 * \text{receta_knn_boost_1_041} \\ 
+
+\end{aligned}
+
+
+Ahora sabemos cómo se pueden combinar sus predicciones en una predicción final para el conjunto. Sin embargo, estos ajustes de modelos individuales aún no se han creado. 
+
+### Ajuste final
+
+Para poder usar el modelo de *stacking*, se requieren los ajustes de todos los modelos candidatos. Estos utilizan todo el conjunto de entrenamiento con los predictores originales.
+
+```{r, eval=FALSE}
+fit_assembly <- fit_members(assembly_v2)
+
+fit_assembly %>%  saveRDS("models/stack_fit_members.rds")
+
+```
+
+```{r}
+fit_assembly <- readRDS("models/stack_fit_members.rds")
+```
+
+```{r}
+fit_assembly
+```
+
+Esto actualiza el objeto de apilamiento con los objetos de flujo de trabajo ajustados para cada miembro. En este punto, el modelo de *stacking* se puede utilizar para la predicción.
+
+```{r}
+regression_metrics <- metric_set(rmse, mae, mape, rsq, ccc)
+
+fit_assembly_pred_test <- predict(fit_assembly, ames_test) %>% 
+  bind_cols(ames_test)
+
+fit_assembly_pred_test %>% regression_metrics(Sale_Price, .pred)
+```
+
+### Comparación de métricas
+
+Para ver la efectividad del ensamblaje, realizamos una comparación con el mejor modelo entrenado anteriormente (XGBoost). Es importante que la comparación se realice utilizando los mismos datos de prueba.
+
+```{r}
+multi_metric(results, truth = Sale_Price, estimate = pred_xgb_reg) 
+```
+
+Este capítulo demuestra cómo combinar diferentes modelos en un conjunto para un mejor desempeño predictivo. El proceso de creación del conjunto puede eliminar automáticamente los modelos candidatos para encontrar un pequeño subconjunto que mejore el rendimiento. 
+
+
+## Ejercicios
+
+Para obtener un mejor aprendizaje de este capítulo, cada alumno deberá:
+
+* Replicar este proceso eligiendo un número de iteraciones mayor a 500 con cualquiera de las metodologías revisadas en este capítulo.
+
+* Realizar el proceso análogo con los datos de respuesta categórica y mandar un reporte con sus resultados
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
