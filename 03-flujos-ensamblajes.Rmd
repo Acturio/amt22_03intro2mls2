@@ -1,6 +1,6 @@
 <div class="watermark"><img src="img/header.png" width="400"></div>
 
-# Workflowsets
+# Workflowsets & Stacking
 
 Es común no sepamos ni remotamente cuál es el mejor modelo que podríamos implementar al iniciar un proyecto con datos que nunca antes hemos visto. Es posible que un profesional de datos deba seleccionar muchas combinaciones de modelos y preprocesadores. También es posible tener poco o ningún conocimiento a priori sobre qué método funcionará mejor con un nuevo conjunto de datos.
 
@@ -925,32 +925,3 @@ Para obtener un mejor aprendizaje de este capítulo, cada alumno deberá:
 * Replicar este proceso eligiendo un número de iteraciones mayor a 500 con cualquiera de las metodologías revisadas en este capítulo.
 
 * Realizar el proceso análogo con los datos de respuesta categórica y mandar un reporte con sus resultados
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
