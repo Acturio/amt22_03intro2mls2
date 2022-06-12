@@ -415,15 +415,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><p>Ajustar un árbol <span class="math inline">\(\hat{f}^b\)</span> al conjunto de entrenamiento <span class="math inline">\((X, r)\)</span></p></li>
 <li><p>Actualizar el ajuste <span class="math inline">\(\hat{f}(x)\)</span> al añadir una nueva versión restringida de un nuevo árbol:</p></li>
 </ol>
-<p><span class="math display">\[\hat{F}_b(X) \leftarrow \hat{F}_{b-1}(X) + \lambda_b\hat{h}_b(X, r_{b-1})\]</span>
+<p><span class="math display">\[\hat{F}_b(X) \leftarrow \hat{F}_{b-1}(X) + \alpha_b\hat{h}_b(X, r_{b-1})\]</span>
 c) Actualizar los residuos:</p>
-<p><span class="math display">\[r_b \leftarrow r_{b-1} - \lambda_b\hat{f}^b(x_i)\]</span></p>
+<p><span class="math display">\[r_b \leftarrow r_{b-1} - \alpha_b\hat{f}^b(x_i)\]</span></p>
 <ol start="3" style="list-style-type: decimal">
 <li>Resultado del modelo <em>Boosting</em>:</li>
 </ol>
-<p><span class="math display">\[\hat{F}=\sum_{b=1}^{B}\lambda_b\hat{F}_b(x)\]</span>
-Para calcular <span class="math inline">\(\lambda_b\)</span> en cada iteración, se usa la siguiente fórmula:</p>
-<p><span class="math display">\[\underset{\alpha}{\operatorname{argmin}}=\sum_{i=1}^{b}{L(Y_i, \hat{F}_{i-1}(X_i)+\lambda \hat{h}_i(X_i, r_{i-1}))}\]</span>
+<p><span class="math display">\[\hat{F}=\sum_{b=1}^{B}\alpha_b\hat{F}_b(x)\]</span>
+Para calcular <span class="math inline">\(\alpha_b\)</span> en cada iteración, se usa la siguiente fórmula:</p>
+<p><span class="math display">\[\underset{\alpha}{\operatorname{argmin}}=\sum_{i=1}^{b}{L(Y_i, \hat{F}_{i-1}(X_i)+\alpha \hat{h}_i(X_i, r_{i-1}))}\]</span>
 Donde <span class="math inline">\(L(Y, F(X))\)</span> es una función de pérdida diferenciable.</p>
 <div id="predicciones-de-boosting" class="section level3 hasAnchor" number="4.4.1">
 <h3><span class="header-section-number">4.4.1</span> Predicciones de <em>Boosting</em><a href="bagging-boosting.html#predicciones-de-boosting" class="anchor-section" aria-label="Anchor link to header"></a></h3>
@@ -688,7 +688,7 @@ Donde <span class="math inline">\(L(Y, F(X))\)</span> es una función de pérdid
 <span id="cb135-2"><a href="bagging-boosting.html#cb135-2" aria-hidden="true" tabindex="-1"></a>  <span class="co">#finalize_workflow(best_xgboost_model) %&gt;% </span></span>
 <span id="cb135-3"><a href="bagging-boosting.html#cb135-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">finalize_workflow</span>(best_xgboost_reg_1se_model) <span class="sc">%&gt;%</span> </span>
 <span id="cb135-4"><a href="bagging-boosting.html#cb135-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(<span class="at">data =</span> ames_train)</span></code></pre></div>
-<pre><code>## [18:19:19] WARNING: amalgamation/../src/learner.cc:627: 
+<pre><code>## [23:14:10] WARNING: amalgamation/../src/learner.cc:627: 
 ## Parameters: { &quot;importance&quot; } might not be used.
 ## 
 ##   This could be a false alarm, with some parameters getting used by language bindings but
@@ -1036,7 +1036,7 @@ Donde <span class="math inline">\(L(Y, F(X))\)</span> es una función de pérdid
 <span id="cb167-2"><a href="bagging-boosting.html#cb167-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">finalize_workflow</span>(best_xgboost_model) <span class="sc">%&gt;%</span> </span>
 <span id="cb167-3"><a href="bagging-boosting.html#cb167-3" aria-hidden="true" tabindex="-1"></a>  <span class="co">#finalize_workflow(best_xgboost_model_1se) %&gt;% </span></span>
 <span id="cb167-4"><a href="bagging-boosting.html#cb167-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(<span class="at">data =</span> telco_test)</span></code></pre></div>
-<pre><code>## [18:19:27] WARNING: amalgamation/../src/learner.cc:627: 
+<pre><code>## [23:14:18] WARNING: amalgamation/../src/learner.cc:627: 
 ## Parameters: { &quot;importance&quot; } might not be used.
 ## 
 ##   This could be a false alarm, with some parameters getting used by language bindings but
