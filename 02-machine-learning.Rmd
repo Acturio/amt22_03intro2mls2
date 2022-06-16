@@ -1387,17 +1387,17 @@ La forma de ajustar el modelo sigue los siguientes pasos:
  
   b) Actualizar el ajuste $\hat{f}(x)$ al añadir una nueva versión restringida de un nuevo árbol:
  
- $$\hat{F}_b(X) \leftarrow \hat{F}_{b-1}(X) + \lambda_b\hat{h}_b(X, r_{b-1})$$
+ $$\hat{F}_b(X) \leftarrow \hat{F}_{b-1}(X) + \alpha_b\hat{h}_b(X, r_{b-1})$$
   c) Actualizar los residuos:
  
- $$r_b \leftarrow r_{b-1} - \lambda_b\hat{f}^b(x_i)$$
+ $$r_b \leftarrow r_{b-1} - \alpha_b\hat{f}^b(x_i)$$
 
 3. Resultado del modelo *Boosting*:
 
-$$\hat{F}=\sum_{b=1}^{B}\lambda_b\hat{F}_b(x)$$
-Para calcular $\lambda_b$ en cada iteración, se usa la siguiente fórmula:
+$$\hat{F}=\sum_{b=1}^{B}\alpha_b\hat{F}_b(x)$$
+Para calcular $\alpha_b$ en cada iteración, se usa la siguiente fórmula:
 
-$$\underset{\alpha}{\operatorname{argmin}}=\sum_{i=1}^{b}{L(Y_i, \hat{F}_{i-1}(X_i)+\lambda \hat{h}_i(X_i, r_{i-1}))}$$
+$$\underset{\alpha}{\operatorname{argmin}}=\sum_{i=1}^{b}{L(Y_i, \hat{F}_{i-1}(X_i)+\alpha \hat{h}_i(X_i, r_{i-1}))}$$
 Donde $L(Y, F(X))$ es una función de pérdida diferenciable.
 
 
@@ -1806,8 +1806,8 @@ best_xgboost_model_1se
 
 ```{r, message=FALSE, warning=FALSE}
 final_xgboost_model <- xgboost_workflow %>% 
-  finalize_workflow(best_xgboost_model) %>% 
-  #finalize_workflow(best_xgboost_model_1se) %>% 
+  #finalize_workflow(best_xgboost_model) %>% 
+  finalize_workflow(best_xgboost_model_1se) %>% 
   fit(data = telco_test)
 
 final_xgboost_model

@@ -31,7 +31,7 @@
   
   
 <link rel="prev" href="bagging-boosting.html"/>
-<link rel="next" href="references.html"/>
+<link rel="next" href="sesgo-e-inequidad.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -248,6 +248,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="5.7.3" data-path="workflowsets-stacking.html"><a href="workflowsets-stacking.html#comparación-de-métricas"><i class="fa fa-check"></i><b>5.7.3</b> Comparación de métricas</a></li>
 </ul></li>
 <li class="chapter" data-level="5.8" data-path="workflowsets-stacking.html"><a href="workflowsets-stacking.html#ejercicios-3"><i class="fa fa-check"></i><b>5.8</b> Ejercicios</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="sesgo-e-inequidad.html"><a href="sesgo-e-inequidad.html"><i class="fa fa-check"></i><b>6</b> Sesgo e Inequidad</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="sesgo-e-inequidad.html"><a href="sesgo-e-inequidad.html#aequitas"><i class="fa fa-check"></i><b>6.1</b> Aequitas</a></li>
 </ul></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
 <li class="divider"></li>
@@ -798,7 +802,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb211-2"><a href="workflowsets-stacking.html#cb211-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">extract_workflow</span>(<span class="st">&quot;receta_knn_boost&quot;</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb211-3"><a href="workflowsets-stacking.html#cb211-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">finalize_workflow</span>(best_regularized_xgb_model_1se) <span class="sc">%&gt;%</span></span>
 <span id="cb211-4"><a href="workflowsets-stacking.html#cb211-4" aria-hidden="true" tabindex="-1"></a>  parsnip<span class="sc">::</span><span class="fu">fit</span>(<span class="at">data =</span> ames_train)</span></code></pre></div>
-<pre><code>## [23:14:48] WARNING: amalgamation/../src/learner.cc:627: 
+<pre><code>## [18:02:28] WARNING: amalgamation/../src/learner.cc:627: 
 ## Parameters: { &quot;importance&quot; } might not be used.
 ## 
 ##   This could be a false alarm, with some parameters getting used by language bindings but
@@ -1318,11 +1322,6 @@ evalúa todos los modelos en un subconjunto inicial de remuestreo. En función d
 <div class="watermark">
 <img src="img/header.png" width="400">
 </div>
-
-<div class="watermark">
-<img src="img/header.png" width="400">
-</div>
-
 </div>
 </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -1353,7 +1352,7 @@ $('.pipehover_select_one_row tr').hover(function() {
         </div>
       </div>
 <a href="bagging-boosting.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="references.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="sesgo-e-inequidad.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

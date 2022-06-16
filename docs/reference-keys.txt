@@ -65,3 +65,16 @@ elección-de-modelos
 ajuste-final
 comparación-de-métricas
 ejercicios-3
+sesgo-e-inequidad
+aequitas
+propósito-vs-error
+métricas
+equal-parity-or-demographic-or-statistical-parity
+proportional-parity-o-impact-parity-o-minimizing-disparate-impact
+equalized-odds
+predictive-rate-parity
+accuracy-parity
+false-negative-parity-o-equal-oppportunity
+false-positive-parity
+negative-predictive-value-parity
+specificity-parity
