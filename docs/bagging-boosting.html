@@ -251,7 +251,19 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="6" data-path="sesgo-e-inequidad.html"><a href="sesgo-e-inequidad.html"><i class="fa fa-check"></i><b>6</b> Sesgo e Inequidad</a>
 <ul>
-<li class="chapter" data-level="6.1" data-path="sesgo-e-inequidad.html"><a href="sesgo-e-inequidad.html#aequitas"><i class="fa fa-check"></i><b>6.1</b> Aequitas</a></li>
+<li class="chapter" data-level="6.1" data-path="sesgo-e-inequidad.html"><a href="sesgo-e-inequidad.html#propósito-vs-error"><i class="fa fa-check"></i><b>6.1</b> Propósito Vs Error</a></li>
+<li class="chapter" data-level="6.2" data-path="sesgo-e-inequidad.html"><a href="sesgo-e-inequidad.html#métricas"><i class="fa fa-check"></i><b>6.2</b> Métricas</a>
+<ul>
+<li class="chapter" data-level="6.2.1" data-path="sesgo-e-inequidad.html"><a href="sesgo-e-inequidad.html#equal-parity-or-demographic-or-statistical-parity"><i class="fa fa-check"></i><b>6.2.1</b> Equal Parity or Demographic or Statistical Parity</a></li>
+<li class="chapter" data-level="6.2.2" data-path="sesgo-e-inequidad.html"><a href="sesgo-e-inequidad.html#proportional-parity-o-impact-parity-o-minimizing-disparate-impact"><i class="fa fa-check"></i><b>6.2.2</b> Proportional Parity o Impact Parity o Minimizing Disparate Impact</a></li>
+<li class="chapter" data-level="6.2.3" data-path="sesgo-e-inequidad.html"><a href="sesgo-e-inequidad.html#equalized-odds"><i class="fa fa-check"></i><b>6.2.3</b> Equalized odds</a></li>
+<li class="chapter" data-level="6.2.4" data-path="sesgo-e-inequidad.html"><a href="sesgo-e-inequidad.html#predictive-rate-parity"><i class="fa fa-check"></i><b>6.2.4</b> Predictive rate parity</a></li>
+<li class="chapter" data-level="6.2.5" data-path="sesgo-e-inequidad.html"><a href="sesgo-e-inequidad.html#accuracy-parity"><i class="fa fa-check"></i><b>6.2.5</b> Accuracy parity</a></li>
+<li class="chapter" data-level="6.2.6" data-path="sesgo-e-inequidad.html"><a href="sesgo-e-inequidad.html#false-negative-parity-o-equal-oppportunity"><i class="fa fa-check"></i><b>6.2.6</b> False Negative Parity o Equal Oppportunity</a></li>
+<li class="chapter" data-level="6.2.7" data-path="sesgo-e-inequidad.html"><a href="sesgo-e-inequidad.html#false-positive-parity"><i class="fa fa-check"></i><b>6.2.7</b> False Positive Parity</a></li>
+<li class="chapter" data-level="6.2.8" data-path="sesgo-e-inequidad.html"><a href="sesgo-e-inequidad.html#negative-predictive-value-parity"><i class="fa fa-check"></i><b>6.2.8</b> Negative predictive value parity</a></li>
+<li class="chapter" data-level="6.2.9" data-path="sesgo-e-inequidad.html"><a href="sesgo-e-inequidad.html#specificity-parity"><i class="fa fa-check"></i><b>6.2.9</b> Specificity parity</a></li>
+</ul></li>
 </ul></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
 <li class="divider"></li>
@@ -692,7 +704,7 @@ Donde <span class="math inline">\(L(Y, F(X))\)</span> es una función de pérdid
 <span id="cb135-2"><a href="bagging-boosting.html#cb135-2" aria-hidden="true" tabindex="-1"></a>  <span class="co">#finalize_workflow(best_xgboost_model) %&gt;% </span></span>
 <span id="cb135-3"><a href="bagging-boosting.html#cb135-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">finalize_workflow</span>(best_xgboost_reg_1se_model) <span class="sc">%&gt;%</span> </span>
 <span id="cb135-4"><a href="bagging-boosting.html#cb135-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(<span class="at">data =</span> ames_train)</span></code></pre></div>
-<pre><code>## [18:01:52] WARNING: amalgamation/../src/learner.cc:627: 
+<pre><code>## [15:41:18] WARNING: amalgamation/../src/learner.cc:627: 
 ## Parameters: { &quot;importance&quot; } might not be used.
 ## 
 ##   This could be a false alarm, with some parameters getting used by language bindings but
@@ -1037,10 +1049,10 @@ Donde <span class="math inline">\(L(Y, F(X))\)</span> es una función de pérdid
 ## #   std_err &lt;dbl&gt;, .config &lt;chr&gt;, .best &lt;dbl&gt;, .bound &lt;dbl&gt;</code></pre>
 <p><strong>Paso 9: Ajuste de modelo final con todos los datos (Vuelve al paso 2, si es necesario)</strong></p>
 <div class="sourceCode" id="cb167"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb167-1"><a href="bagging-boosting.html#cb167-1" aria-hidden="true" tabindex="-1"></a>final_xgboost_model <span class="ot">&lt;-</span> xgboost_workflow <span class="sc">%&gt;%</span> </span>
-<span id="cb167-2"><a href="bagging-boosting.html#cb167-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">finalize_workflow</span>(best_xgboost_model) <span class="sc">%&gt;%</span> </span>
-<span id="cb167-3"><a href="bagging-boosting.html#cb167-3" aria-hidden="true" tabindex="-1"></a>  <span class="co">#finalize_workflow(best_xgboost_model_1se) %&gt;% </span></span>
+<span id="cb167-2"><a href="bagging-boosting.html#cb167-2" aria-hidden="true" tabindex="-1"></a>  <span class="co">#finalize_workflow(best_xgboost_model) %&gt;% </span></span>
+<span id="cb167-3"><a href="bagging-boosting.html#cb167-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">finalize_workflow</span>(best_xgboost_model_1se) <span class="sc">%&gt;%</span> </span>
 <span id="cb167-4"><a href="bagging-boosting.html#cb167-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(<span class="at">data =</span> telco_test)</span></code></pre></div>
-<pre><code>## [18:02:00] WARNING: amalgamation/../src/learner.cc:627: 
+<pre><code>## [15:41:27] WARNING: amalgamation/../src/learner.cc:627: 
 ## Parameters: { &quot;importance&quot; } might not be used.
 ## 
 ##   This could be a false alarm, with some parameters getting used by language bindings but
@@ -1062,15 +1074,16 @@ Donde <span class="math inline">\(L(Y, F(X))\)</span> es una función de pérdid
 ## 
 ## ── Model ───────────────────────────────────────────────────────────────────────
 ## ##### xgb.Booster
-## raw: 1.4 Mb 
+## raw: 1.2 Mb 
 ## call:
-##   xgboost::xgb.train(params = list(eta = 0.00252103438835676, max_depth = 5L, 
-##     gamma = 4.18551300211136e-05, colsample_bytree = 1, colsample_bynode = 1, 
-##     min_child_weight = 18L, subsample = 0.764372093626251, objective = &quot;binary:logistic&quot;), 
+##   xgboost::xgb.train(params = list(eta = 3.18565038552185e-05, 
+##     max_depth = 18L, gamma = 9.31534488985793e-08, colsample_bytree = 1, 
+##     colsample_bynode = 0.666666666666667, min_child_weight = 8L, 
+##     subsample = 0.293253452659119, objective = &quot;binary:logistic&quot;), 
 ##     data = x$data, nrounds = 1000, watchlist = x$watchlist, verbose = 0, 
 ##     importance = &quot;impurity&quot;, nthread = 1)
 ## params (as set within xgb.train):
-##   eta = &quot;0.00252103438835676&quot;, max_depth = &quot;5&quot;, gamma = &quot;4.18551300211136e-05&quot;, colsample_bytree = &quot;1&quot;, colsample_bynode = &quot;1&quot;, min_child_weight = &quot;18&quot;, subsample = &quot;0.764372093626251&quot;, objective = &quot;binary:logistic&quot;, importance = &quot;impurity&quot;, nthread = &quot;1&quot;, validate_parameters = &quot;TRUE&quot;
+##   eta = &quot;3.18565038552185e-05&quot;, max_depth = &quot;18&quot;, gamma = &quot;9.31534488985793e-08&quot;, colsample_bytree = &quot;1&quot;, colsample_bynode = &quot;0.666666666666667&quot;, min_child_weight = &quot;8&quot;, subsample = &quot;0.293253452659119&quot;, objective = &quot;binary:logistic&quot;, importance = &quot;impurity&quot;, nthread = &quot;1&quot;, validate_parameters = &quot;TRUE&quot;
 ## xgb.attributes:
 ##   niter
 ## callbacks:
@@ -1080,11 +1093,11 @@ Donde <span class="math inline">\(L(Y, F(X))\)</span> es una función de pérdid
 ## nfeatures : 3 
 ## evaluation_log:
 ##     iter training_logloss
-##        1        0.6920750
-##        2        0.6910146
+##        1        0.6931346
+##        2        0.6931242
 ## ---                      
-##      999        0.4275578
-##     1000        0.4275244</code></pre>
+##      999        0.6811728
+##     1000        0.6811615</code></pre>
 <p>Como hemos hablado anteriormente, este último objeto es el modelo final entrenado, el cual contiene toda la información del pre-procesamiento de datos, por lo que en caso de ponerse en producción el modelo, sólo se necesita de este último elemento para poder realizar nuevas predicciones.</p>
 <p>Antes de pasar al siguiente paso, es importante validar que hayamos hecho un uso correcto de las variables predictivas. En este momento es posible detectar variables que no estén aportando valor o variables que no debiéramos estar usando debido a que cometeríamos data leakage. Para enfrentar esto, ayuda estimar y ordenar el valor de importancia del modelo.</p>
 <div class="sourceCode" id="cb171"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb171-1"><a href="bagging-boosting.html#cb171-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(vip)</span>
@@ -1106,22 +1119,22 @@ Donde <span class="math inline">\(L(Y, F(X))\)</span> es una función de pérdid
 <pre><code>## # A tibble: 6 × 3
 ##   .pred_No .pred_Yes Churn
 ##      &lt;dbl&gt;     &lt;dbl&gt; &lt;fct&gt;
-## 1    0.885     0.115 No   
-## 2    0.233     0.767 Yes  
-## 3    0.664     0.336 No   
-## 4    0.900     0.100 No   
-## 5    0.836     0.164 No   
-## 6    0.624     0.376 No</code></pre>
+## 1    0.512     0.488 No   
+## 2    0.495     0.505 Yes  
+## 3    0.508     0.492 No   
+## 4    0.512     0.488 No   
+## 5    0.510     0.490 No   
+## 6    0.502     0.498 No</code></pre>
 <div class="sourceCode" id="cb175"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb175-1"><a href="bagging-boosting.html#cb175-1" aria-hidden="true" tabindex="-1"></a><span class="fu">roc_auc</span>(class_results, <span class="at">truth =</span> Churn, <span class="at">estimate =</span> .pred_Yes, <span class="at">event_level =</span> <span class="st">&quot;second&quot;</span>)</span></code></pre></div>
 <pre><code>## # A tibble: 1 × 3
 ##   .metric .estimator .estimate
 ##   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
-## 1 roc_auc binary         0.846</code></pre>
+## 1 roc_auc binary         0.833</code></pre>
 <div class="sourceCode" id="cb177"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb177-1"><a href="bagging-boosting.html#cb177-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pr_auc</span>(class_results, <span class="at">truth =</span> Churn, <span class="at">estimate =</span> .pred_Yes, <span class="at">event_level =</span> <span class="st">&quot;second&quot;</span>)</span></code></pre></div>
 <pre><code>## # A tibble: 1 × 3
 ##   .metric .estimator .estimate
 ##   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
-## 1 pr_auc  binary         0.679</code></pre>
+## 1 pr_auc  binary         0.650</code></pre>
 <p>A continuación, conoceremos el nivel de sensitividad y especificidad para cada punto de corte:</p>
 <div class="sourceCode" id="cb179"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb179-1"><a href="bagging-boosting.html#cb179-1" aria-hidden="true" tabindex="-1"></a>roc_curve_data <span class="ot">&lt;-</span> <span class="fu">roc_curve</span>(</span>
 <span id="cb179-2"><a href="bagging-boosting.html#cb179-2" aria-hidden="true" tabindex="-1"></a>  class_results, </span>
@@ -1131,20 +1144,20 @@ Donde <span class="math inline">\(L(Y, F(X))\)</span> es una función de pérdid
 <span id="cb179-6"><a href="bagging-boosting.html#cb179-6" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb179-7"><a href="bagging-boosting.html#cb179-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb179-8"><a href="bagging-boosting.html#cb179-8" aria-hidden="true" tabindex="-1"></a>roc_curve_data</span></code></pre></div>
-<pre><code>## # A tibble: 1,757 × 3
+<pre><code>## # A tibble: 1,864 × 3
 ##    .threshold specificity sensitivity
 ##         &lt;dbl&gt;       &lt;dbl&gt;       &lt;dbl&gt;
-##  1  -Inf         0                  1
-##  2     0.0715    0                  1
-##  3     0.0715    0.000646           1
-##  4     0.0715    0.00129            1
-##  5     0.0715    0.00323            1
-##  6     0.0715    0.00388            1
-##  7     0.0716    0.00452            1
-##  8     0.0716    0.00517            1
-##  9     0.0717    0.00840            1
-## 10     0.0717    0.00905            1
-## # … with 1,747 more rows</code></pre>
+##  1   -Inf        0                  1
+##  2      0.487    0                  1
+##  3      0.487    0.000646           1
+##  4      0.487    0.00323            1
+##  5      0.487    0.00388            1
+##  6      0.487    0.00452            1
+##  7      0.487    0.00646            1
+##  8      0.487    0.00776            1
+##  9      0.487    0.00905            1
+## 10      0.487    0.0103             1
+## # … with 1,854 more rows</code></pre>
 <p>A través de estas métricas es posible crear la curva ROC:</p>
 <div class="sourceCode" id="cb181"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb181-1"><a href="bagging-boosting.html#cb181-1" aria-hidden="true" tabindex="-1"></a>roc_curve_plot <span class="ot">&lt;-</span> roc_curve_data <span class="sc">%&gt;%</span> </span>
 <span id="cb181-2"><a href="bagging-boosting.html#cb181-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> <span class="dv">1</span> <span class="sc">-</span> specificity, <span class="at">y =</span> sensitivity)) <span class="sc">+</span></span>
@@ -1165,20 +1178,20 @@ Donde <span class="math inline">\(L(Y, F(X))\)</span> es una función de pérdid
 <span id="cb182-6"><a href="bagging-boosting.html#cb182-6" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb182-7"><a href="bagging-boosting.html#cb182-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb182-8"><a href="bagging-boosting.html#cb182-8" aria-hidden="true" tabindex="-1"></a>pr_curve_data</span></code></pre></div>
-<pre><code>## # A tibble: 1,756 × 3
+<pre><code>## # A tibble: 1,863 × 3
 ##    .threshold  recall precision
 ##         &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;
-##  1    Inf     0               1
-##  2      0.796 0.00353         1
-##  3      0.796 0.00530         1
-##  4      0.795 0.00883         1
-##  5      0.794 0.0106          1
-##  6      0.794 0.0124          1
-##  7      0.793 0.0141          1
-##  8      0.792 0.0159          1
-##  9      0.790 0.0177          1
-## 10      0.789 0.0212          1
-## # … with 1,746 more rows</code></pre>
+##  1    Inf     0           1    
+##  2      0.507 0.00177     1    
+##  3      0.507 0.00353     1    
+##  4      0.507 0.00707     1    
+##  5      0.507 0.0106      1    
+##  6      0.507 0.0124      1    
+##  7      0.507 0.0124      0.875
+##  8      0.507 0.0141      0.889
+##  9      0.507 0.0159      0.9  
+## 10      0.507 0.0177      0.909
+## # … with 1,853 more rows</code></pre>
 <p>Y graficar su respectiva curva:</p>
 <div class="sourceCode" id="cb184"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb184-1"><a href="bagging-boosting.html#cb184-1" aria-hidden="true" tabindex="-1"></a>pr_curve_plot <span class="ot">&lt;-</span> pr_curve_data <span class="sc">%&gt;%</span> </span>
 <span id="cb184-2"><a href="bagging-boosting.html#cb184-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> recall, <span class="at">y =</span> precision)) <span class="sc">+</span></span>
