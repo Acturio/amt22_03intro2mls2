@@ -77,3 +77,11 @@ false-negative-parity-o-equal-oppportunity
 false-positive-parity
 negative-predictive-value-parity
 specificity-parity
+interpretabilidad-de-modelos
+lime
+proceso
+características-principales
+implementación-con-r
+dalextra
+otros-métodos
+consejos
