@@ -143,9 +143,9 @@ En el contexto de LIME:
 
 * Interpretable: Se refiere a que la explicación debe ser entendida por un ser humano.
 
-* Model-agnostic: Se refiere a tratar a un cualquier modelo de clasificación, complejo o no, como una caja negra a la que metemos observaciones y obtenemos predicciones, no nos interesa cómo genera estas predicciones, lo que nos interesa es generarlas.
+* Model-agnostic: Se refiere a tratar a cualquier modelo de clasificación, complejo o no, como una caja negra a la que metemos observaciones y obtenemos predicciones, no nos interesa cómo genera estas predicciones, lo que nos interesa es generarlas.
 
-```{r echo=FALSE,fig.align='center', out.width='420pt', out.height='600pt'}
+```{r echo=FALSE,fig.align='center', out.width='700pt', out.height='400pt'}
 knitr::include_graphics("img/08-lime/lime.png")
 ```
 
@@ -171,7 +171,7 @@ Para entrenar el modelo interpertable, seguimos los siguientes pasos:
 
 1. Seleccionamos la observación de la que queremos una explicación.
 
-2. Seleccionamos un tamaño de vecindad $k$ para que *LIME* ajuste el modelo.
+2. Seleccionamos una vecindad para que *LIME* ajuste el modelo.
 
 3. Seleccionamos el número de features más importantes con los que queremos realizar la explicación (se recomienda que sea menor a $10$).
 
@@ -191,6 +191,12 @@ knitr::include_graphics("img/08-lime/lime_text_2.png")
 knitr::include_graphics("img/08-lime/lime_text_3.png")
 ```
 
+La columna de probabilidad corresponde a la probabilidad de que el enunciado sea Spam o no. La columna peso corresponde a la proximidad del enunciado con variación al enunciado original y está calculado como 1 menos la proporción de palabras que fueron eliminadas.
+
+Por ejemplo: Si una de 7 palabras fueron removidas, el peso correspondería a: $1- 1/7=0.86$.
+
+Al pasar dos enunciados al modelo de interpretabilidad se identifica que para los casos donde está la palabra *channel!* el enunciado será clasificado como spam que es el feature con mayor peso para la etiqueta spam.
+
  * **Imágenes:** "Apaga" y "prende" pixeles de la imágen original.
 
 ```{r echo=FALSE,fig.align='center', out.height='250pt', out.width='600pt'}
@@ -207,7 +213,7 @@ knitr::include_graphics("img/08-lime/tiger.jpeg")
 
  * **Datos tabulares:** De cada feature genera nuevas muestras tomadas de una distribución normal con la $\mu$ y $\sigma$ del feature.
 
-```{r echo=FALSE,fig.align='center', out.height='600pt', out.width='420pt'}
+```{r echo=FALSE,fig.align='center', out.height='600pt', out.width='700pt'}
 knitr::include_graphics("img/08-lime/lime_tabular_data.png")
 ```
 
@@ -231,7 +237,7 @@ knitr::include_graphics("img/08-lime/lime_tabular_data.png")
 
 7. Convierte la distancia a un score de similitud.
 
-  * **Datos tabulares:** Utiliza el kernel k de suavizamiento exponencial.
+  * **Datos tabulares:** Utiliza el kernel de suavizamiento exponencial.
 
   * **Texto:** Distancia coseno.
 
@@ -239,12 +245,6 @@ knitr::include_graphics("img/08-lime/lime_tabular_data.png")
     * Genera un modelo simple con los datos modificados
 
     * Selecciona las $m$ mejores características (depende del modelo utilizado para crear el modelo de interpretabilidad) como explicación para la predicción del modelo de caja negra.
-
-La columna de probabilidad corresponde a la probabilidad de que el enunciado sea Spam o no. La columna peso corresponde a la proximidad del enunciado con variación al enunciado original y está calculado como 1 menos la proporción de palabras que fueron eliminadas.
-
-Por ejemplo: Si una de 7 palabras fueron removidas, el peso correspondería a: $1- 1/7=0.86$.
-
-Al pasar dos enunciados al modelo de interpretabilidad se identifica que para los casos donde está la palabra *channel!* el enunciado será clasificado como spam que es el feature con mayor peso para la etiqueta spam.
 
 
 ### Características principales

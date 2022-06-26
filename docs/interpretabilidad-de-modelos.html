@@ -326,9 +326,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <ul>
 <li><p>Local: Se refiere a que un modelo simple es lo suficientemente bueno/igual de bueno localmente que uno complejo globalmente.</p></li>
 <li><p>Interpretable: Se refiere a que la explicación debe ser entendida por un ser humano.</p></li>
-<li><p>Model-agnostic: Se refiere a tratar a un cualquier modelo de clasificación, complejo o no, como una caja negra a la que metemos observaciones y obtenemos predicciones, no nos interesa cómo genera estas predicciones, lo que nos interesa es generarlas.</p></li>
+<li><p>Model-agnostic: Se refiere a tratar a cualquier modelo de clasificación, complejo o no, como una caja negra a la que metemos observaciones y obtenemos predicciones, no nos interesa cómo genera estas predicciones, lo que nos interesa es generarlas.</p></li>
 </ul>
-<p><img src="img/08-lime/lime.png" width="420pt" height="600pt" style="display: block; margin: auto;" /></p>
+<p><img src="img/08-lime/lime.png" width="700pt" height="400pt" style="display: block; margin: auto;" /></p>
 <div id="proceso" class="section level3 hasAnchor" number="7.1.1">
 <h3><span class="header-section-number">7.1.1</span> Proceso<a href="interpretabilidad-de-modelos.html#proceso" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>El objetivo de <em>LIME</em> es entender por qué el modelo de machine learning hace cierta predicción, para ello <strong><em>LIME</em> prueba qué pasa con las predicciones si le brindamos al modelo las mismas observaciones pero con variaciones.</strong></p>
@@ -346,7 +346,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Para entrenar el modelo interpertable, seguimos los siguientes pasos:</p>
 <ol style="list-style-type: decimal">
 <li><p>Seleccionamos la observación de la que queremos una explicación.</p></li>
-<li><p>Seleccionamos un tamaño de vecindad <span class="math inline">\(k\)</span> para que <em>LIME</em> ajuste el modelo.</p></li>
+<li><p>Seleccionamos una vecindad para que <em>LIME</em> ajuste el modelo.</p></li>
 <li><p>Seleccionamos el número de features más importantes con los que queremos realizar la explicación (se recomienda que sea menor a <span class="math inline">\(10\)</span>).</p></li>
 <li><p><em>LIME</em> genera perturbaciones en una muestra de datos del conjunto de datos</p></li>
 </ol>
@@ -356,6 +356,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p><img src="img/08-lime/lime_text.png" width="600pt" height="120" style="display: block; margin: auto;" /></p>
 <p><img src="img/08-lime/lime_text_2.png" width="600pt" height="200pt" style="display: block; margin: auto;" /></p>
 <p><img src="img/08-lime/lime_text_3.png" width="600" height="210" style="display: block; margin: auto;" /></p>
+<p>La columna de probabilidad corresponde a la probabilidad de que el enunciado sea Spam o no. La columna peso corresponde a la proximidad del enunciado con variación al enunciado original y está calculado como 1 menos la proporción de palabras que fueron eliminadas.</p>
+<p>Por ejemplo: Si una de 7 palabras fueron removidas, el peso correspondería a: <span class="math inline">\(1- 1/7=0.86\)</span>.</p>
+<p>Al pasar dos enunciados al modelo de interpretabilidad se identifica que para los casos donde está la palabra <em>channel!</em> el enunciado será clasificado como spam que es el feature con mayor peso para la etiqueta spam.</p>
 <ul>
 <li><strong>Imágenes:</strong> “Apaga” y “prende” pixeles de la imágen original.</li>
 </ul>
@@ -365,7 +368,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <ul>
 <li><strong>Datos tabulares:</strong> De cada feature genera nuevas muestras tomadas de una distribución normal con la <span class="math inline">\(\mu\)</span> y <span class="math inline">\(\sigma\)</span> del feature.</li>
 </ul>
-<p><img src="img/08-lime/lime_tabular_data.png" width="420pt" height="600pt" style="display: block; margin: auto;" /></p>
+<p><img src="img/08-lime/lime_tabular_data.png" width="700pt" height="600pt" style="display: block; margin: auto;" /></p>
 <blockquote>
 <p>Las observaciones más “cercanas” tendrán más peso que el resto. <em>LIME</em> ocupa un kernel de suavizamiento exponencial.</p>
 </blockquote>
@@ -387,7 +390,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li>Convierte la distancia a un score de similitud.</li>
 </ol>
 <ul>
-<li><p><strong>Datos tabulares:</strong> Utiliza el kernel k de suavizamiento exponencial.</p></li>
+<li><p><strong>Datos tabulares:</strong> Utiliza el kernel de suavizamiento exponencial.</p></li>
 <li><p><strong>Texto:</strong> Distancia coseno.</p></li>
 <li><p><strong>Imágenes:</strong></p>
 <ul>
@@ -395,9 +398,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><p>Selecciona las <span class="math inline">\(m\)</span> mejores características (depende del modelo utilizado para crear el modelo de interpretabilidad) como explicación para la predicción del modelo de caja negra.</p></li>
 </ul></li>
 </ul>
-<p>La columna de probabilidad corresponde a la probabilidad de que el enunciado sea Spam o no. La columna peso corresponde a la proximidad del enunciado con variación al enunciado original y está calculado como 1 menos la proporción de palabras que fueron eliminadas.</p>
-<p>Por ejemplo: Si una de 7 palabras fueron removidas, el peso correspondería a: <span class="math inline">\(1- 1/7=0.86\)</span>.</p>
-<p>Al pasar dos enunciados al modelo de interpretabilidad se identifica que para los casos donde está la palabra <em>channel!</em> el enunciado será clasificado como spam que es el feature con mayor peso para la etiqueta spam.</p>
 </div>
 <div id="características-principales" class="section level3 hasAnchor" number="7.1.2">
 <h3><span class="header-section-number">7.1.2</span> Características principales<a href="interpretabilidad-de-modelos.html#características-principales" class="anchor-section" aria-label="Anchor link to header"></a></h3>
