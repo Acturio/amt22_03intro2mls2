@@ -85,3 +85,6 @@ implementación-con-r
 dalextra
 otros-métodos
 consejos
+ab-testing
+elementos-en-riesgo
+costo-de-retención

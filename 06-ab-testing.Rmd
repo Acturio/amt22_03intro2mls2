@@ -1,0 +1,188 @@
+<div class="watermark"><img src="img/header.png" width="400"></div>
+
+# A/B testing
+
+Los modelos de machine learning en la gran mayoría de las ocasiones tienen un propósito comercial. Como científicos de datos, es nuestra responsabilidad ayudar al negocio a tomar mejores decisiones que beneficien a la empresa en donde se ha desarrollado el modelo predictivo. Particularmente, una de las aplicaciones de mayor impacto en los últimos años es la **reducción del CHURN**
+
+El churn rate o tasa de cancelación, es el **porcentaje de clientes o suscriptores que dejan de utilizar los servicios que ofrece una empresa.**
+
+```{r echo=FALSE,fig.align='center', out.height='250', out.width='600pt'}
+knitr::include_graphics("img/09-ab-testing/churn.png")
+```
+
+Es bastante conocido en el mundo del marketing que es mucho más caro adquirir nuevos clientes que retener a aquellos con los que ya cuenta la empresa. Es por esta razón que adicional a los esfuerzos de captar nuevos clientes se realizan esfuerzos por retener a los clientes con alta probabilidad de abandonar la empresa.
+
+A partir de los modelos de machine learning que han sido estudiados en el curso para detectar la posible inclusión a una categoría (cancelación de clientes) es que se realizará en este capítulo el estudio de técnicas para cuantificar el impacto de los modelos predictivos y de las estrategias de retención.
+
+Existen múltiples estrategias que surgen en las áreas de marketing para retener a los clientes. Hay una inversión muy grande de dinero que busca encontrar las mejores ideas que contribuyan a la retención. Sin embargo, **poner todas estas ideas y estrategias a trabajar puede ser bastante costoso y riesgoso.** 
+
+* ¿Qué pasa si la empresa gasta grandes cantidades de dinero en campañas publicitarias y estas no ayudan a alcanzar la meta?
+
+* ¿Qué sucede si se le invierte mucho tiempo en refinar la estrategia y esta nunca atrae a los clientes esperados?
+
+Este capítulo está destinado a discutir métodos de evaluación de esas ideas, de modo que antes de comprometernos completamente con una campaña e implementarla con todos los clientes, podamos hacer pequeñas pruebas con significancia estadística para determinar cuál de ellas tiene el mejor impacto sobre los objetivos planteados.
+
+
+## Elementos en riesgo
+
+El primer paso es detectar a los posibles canceladores de servicios para la empresa. Esta tarea ha sido ampliamente estudiada en el curso mediante múltiples modelos predictivos, entre los que se encuentran:
+
+* Regresión bernoulli (logística)
+* Regresión Ridge
+* Regresión Lasso
+* KNN
+* Árbol de decisión
+* Bagging
+* Bosque aleatorio
+* Support Vector Machine
+* Boosting
+* Stacking
+
+Recordemos que anteriormente ya se ha realizado la partición de los datos y se cuenta con varias configuraciones de cada modelo.
+
+```{r, warning=FALSE, message=FALSE}
+
+library(tidyverse)
+library(tidymodels)
+library(readr)
+library(patchwork)
+
+telco <- read_csv("data/Churn.csv")
+
+set.seed(1234)
+telco_split <- initial_split(telco, prop = .70)
+telco_train  <- training(telco_split)
+telco_test  <- testing(telco_split)
+
+svm_tune_class_result <- readRDS("models/svm_model_class.rds")
+```
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+binner <- function(x) {
+  x <- cut(x, breaks = c(0, 12, 24, 36,48,60,72), include.lowest = TRUE)
+  as.numeric(x)
+}
+
+telco_rec <- recipe(Churn ~ ., data = telco_train) %>% 
+  update_role(customerID, new_role = "id variable") %>% 
+  step_num2factor(
+    tenure, transform = binner, 
+    levels = c("0-1 year", "1-2 years", "2-3 years", "3-4 years", "4-5 years", "5-6 years")) %>%
+  step_normalize(all_numeric_predictors()) %>% 
+  step_dummy(all_nominal_predictors()) %>% 
+  step_impute_median(all_numeric_predictors()) %>% 
+  step_rm(customerID, skip=T) %>% 
+  prep()
+
+svm_class_model <- svm_rbf(
+  mode = "classification",
+  cost = tune(),
+  rbf_sigma = tune(),
+  margin = tune()) %>% 
+set_engine("kernlab")
+
+svm_class_workflow <- workflow() %>% 
+  add_recipe(telco_rec) %>% 
+  add_model(svm_class_model)
+```
+
+A partir de los resultados de los modelos, se realizó una priorización para determinar cuál de ellos eran los más valiosos en términos de predicción.
+
+```{r, warning=FALSE, message=FALSE}
+show_best(svm_tune_class_result, n = 10, metric = "roc_auc")
+```
+
+Y mediante una elección de métrica y método, se seleccionó al más valioso para re-entrenarse usando todos los datos disponibles de entrenamiento.
+
+```{r, warning=FALSE, message=FALSE}
+svm_classification_best_model <- select_best(svm_tune_class_result, metric = "roc_auc")
+svm_classification_best_model
+
+set.seed(1352)
+svm_classification_final_model <- svm_class_workflow %>%
+  finalize_workflow(svm_classification_best_model) %>%
+  parsnip::fit(data = telco_train)
+```
+
+Mediante este modelo final, se realizaron las predicciones de cancelación de servicios a clientes de telecomunicaciones. Para estos clientes se cuenta con la respuesta correcta debido a que se trata de los datos de testing.
+
+```{r}
+class_results <- predict(svm_classification_final_model, telco_test, type = "prob") %>% 
+  bind_cols(Churn = telco_test$Churn) %>% 
+  mutate(Churn = factor(Churn, levels = c('No', 'Yes'), labels = c('No', 'Yes')))
+
+head(class_results, 10)
+
+```
+
+Hasta este punto, únicamente se han calculado probabilidades y no se han tomado decisiones sobre la determinación de elementos a quienes se realizará alguna intervención de retención.
+
+
+```{r, warning=FALSE, message=FALSE}
+roc_auc_value <- roc_auc(
+  class_results, truth = Churn, estimate = .pred_Yes, event_level = "second"
+  )
+
+pr_auc_value <- pr_auc(
+  class_results, truth = Churn, estimate = .pred_Yes, event_level = "second"
+  )
+
+roc_curve_data <- roc_curve(
+  class_results, 
+  truth = Churn, 
+  estimate = .pred_Yes, 
+  event_level = 'second'
+  )
+
+roc_curve_plot <- roc_curve_data %>% 
+  ggplot(aes(x = 1 - specificity, y = sensitivity)) +
+  geom_path(size = 1, colour = 'lightblue') +
+  geom_abline() +
+  coord_equal() +
+  ggtitle(paste0("ROC Curve ", "(", round(roc_auc_value$.estimate, 2),")")) +
+  theme_minimal()
+
+
+pr_curve_data <- pr_curve(
+  class_results, 
+  truth = Churn, 
+  estimate = .pred_Yes, 
+  event_level = 'second'
+  )
+
+pr_curve_plot <- pr_curve_data %>% 
+  ggplot(aes(x = recall, y = precision)) +
+  geom_path(size = 1, colour = 'lightblue') +
+  coord_equal() +
+  ggtitle(paste0("Precision vs Recall ", "(", round(pr_auc_value$.estimate, 2),")")) +
+  theme_minimal()
+
+roc_curve_plot + pr_curve_plot
+```
+
+## Costo de retención
+
+Supongamos que existe un presupuesto designado a retener a los clientes de una compañía de telecomunicaciones que son áltamente probables de cancelar su servicio en los siguientes 3 meses. El presupuesto asignado es de $50,000.00 dólares y el equipo el marketing aún no se decide qué ofrecer:
+
+a) 1 mes gratis de servicio
+
+b) 1 celular gratis con valor de $100 dólares (para la empresa)
+
+
+**¿Cuántos clientes podrían ser intervenidos con cada uno de los posibles métodos?** 
+
+Considere los siguientes escenarios:
+
+1) Todas las retenciones son mediante meses gratis de servicio.
+
+2) Todas las retenciones son mediante el celular gratis.
+
+3) Las retenciones se realizan con 50% celular y 50% meses gratis.
+
+
+
+
+
+
+

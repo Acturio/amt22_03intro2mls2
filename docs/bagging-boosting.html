@@ -279,6 +279,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="7.2.2" data-path="interpretabilidad-de-modelos.html"><a href="interpretabilidad-de-modelos.html#consejos"><i class="fa fa-check"></i><b>7.2.2</b> Consejos</a></li>
 </ul></li>
 </ul></li>
+<li class="chapter" data-level="8" data-path="ab-testing.html"><a href="ab-testing.html"><i class="fa fa-check"></i><b>8</b> A/B testing</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="ab-testing.html"><a href="ab-testing.html#elementos-en-riesgo"><i class="fa fa-check"></i><b>8.1</b> Elementos en riesgo</a></li>
+<li class="chapter" data-level="8.2" data-path="ab-testing.html"><a href="ab-testing.html#costo-de-retención"><i class="fa fa-check"></i><b>8.2</b> Costo de retención</a></li>
+</ul></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
 <li class="divider"></li>
 <li><a href="./"><img src="img/amat-logo.png" width="280"></a></li>
@@ -718,7 +723,7 @@ Donde <span class="math inline">\(L(Y, F(X))\)</span> es una función de pérdid
 <span id="cb135-2"><a href="bagging-boosting.html#cb135-2" aria-hidden="true" tabindex="-1"></a>  <span class="co">#finalize_workflow(best_xgboost_model) %&gt;% </span></span>
 <span id="cb135-3"><a href="bagging-boosting.html#cb135-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">finalize_workflow</span>(best_xgboost_reg_1se_model) <span class="sc">%&gt;%</span> </span>
 <span id="cb135-4"><a href="bagging-boosting.html#cb135-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(<span class="at">data =</span> ames_train)</span></code></pre></div>
-<pre><code>## [23:13:45] WARNING: amalgamation/../src/learner.cc:627: 
+<pre><code>## [01:11:37] WARNING: amalgamation/../src/learner.cc:627: 
 ## Parameters: { &quot;importance&quot; } might not be used.
 ## 
 ##   This could be a false alarm, with some parameters getting used by language bindings but
@@ -1066,7 +1071,7 @@ Donde <span class="math inline">\(L(Y, F(X))\)</span> es una función de pérdid
 <span id="cb167-2"><a href="bagging-boosting.html#cb167-2" aria-hidden="true" tabindex="-1"></a>  <span class="co">#finalize_workflow(best_xgboost_model) %&gt;% </span></span>
 <span id="cb167-3"><a href="bagging-boosting.html#cb167-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">finalize_workflow</span>(best_xgboost_model_1se) <span class="sc">%&gt;%</span> </span>
 <span id="cb167-4"><a href="bagging-boosting.html#cb167-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(<span class="at">data =</span> telco_test)</span></code></pre></div>
-<pre><code>## [23:13:53] WARNING: amalgamation/../src/learner.cc:627: 
+<pre><code>## [01:11:45] WARNING: amalgamation/../src/learner.cc:627: 
 ## Parameters: { &quot;importance&quot; } might not be used.
 ## 
 ##   This could be a false alarm, with some parameters getting used by language bindings but
