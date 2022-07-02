@@ -88,3 +88,4 @@ consejos
 ab-testing
 elementos-en-riesgo
 costo-de-retención
+costo-de-promoción-híbrida

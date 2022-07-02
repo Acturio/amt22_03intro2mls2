@@ -282,7 +282,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="8" data-path="ab-testing.html"><a href="ab-testing.html"><i class="fa fa-check"></i><b>8</b> A/B testing</a>
 <ul>
 <li class="chapter" data-level="8.1" data-path="ab-testing.html"><a href="ab-testing.html#elementos-en-riesgo"><i class="fa fa-check"></i><b>8.1</b> Elementos en riesgo</a></li>
-<li class="chapter" data-level="8.2" data-path="ab-testing.html"><a href="ab-testing.html#costo-de-retención"><i class="fa fa-check"></i><b>8.2</b> Costo de retención</a></li>
+<li class="chapter" data-level="8.2" data-path="ab-testing.html"><a href="ab-testing.html#costo-de-retención"><i class="fa fa-check"></i><b>8.2</b> Costo de retención</a>
+<ul>
+<li class="chapter" data-level="8.2.1" data-path="ab-testing.html"><a href="ab-testing.html#costo-de-promoción-híbrida"><i class="fa fa-check"></i><b>8.2.1</b> Costo de promoción híbrida</a></li>
+</ul></li>
 </ul></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
 <li class="divider"></li>
@@ -375,23 +378,26 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb319-4"><a href="ab-testing.html#cb319-4" aria-hidden="true" tabindex="-1"></a>  parsnip<span class="sc">::</span><span class="fu">fit</span>(<span class="at">data =</span> telco_train)</span></code></pre></div>
 <p>Mediante este modelo final, se realizaron las predicciones de cancelación de servicios a clientes de telecomunicaciones. Para estos clientes se cuenta con la respuesta correcta debido a que se trata de los datos de testing.</p>
 <div class="sourceCode" id="cb320"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb320-1"><a href="ab-testing.html#cb320-1" aria-hidden="true" tabindex="-1"></a>class_results <span class="ot">&lt;-</span> <span class="fu">predict</span>(svm_classification_final_model, telco_test, <span class="at">type =</span> <span class="st">&quot;prob&quot;</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb320-2"><a href="ab-testing.html#cb320-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_cols</span>(<span class="at">Churn =</span> telco_test<span class="sc">$</span>Churn) <span class="sc">%&gt;%</span> </span>
-<span id="cb320-3"><a href="ab-testing.html#cb320-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Churn =</span> <span class="fu">factor</span>(Churn, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">&#39;No&#39;</span>, <span class="st">&#39;Yes&#39;</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">&#39;No&#39;</span>, <span class="st">&#39;Yes&#39;</span>)))</span>
-<span id="cb320-4"><a href="ab-testing.html#cb320-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb320-5"><a href="ab-testing.html#cb320-5" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(class_results, <span class="dv">10</span>)</span></code></pre></div>
-<pre><code>## # A tibble: 10 × 3
-##    .pred_No .pred_Yes Churn
-##       &lt;dbl&gt;     &lt;dbl&gt; &lt;fct&gt;
-##  1    0.854    0.146  No   
-##  2    0.247    0.753  Yes  
-##  3    0.822    0.178  No   
-##  4    0.871    0.129  No   
-##  5    0.923    0.0771 No   
-##  6    0.547    0.453  No   
-##  7    0.855    0.145  No   
-##  8    0.920    0.0799 No   
-##  9    0.783    0.217  Yes  
-## 10    0.950    0.0500 No</code></pre>
+<span id="cb320-2"><a href="ab-testing.html#cb320-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_cols</span>(</span>
+<span id="cb320-3"><a href="ab-testing.html#cb320-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">Churn =</span> telco_test<span class="sc">$</span>Churn,</span>
+<span id="cb320-4"><a href="ab-testing.html#cb320-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">customerID =</span> telco_test<span class="sc">$</span>customerID) <span class="sc">%&gt;%</span> </span>
+<span id="cb320-5"><a href="ab-testing.html#cb320-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">relocate</span>(customerID, <span class="at">.before =</span> .pred_No) <span class="sc">%&gt;%</span> </span>
+<span id="cb320-6"><a href="ab-testing.html#cb320-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Churn =</span> <span class="fu">factor</span>(Churn, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">&#39;No&#39;</span>, <span class="st">&#39;Yes&#39;</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">&#39;No&#39;</span>, <span class="st">&#39;Yes&#39;</span>)))</span>
+<span id="cb320-7"><a href="ab-testing.html#cb320-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb320-8"><a href="ab-testing.html#cb320-8" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(class_results, <span class="dv">10</span>)</span></code></pre></div>
+<pre><code>## # A tibble: 10 × 4
+##    customerID .pred_No .pred_Yes Churn
+##    &lt;chr&gt;         &lt;dbl&gt;     &lt;dbl&gt; &lt;fct&gt;
+##  1 5575-GNVDE    0.854    0.146  No   
+##  2 9305-CDSKC    0.247    0.753  Yes  
+##  3 6713-OKOMC    0.822    0.178  No   
+##  4 7469-LKBCI    0.871    0.129  No   
+##  5 9959-WOFKT    0.923    0.0771 No   
+##  6 4183-MYFRB    0.547    0.453  No   
+##  7 1680-VDCWW    0.855    0.145  No   
+##  8 6322-HRPFA    0.920    0.0799 No   
+##  9 8665-UTDHZ    0.783    0.217  Yes  
+## 10 5248-YGIJN    0.950    0.0500 No</code></pre>
 <p>Hasta este punto, únicamente se han calculado probabilidades y no se han tomado decisiones sobre la determinación de elementos a quienes se realizará alguna intervención de retención.</p>
 <div class="sourceCode" id="cb322"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb322-1"><a href="ab-testing.html#cb322-1" aria-hidden="true" tabindex="-1"></a>roc_auc_value <span class="ot">&lt;-</span> <span class="fu">roc_auc</span>(</span>
 <span id="cb322-2"><a href="ab-testing.html#cb322-2" aria-hidden="true" tabindex="-1"></a>  class_results, <span class="at">truth =</span> Churn, <span class="at">estimate =</span> .pred_Yes, <span class="at">event_level =</span> <span class="st">&quot;second&quot;</span></span>
@@ -448,7 +454,86 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><p>Todas las retenciones son mediante el celular gratis.</p></li>
 <li><p>Las retenciones se realizan con 50% celular y 50% meses gratis.</p></li>
 </ol>
+<p><strong>Costo de promoción de servicio</strong></p>
+<p>El primer escenario considera que se obsequie un mes gratis de servicio al renovar un año completo. Para cada cliente se tiene en los datos el pago mensual que realizan, por lo que es posible priorizar de alguna manera a los clientes con mayor necesidad de retención</p>
+<div class="sourceCode" id="cb323"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb323-1"><a href="ab-testing.html#cb323-1" aria-hidden="true" tabindex="-1"></a>promo_1 <span class="ot">&lt;-</span> class_results <span class="sc">%&gt;%</span> </span>
+<span id="cb323-2"><a href="ab-testing.html#cb323-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb323-3"><a href="ab-testing.html#cb323-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">MonthlyCharges =</span> telco_test<span class="sc">$</span>MonthlyCharges,</span>
+<span id="cb323-4"><a href="ab-testing.html#cb323-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">Expected_Loss =</span> .pred_Yes <span class="sc">*</span> MonthlyCharges) <span class="sc">%&gt;%</span> </span>
+<span id="cb323-5"><a href="ab-testing.html#cb323-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(Expected_Loss)) <span class="sc">%&gt;%</span> </span>
+<span id="cb323-6"><a href="ab-testing.html#cb323-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Budget =</span> <span class="fu">cumsum</span>(MonthlyCharges)) <span class="sc">%&gt;%</span> </span>
+<span id="cb323-7"><a href="ab-testing.html#cb323-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Budget <span class="sc">&lt;=</span> <span class="dv">50000</span>)</span>
+<span id="cb323-8"><a href="ab-testing.html#cb323-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb323-9"><a href="ab-testing.html#cb323-9" aria-hidden="true" tabindex="-1"></a>promo_1 <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span>Churn, <span class="sc">-</span>.pred_No)</span></code></pre></div>
+<pre><code>## # A tibble: 587 × 5
+##    customerID .pred_Yes MonthlyCharges Expected_Loss Budget
+##    &lt;chr&gt;          &lt;dbl&gt;          &lt;dbl&gt;         &lt;dbl&gt;  &lt;dbl&gt;
+##  1 1400-MMYXY     0.964          106.          102.    106.
+##  2 5419-CONWX     0.946           99.8          94.4   206.
+##  3 2754-SDJRD     0.921          100.           92.2   306.
+##  4 3902-FOIGH     0.905          101.           91.7   407.
+##  5 6210-KBBPI     0.918           99.4          91.3   507.
+##  6 4716-HHKQH     0.852          107.           91.2   614.
+##  7 8510-AWCXC     0.895          101.           90.2   714.
+##  8 2012-NWRPA     0.903           99.6          89.9   814.
+##  9 9851-KIELU     0.816          110.           89.9   924.
+## 10 9300-AGZNL     0.946           94            89.0  1018.
+## # … with 577 more rows</code></pre>
+<p>Sin acabarse el presupuesto de $50,000 dólares, el número de clientes a quienes es posible ofrecer la promoción es de 587/2113, lo que representa cerca del 28% de los clientes.</p>
+<div class="sourceCode" id="cb325"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb325-1"><a href="ab-testing.html#cb325-1" aria-hidden="true" tabindex="-1"></a>promo_1 <span class="sc">%&gt;%</span></span>
+<span id="cb325-2"><a href="ab-testing.html#cb325-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb325-3"><a href="ab-testing.html#cb325-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">min_prob =</span> <span class="fu">min</span>(.pred_Yes),</span>
+<span id="cb325-4"><a href="ab-testing.html#cb325-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">mean_monthly_charge =</span> <span class="fu">mean</span>(MonthlyCharges),</span>
+<span id="cb325-5"><a href="ab-testing.html#cb325-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">sum_monthly_charge =</span> <span class="fu">sum</span>(MonthlyCharges),</span>
+<span id="cb325-6"><a href="ab-testing.html#cb325-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">sum_yearly_charge =</span> <span class="fu">sum</span>(MonthlyCharges)<span class="sc">*</span><span class="dv">11</span></span>
+<span id="cb325-7"><a href="ab-testing.html#cb325-7" aria-hidden="true" tabindex="-1"></a>    )</span></code></pre></div>
+<pre><code>## # A tibble: 1 × 4
+##   min_prob mean_monthly_charge sum_monthly_charge sum_yearly_charge
+##      &lt;dbl&gt;               &lt;dbl&gt;              &lt;dbl&gt;             &lt;dbl&gt;
+## 1    0.217                85.1             49960.           549557.</code></pre>
+<p>Al calcular el valor mínimo de probabilidad de cancelar el servicio, se observa que <strong>el umbral se encuentra cercano a 0.20</strong>, por lo que este es un buen candidato a usar en futuros meses si se usa este método y se cuenta con tal presupuesto.</p>
+<p>El gasto mensual promedio de los clientes es de $85 dólares. El costo total para la empresa es de $49,959.75 y el beneficio de invertir esta cantidad es de $549,557 dólares en un año. Este beneficio es el máximo a obtener si todos los clientes aceptaran renovar su suscripción. Será necesario realizar un experimento para comparar el beneficio neto cuando se implementa esta táctiva de marketing u alguna otra estrategia.</p>
+<p><strong>Costo de promoción de producto</strong></p>
+<p>El segundo método es más sencillo de calcular, pues supone un costo constante para cualquier cliente. Al regalar un producto en donde la empresa paga $100 dólares por celular, se logra ofrecer <span class="math inline">\(50000/100 = 500\)</span> productos.</p>
+<div class="sourceCode" id="cb327"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb327-1"><a href="ab-testing.html#cb327-1" aria-hidden="true" tabindex="-1"></a>promo_2 <span class="ot">&lt;-</span> class_results <span class="sc">%&gt;%</span> </span>
+<span id="cb327-2"><a href="ab-testing.html#cb327-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb327-3"><a href="ab-testing.html#cb327-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">MonthlyCharges =</span> telco_test<span class="sc">$</span>MonthlyCharges,</span>
+<span id="cb327-4"><a href="ab-testing.html#cb327-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">Profit =</span> <span class="dv">100</span>,</span>
+<span id="cb327-5"><a href="ab-testing.html#cb327-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">Expected_Loss =</span> .pred_Yes <span class="sc">*</span> MonthlyCharges) <span class="sc">%&gt;%</span> </span>
+<span id="cb327-6"><a href="ab-testing.html#cb327-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(Expected_Loss)) <span class="sc">%&gt;%</span> </span>
+<span id="cb327-7"><a href="ab-testing.html#cb327-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Budget =</span> <span class="fu">cumsum</span>(Profit)) <span class="sc">%&gt;%</span> </span>
+<span id="cb327-8"><a href="ab-testing.html#cb327-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Budget <span class="sc">&lt;=</span> <span class="dv">50000</span>)</span>
+<span id="cb327-9"><a href="ab-testing.html#cb327-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb327-10"><a href="ab-testing.html#cb327-10" aria-hidden="true" tabindex="-1"></a>promo_2 <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span>Churn, <span class="sc">-</span>.pred_No)</span></code></pre></div>
+<pre><code>## # A tibble: 500 × 6
+##    customerID .pred_Yes MonthlyCharges Profit Expected_Loss Budget
+##    &lt;chr&gt;          &lt;dbl&gt;          &lt;dbl&gt;  &lt;dbl&gt;         &lt;dbl&gt;  &lt;dbl&gt;
+##  1 1400-MMYXY     0.964          106.     100         102.     100
+##  2 5419-CONWX     0.946           99.8    100          94.4    200
+##  3 2754-SDJRD     0.921          100.     100          92.2    300
+##  4 3902-FOIGH     0.905          101.     100          91.7    400
+##  5 6210-KBBPI     0.918           99.4    100          91.3    500
+##  6 4716-HHKQH     0.852          107.     100          91.2    600
+##  7 8510-AWCXC     0.895          101.     100          90.2    700
+##  8 2012-NWRPA     0.903           99.6    100          89.9    800
+##  9 9851-KIELU     0.816          110.     100          89.9    900
+## 10 9300-AGZNL     0.946           94      100          89.0   1000
+## # … with 490 more rows</code></pre>
+<div class="sourceCode" id="cb329"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb329-1"><a href="ab-testing.html#cb329-1" aria-hidden="true" tabindex="-1"></a>promo_2 <span class="sc">%&gt;%</span></span>
+<span id="cb329-2"><a href="ab-testing.html#cb329-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb329-3"><a href="ab-testing.html#cb329-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">min_prob =</span> <span class="fu">min</span>(.pred_Yes),</span>
+<span id="cb329-4"><a href="ab-testing.html#cb329-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">mean_monthly_charge =</span> <span class="fu">mean</span>(MonthlyCharges),</span>
+<span id="cb329-5"><a href="ab-testing.html#cb329-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">sum_monthly_charge =</span> <span class="fu">sum</span>(MonthlyCharges),</span>
+<span id="cb329-6"><a href="ab-testing.html#cb329-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">sum_yearly_charge =</span> <span class="fu">sum</span>(MonthlyCharges)<span class="sc">*</span><span class="dv">11</span></span>
+<span id="cb329-7"><a href="ab-testing.html#cb329-7" aria-hidden="true" tabindex="-1"></a>    )</span></code></pre></div>
+<pre><code>## # A tibble: 1 × 4
+##   min_prob mean_monthly_charge sum_monthly_charge sum_yearly_charge
+##      &lt;dbl&gt;               &lt;dbl&gt;              &lt;dbl&gt;             &lt;dbl&gt;
+## 1    0.283                86.1             43050.           473545.</code></pre>
+<div id="costo-de-promoción-híbrida" class="section level3 hasAnchor" number="8.2.1">
+<h3><span class="header-section-number">8.2.1</span> Costo de promoción híbrida<a href="ab-testing.html#costo-de-promoción-híbrida" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 
+</div>
 </div>
 </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>

@@ -109,7 +109,10 @@ Mediante este modelo final, se realizaron las predicciones de cancelación de se
 
 ```{r}
 class_results <- predict(svm_classification_final_model, telco_test, type = "prob") %>% 
-  bind_cols(Churn = telco_test$Churn) %>% 
+  bind_cols(
+    Churn = telco_test$Churn,
+    customerID = telco_test$customerID) %>% 
+  relocate(customerID, .before = .pred_No) %>% 
   mutate(Churn = factor(Churn, levels = c('No', 'Yes'), labels = c('No', 'Yes')))
 
 head(class_results, 10)
@@ -178,7 +181,84 @@ Considere los siguientes escenarios:
 
 2) Todas las retenciones son mediante el celular gratis.
 
-3) Las retenciones se realizan con 50% celular y 50% meses gratis.
+
+**Costo de promoción de servicio**
+
+El primer escenario considera que se obsequie un mes gratis de servicio al renovar un año completo. Para cada cliente se tiene en los datos el pago mensual que realizan, por lo que es posible priorizar de alguna manera a los clientes con mayor necesidad de retención
+
+```{r}
+promo_1 <- class_results %>% 
+  mutate(
+    MonthlyCharges = telco_test$MonthlyCharges,
+    Expected_Loss = .pred_Yes * MonthlyCharges) %>% 
+  arrange(desc(Expected_Loss)) %>% 
+  mutate(Budget = cumsum(MonthlyCharges)) %>% 
+  filter(Budget <= 50000)
+
+promo_1 %>% select(-Churn, -.pred_No)
+```
+
+Sin acabarse el presupuesto de $50,000 dólares, el número de clientes a quienes es posible ofrecer la promoción es de 587/2113, lo que representa cerca del 28% de los clientes.
+
+```{r}
+promo_1 %>%
+  summarise(
+    min_prob = min(.pred_Yes),
+    mean_monthly_charge = mean(MonthlyCharges),
+    sum_monthly_charge = sum(MonthlyCharges),
+    sum_yearly_charge = sum(MonthlyCharges)*11
+    )
+```
+Al calcular el valor mínimo de probabilidad de cancelar el servicio, se observa que **el umbral se encuentra cercano a 0.20**, por lo que este es un buen candidato a usar en futuros meses si se usa este método y se cuenta con tal presupuesto.
+
+El gasto mensual promedio de los clientes es de \$85 dólares. El costo total para la empresa es de \$49,959.75 y el beneficio de invertir esta cantidad es de \$549,557 dólares en un año. Este beneficio es el máximo a obtener si todos los clientes aceptaran renovar su suscripción. Será necesario realizar un experimento para comparar el beneficio neto cuando se implementa esta táctiva de marketing u alguna otra estrategia.
+
+
+**Costo de promoción de producto**
+
+El segundo método es más sencillo de calcular, pues supone un costo constante para cualquier cliente. Al regalar un producto en donde la empresa paga \$100 dólares por celular, se logra ofrecer $50000/100 = 500$ productos.
+
+```{r}
+promo_2 <- class_results %>% 
+  mutate(
+    MonthlyCharges = telco_test$MonthlyCharges,
+    Profit = 100,
+    Expected_Loss = .pred_Yes * MonthlyCharges) %>% 
+  arrange(desc(Expected_Loss)) %>% 
+  mutate(Budget = cumsum(Profit)) %>% 
+  filter(Budget <= 50000)
+
+promo_2 %>% select(-Churn, -.pred_No)
+```
+
+```{r}
+promo_2 %>%
+  summarise(
+    min_prob = min(.pred_Yes),
+    mean_monthly_charge = mean(MonthlyCharges),
+    sum_monthly_charge = sum(MonthlyCharges),
+    sum_yearly_charge = sum(MonthlyCharges)*11
+    )
+```
+
+A diferencia del primer método, el umbral de probabilidad con esta segunda campaña es cercano a 0.30, lo que implica mayor precisión a costa de menor cobertura. Adicionalmente, el beneficio total de renovación de contrato es menor que el beneficio alcanzado por el primer método en el escenario utópico en que todos los clientes renuevan.
+
+Estos cálculos sirven exclusivamente para acotar los escenarios, pues no es de esperarse que realmente todos los clientes renueven sus contratos. En las siguientes secciones se procede a realizar experimentos para evaluar cuál de las campañas tiene una mayor tasa de retención de clientes.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
