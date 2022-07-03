@@ -1,6 +1,6 @@
 <div class="watermark"><img src="img/header.png" width="400"></div>
 
-# A/B testing
+# A / B - testing
 
 Los modelos de machine learning en la gran mayoría de las ocasiones tienen un propósito comercial. Como científicos de datos, es nuestra responsabilidad ayudar al negocio a tomar mejores decisiones que beneficien a la empresa en donde se ha desarrollado el modelo predictivo. Particularmente, una de las aplicaciones de mayor impacto en los últimos años es la **reducción del CHURN**
 
@@ -244,6 +244,373 @@ promo_2 %>%
 A diferencia del primer método, el umbral de probabilidad con esta segunda campaña es cercano a 0.30, lo que implica mayor precisión a costa de menor cobertura. Adicionalmente, el beneficio total de renovación de contrato es menor que el beneficio alcanzado por el primer método en el escenario utópico en que todos los clientes renuevan.
 
 Estos cálculos sirven exclusivamente para acotar los escenarios, pues no es de esperarse que realmente todos los clientes renueven sus contratos. En las siguientes secciones se procede a realizar experimentos para evaluar cuál de las campañas tiene una mayor tasa de retención de clientes.
+
+```{r}
+set.seed(13582)
+results_promo_1 <- promo_1 %>% 
+  rowwise() %>% 
+  mutate(
+    result = rbinom(1,1,0.40),
+    cancell = if_else(result == 1, "Yes", "No")) %>% 
+  select(-result)
+
+results_promo_1
+```
+
+
+Primero, analicemos el siguiente resultado, el cual corresponde a la efectividad del método de retención por descuento de mensualidad gratis.
+
+```{r}
+results_promo_1 %>% 
+    group_by(cancell) %>% 
+    summarise(
+    n = n(),
+    mean_monthly_charge = mean(MonthlyCharges),
+    sum_monthly_charge = sum(MonthlyCharges),
+    sum_yearly_charge = sum(MonthlyCharges)*11
+    ) %>% 
+  mutate(prop = round(n/sum(n), 2)) %>% 
+  relocate(prop, .after = n)
+```
+
+
+El contrafactual se refiere a una versión alternativa en la que la alteración (en este caso, método de retención) en la serie de sucesos conduce a un resultado distinto del que realmente ocurrió. En la siguiente tabla, aparecen los resultados del contrafactual (etiqueta original de Churn).
+
+```{r}
+promo_1 %>% 
+  group_by(Churn) %>% 
+    summarise(
+    n = n(),
+    mean_monthly_charge = mean(MonthlyCharges),
+    sum_monthly_charge = sum(MonthlyCharges),
+    sum_yearly_charge = sum(MonthlyCharges)*11
+    ) %>% 
+  mutate(prop = round(n/sum(n), 2)) %>% 
+  relocate(prop, .after = n)
+  
+```
+
+Hay que observar que se obtiene una mejora en la tasa de cancelación (Churn) cuando se aplica el método de retención basado en descuento de mensualidad. 
+
+$$\text{diferencia} =  \$328,163 - \$246,546 = \$81,617$$
+
+**Esta diferencia es el verdadero beneficio de haber implementado e invertido en ciencia de datos y machine learning**. 
+
+Por supuesto, este resultado deberá ser mayor al esfuerzo de inversión de todo el proyecto. Quizá en la primera iteración se realiza una inversión mayor, no obstante, a lo largo del tiempo deberá ser rentable para el negocio.
+
+Por supuesto, este resultado es teórico, pues es imposible conocer el contrafactual de la forma en que fue presentado anteriormente debido a que una vez que se implementa un método, se vuelve imposible conocer el resultado de haber hecho otra cosa. Este mismo problema se enfrenta en una gran cantidad de estudios médicos, sociales, de diseño de imagen corporativa, etc, por lo que las mismas técnicas estadísticas serán presentadas para dar solución a esta estimación.
+
+::: {.infobox .note data-latex="{note}"}
+**WHAT IF...**
+
+* ¿Qué pasaría si la tasa de *churn* fuese mayor a la obtenida al no implementar ninguna campaña?
+
+* ¿Cómo sabemos que estamos maximizando las ganancias a través de la elección de la mejor campaña de retención?
+:::
+
+## Diseño experimental
+
+Sería formidable lograr conocer cuál es el mejor método de retención antes de aplicar el ejercicio de retención a todos los clientes. Esto definitivamente ayudaría a maximizar ganancias y evitar tener pérdidas con alguna mala decisión.
+
+A través de la experimentación es posible estimar los resultados de diferentes escenarios. Para lograrlo, se requiere de la **creación de muestras representativas de la población** que simulen con cierto error tolerable el resultado de cada campaña de retención. Para realizar esta práctica es importante introducirnos al tema de: **muestreo**.
+
+### ¿Qué es y para qué sirve muestreo?
+
+El muestreo es el proceso de seleccionar un conjunto de individuos de una población con el fin de estudiarlos y poder caracterizar el total de la población. Nos ayuda a obtener información fiable de la población a partir de una muestra de la que extrae inferencias estadísticas con un margen de error medido en términos de probabilidades. En otras palabras, en una investigación por muestreo podremos estudiar el comportamiento y las opiniones de toda una población analizando únicamente una parte de esta, teniendo en cuenta que siempre existirá un margen de error a la hora de realizar dichos cálculos.
+
+```{r, fig.align='center', out.height='450pt', out.width='450pt', echo=F}
+knitr::include_graphics("img/09-ab-testing/1-1-1-muestreo.jpg")
+```
+
+**Ventajas**
+
+* **Reducción de costos:** Los costos de un estudio serán menores si los datos de interés se pueden obtener a partir de una muestra de la población. Por ejemplo, cuando se realizan estudios de prevalencia de un evento de interés, es más económico medir una muestra representativa de 1500 sujetos de una población, que el total de individuos que la componen.
+
+* **Eficiencia:** Al trabajar con un número reducido de sujetos de estudio, representativos de la población; el tiempo necesario para conducir el estudio y obtener resultados y conclusiones será notoriamente menor.
+
+Una muestra puede ser obtenida de diferentes maneras:
+
+* No probabilística.
+  * Por cuotas
+  * Conveniencia
+  * Bola de nieve
+  * Discrecional
+
+* Probabilística
+  * Aleatorio Simple
+  * Sistemático
+  * Estratificado
+  * Conglomerados
+  * Polietápico
+  * Etc.
+
+El temario de muestreo es largo, por lo que nuestro enfoque se centrará en el muestreo probabilístico aletorio simple y el estratificado.
+
+El muestreo probabilístico se define como aquél en que todos los individuos de la población tienen una probabilidad de entrar a formar parte de la muestra. Los diseños en que interviene el azar producen muestras representativas la mayoría de las veces.
+
+
+### Muestreo aleatorio simple
+
+Se caracteriza porque **cada elemento de la población tiene la misma probabilidad  de  ser escogido para formar parte de la muestra** y todas las posibles muestras tienen la misma probabilidad de ser elegidas. Una vez censado el marco de la población, se asigna un número a cada individuo o elemento y se elige aleatoriamente.
+
+Para seleccionar una muestra de este tipo se requiere tener en forma de lista todos los elementos que integran la población investigada y utilizar tablas de números aleatorios.
+
+Ejemplo: A un grupo de 100 personas se les numera de uno a cien y se depositan en una urna 100 canicas a su vez numeradas de uno a cien. Para obtener una muestra aleatoria simple de 20 elementos, tendríamos que sacar 20 canicas numeradas de la urna que nos seleccionarán en forma completamente aleatoria a los 20 elementos escogidos para que opinen sobre un nuevo producto.
+
+```{r, fig.align='center', out.height='250pt', out.width='250pt', echo=F}
+knitr::include_graphics("img/09-ab-testing/1-1-4-tipos-de-muestreo-probabilistico-mas.png")
+```
+
+### Muestreo estratificado
+
+En este tipo de muestreo **la población de estudio se divide en subgrupos o estratos**, escogiendo posteriormente una muestra al azar de cada estrato. Esta división suele realizarse según una característica que pueda influir sobre los resultados del estudio.
+
+Si la estratificación se realiza respecto una característica se denomina *muestreo estratificado simple*, y si se realiza respecto a dos o más características sedenomina *muestreo estratificado compuesto*.
+
+Ejemplo: Si existen 5 millones de hipertensos en una población y hay un $35\%$ de pacientes que fuman, podemos estratificar de manera que en nuestra muestra queden representados al igual que en el total de la población, la misma proporción de hipertensos fumadores ($35\%$) y de no fumadores ($65\%$).
+
+```{r, fig.align='center', out.height='350pt', out.width='350pt', echo=F}
+knitr::include_graphics("img/09-ab-testing/1-1-4-tipos-de-muestreo-probabilistico-estratificado.jpg")
+```
+
+
+### Marco de muestreo
+
+El primer paso consiste en crear un **marco de muestreo**, el cual es el **listado de los posibles elementos a ser seleccionados en la muestra.** Tiene la característica de que todos los elementos deben pertenecer a la población objetivo. Este marco de muestreo podría llegar a tener los siguientes 3 errores:
+
+* **Duplicidad:** Existen elementos repetidos 
+
+* **Sobre-representatividad:** Existen elementos en el marco que no pertenecen a la población objetivo
+
+* **Sub-representatividad:** Existen elementos pertenecientes a la población objetivo que no se encuentran representados en el marco
+
+Ante estos problemas, es necesario realizar una limpieza de los datos disponibles para obtener un conjunto lo más adecuado para extraer estos problemas. 
+
+
+### Tamaño de muestra
+
+Es imprescindible en una buena estimación conocer el tamaño de muestra adecuado que permitirá controlar o cuantificar el error de muestreo.
+
+Se presenta a continuación la fórmula estadística que permite conocer el tamaño de muestra necesario para lograr con 95% de confianza ($\alpha$) un error de muestreo (e). Esta fórmula corresponde se calcula a partir de un diseño de muestreo aleatorio simple, donde la variable de respuesta es dicotómica (sí o no):
+
+$$m=\frac{p(1-p)Z_{1-\alpha/2}^2}{e²};$$
+
+$$n=\frac{m}{1+\frac{m}{N}} \frac{deff}{(1-TNR)}$$
+
+**Donde:**
+
+N = Es el tamaño de población.
+
+n = Tamaño de muestra.
+
+p = Proporción esperada (50% por default).
+
+$Z_{1-\alpha/2}$ = Percentil $\alpha/2$ de la distribución Normal estándar.
+
+e = Error de muestreo máximo a tolerar.
+
+TNR = Tasa de no respuesta
+
+deff = Efecto de diseño (aumento en la varianza por usar un diseño distinto al aleatorio simple)
+
+Esta fórmula puede demostrarse a partir del siguiente planteamiento:
+
+$$P[|\theta-\hat{\theta}| < error] = Z_{1-\alpha/2}$$
+
+Para mayor teoría de muestreo, consultar el libro: [Model Assisted Survey Sampling](https://link.springer.com/book/9780387406206)
+
+::: {.infobox .pin data-latex="{pin}"}
+**¡¡ RECORDAR !!**
+
+En la medida en que se desea disminuir el error de muestreo, es necesario incrementar de manera exponencial el tamaño de muestra.
+:::
+
+Se presenta a continuación la función creada con *R* para conocer el tamaño de muestra de una población. Es necesario indicar los parámetros e hipótesis bajo los cuales se realizará dicho cálculo. Posteriormente, se presenta una gráfica que permite conocer el tamaño de muestra de acuerdo con el error de muestreo a tolerar (suponiendo fijos otros parámetros).
+
+
+#### Implementación en R
+
+```{r}
+n_muestra <- function(e = 0.04, p = 0.5, alpha = 0.95, N = 100000, deff = 1.5, tnr = 0.10){
+  
+  m = p*(1-p)*(qnorm(1- (1-alpha)/2)/e)^2
+  n = ceiling( (m/(1 + m/N)) * deff/(1 - tnr ) ) 
+
+  return(n)
+}
+```
+
+**Ejemplo**
+
+Suponiendo un tamaño poblacional de 4.5 millones de personas, y con 95% de confianza un error máximo a tolerar de 3.5%, el tamaño de muestra necesario para estimar una proporción es:
+
+```{r}
+n_muestra(e = 0.035, p = 0.5, alpha = 0.95, N = 4500000, deff = 1, tnr = 0.20)
+```
+
+En este ejemplo, por practicidad se redondea el tamaño de la muestra a 1,00 unidades. Veamos otro ejemplo:
+
+```{r}
+n_muestra(e = 0.04, p = 0.5, alpha = 0.95, N = 900, deff = 1, tnr = 0.20)
+```
+En este segundo caso, se redonde a 450 casos. Veamos ahora una gráfica que permita anañizar la relación existente entre el tamaño de muestra y el error de muestreo.
+
+```{r, warning=F, message=FALSE}
+library(dplyr)
+library(ggplot2)
+
+tam_muestra <- tibble(error = seq(0.02, 0.1, by = 0.001))
+
+tam_muestra %>% 
+  mutate(n = n_muestra(e = error, p = 0.5, alpha = 0.95, N = 100000, deff = 1.7, tnr = 0.1)) %>% 
+  ggplot(aes(x = error, y = n)) +
+  geom_line() +
+  geom_point() +
+  ggtitle("Relación entre error de muestreo y tamaño de muestra") +
+  xlab("Error de muestreo") +
+  ylab("Tamaño de muestra")
+
+```
+
+Ahora analizaremos la relación existente entre el tamaño de muestra y el tamaño poblacional cuando fijamos el error de muestreo en 3.5%.
+
+```{r, warning=F, message=FALSE}
+tam_muestra <- tibble(N = seq(1, 100000, by = 1000))
+
+tam_muestra %>% 
+  mutate(n = n_muestra(e = 0.035, N = N)) %>% 
+  ggplot(aes(x = N, y = n)) +
+  geom_line() +
+  geom_point() +
+  scale_y_continuous(limits = c(0, 1500), breaks = seq(0, 1500, by = 100)) +
+  ggtitle("Relación entre tamaño de población y tamaño de muestra") +
+  xlab("Tamaño de población") +
+  ylab("Tamaño de muestra")
+
+```
+
+Se puede apreciar que a mayor tamaño de población es necesario una muestra más grande, sin embargo, no es un comportamiento lineal. Debido a que una de las condiciones de muestreo es que la selección es aleatoria, existe un punto de saturación de información, en donde no se necesita aumentar más el tamaño de muestra (aunque el tamaño de la población siga creciendo)
+
+
+::: {.infobox .important data-latex="{important}"}
+**¡¡ RECORDAR !!**
+
+Para lograr estimaciones representativas de ALTA calidad sobre la población, es indispensable realizar un buen diseño de muestreo, de lo contrario los resultados pueden estar sesgados.
+:::
+
+::: {.infobox .note data-latex="{note}"}
+**EJERCICIO**
+
+Realizar el cálculo del tamaño de muestra necesario para los siguientes escenarios:
+
+a) Muestra representativa de alumnos de esta clase
+
+b) Muestra de clientes probables a cancelar su servicio de telecomunicaciones con los datos vistos en clase (Test)
+:::
+
+
+## Distribución muestral
+
+Una vez que el tamaño de muestra ha sido calculado, es común que se proceda a distribuirla de una manera estratégica que permita recolectar de manera óptima la información necesaria. Existe distintos tipos de distribución (afijación), las cuales dependen de que existan estratos (grupos) de la población sobre los cuales se desea distribuir la muestra. Entre las más comunes, se encuentran:
+
+1. **Afijación simple:** En este tipo de afijación, la muestra se distribuye de manera igualitaria entre los distintos grupos. La fórmula es la siguiente:
+
+$$n_h=\frac{n}{L}$$
+**Donde:**
+
+$n_h=$ Es el tamaño de muestra en el h-ésimo estrato
+
+$n=$ Es el tamaño de muestra total
+
+$L=$ Es el número de estratos
+
+
+2. **Afijación proporcional:** Posiblemente es el tipo de afijación más usado. Esta estrategia se usa para distribuir la muestra de manera proporcional a una característica. Por regla general, se distribuye de acuerdo con la distribución poblacional (viviendas o personas) en zonas geográficas. La fórmula es la siguiente:
+
+
+$$n_h = \frac{P_h}{P} \cdot n$$
+
+**Donde:**
+
+* $n_h=$ Es el tamaño de muestra ajustado en el h-ésimo estrato
+
+* $n=$ Es el tamaño de muestra global
+
+* $P_h=$ Es la población en el h-ésimo estrato
+
+* $P=$ Es la población total
+
+
+### Implementación en R
+
+Suponga por un momento que contamos con una característica particular de interés en la que podemos clasificar a la población de clientes, puede ser el sexo, la edad, ingresos o alguna otra clasificación de interés (producto de contratación).
+
+```{r}
+
+marco <- telco_test %>% 
+  select(customerID, gender, Contract) %>% 
+  mutate(
+    cod_gender = as.numeric(as.factor(gender)),
+    cod_contract = as.numeric(as.factor(Contract)),
+  ) %>% 
+  unite(estrato, starts_with("cod_"), sep = "-") %>% 
+  left_join(
+    class_results %>% select(customerID, .pred_Yes)
+    ) %>% 
+  filter(.pred_Yes >= 0.20)
+
+marco
+
+marco %<>% 
+  arrange(estrato) %>% 
+  mutate(ID_unit = 1:nrow(marco))
+
+
+pob_estrato <- marco %>% 
+  group_by(gender, Contract, estrato) %>% 
+  summarise(
+    n = n(),
+    mean_prob = mean(.pred_Yes, na.rm = T),
+    .groups = "drop"
+  ) %>% 
+  arrange(desc(mean_prob))
+
+pob_estrato
+```
+
+Suponiendo que el tamaño de muestra seleccionado es de 450 individuos y se desea hacer una afijación proporcional, el tamaño de muestra en cada estrato queda asignado de la siguiente forma:
+
+```{r}
+distribucion <- pob_estrato %>% 
+  mutate(
+    prop = n/sum(n),
+    n_h = round(prop * 450)
+  )
+
+distribucion
+```
+
+Una práctica muy común es redondear la muestra elegida en cada estrato de forma que sean número múltiplos de 5 o 10 los que definan el tamaño final de muestra en cada estrato. Existen múltiples formas de realizar estos ajustes. Usaremos un redondeo simple para determinar el tamaño de muetsra final en cada estrato.
+
+```{r}
+distribucion <- distribucion %>% 
+  mutate(nh_aj = round(n_h/10)*10)
+
+distribucion
+```
+
+**De esta forma, el tamaño final de la muestra será de `r sum(distribucion$nh_aj)` unidades.**
+
+
+
+
+
+
+
+
+
+
+
 
 
 
